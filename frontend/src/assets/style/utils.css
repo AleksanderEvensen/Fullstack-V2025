@@ -1,0 +1,58 @@
+@layer utils {
+  /* Page container media queries */
+  @media (width >= 40rem) {
+    .container {
+      max-width: 40rem;
+    }
+  }
+  @media (width >= 48rem) {
+    .container {
+      max-width: 48rem;
+    }
+  }
+  @media (width >= 64rem) {
+    .container {
+      max-width: 64rem;
+    }
+  }
+  @media (width >= 80rem) {
+    .container {
+      max-width: 80rem;
+    }
+  }
+  @media (width >= 96rem) {
+    .container {
+      max-width: 96rem;
+    }
+  }
+
+  .rounded-sm {
+    border-radius: calc(var(--radius) - 4px);
+  }
+  .rounded-md {
+    border-radius: calc(var(--radius) - 2px);
+  }
+  .rounded {
+    border-radius: calc(var(--radius));
+  }
+  .rounded-xl {
+    border-radius: calc(var(--radius) + 4px);
+  }
+
+  .text-sm {
+    font-size: var(--text-sm);
+    line-height: var(--text-sm-line-height);
+  }
+  .text-base {
+    font-size: var(--text-base);
+    line-height: var(--text-base-line-height);
+  }
+  .text-lg {
+    font-size: var(--text-lg);
+    line-height: var(--text-lg-line-height);
+  }
+  .text-2xl {
+    font-size: var(--text-2xl);
+    line-height: var(--text-2xl-line-height);
+  }
+}
