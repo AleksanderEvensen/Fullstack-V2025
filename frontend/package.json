@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "test:unit": "vitest",
     "build-only": "vite build",
-    "type-check": "vue-tsc --build"
+    "type-check": "vue-tsc --build",
+    "lint": "biome lint --no-errors-on-unmatched"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
