@@ -56,17 +56,14 @@ withDefaults(defineProps<Props>(), {
   align-items: center;
   justify-content: center;
   font-weight: var(--font-weight-medium);
-
-  /* transition-colors */
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-property: color, background-color, border-color;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }
 
 .button:focus-visible {
   outline: none;
-  --local_ring-offset: 2px;
-  box-shadow: 0 0 0 calc(2px + var(--local_ring-offset)) var(--ring);
+  box-shadow: 0 0 0 2px var(--ring), 0 0 0 4px var(--ring-offset, white);
 }
 
 .button:disabled {
@@ -74,11 +71,12 @@ withDefaults(defineProps<Props>(), {
   opacity: 0.5;
 }
 
-/* Variant styles */
+/* Variants */
 .button-default {
   background-color: var(--primary);
   color: var(--primary-foreground);
 }
+
 .button-default:hover {
   background-color: color-mix(in srgb, var(--primary) 90%, transparent);
 }
@@ -115,6 +113,7 @@ withDefaults(defineProps<Props>(), {
 
 .button-link {
   color: var(--primary);
+  text-decoration: none;
   text-underline-offset: 4px;
 }
 .button-link:hover {
@@ -124,17 +123,17 @@ withDefaults(defineProps<Props>(), {
 /* Size styles */
 .button-size-default {
   height: calc(var(--spacing) * 10); /* h-10 */
-  padding: calc(var(--spacing) * 4) calc(var(--spacing) * 2); /* px-4 py-2 */
+  padding: calc(var(--spacing) * 2) calc(var(--spacing) * 4); /* px-4 py-2 */
 }
 
 .button-size-sm {
   height: calc(var(--spacing) * 9); /* h-9 */
-  padding: calc(var(--spacing) * 3); /* px-3 */
+  padding: 0 calc(var(--spacing) * 3); /* px-3 */
 }
 
 .button-size-lg {
   height: calc(var(--spacing) * 11); /* h-11 */
-  padding: calc(var(--spacing) * 8); /* px-8 */
+  padding: 0 calc(var(--spacing) * 8); /* px-8 */
 }
 
 .button-size-icon {
