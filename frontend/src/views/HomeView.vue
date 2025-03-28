@@ -6,4 +6,30 @@ import TheWelcome from "../components/TheWelcome.vue";
   <main>
     <TheWelcome />
   </main>
+  <h1>Hello World</h1>
+  <h1>Hello World</h1>
+  <h1>Hello World</h1>
+  <h1>Hello World</h1>
+  <h1>Hello World</h1>
+  <h1>Hello World</h1>
+  <h1>Hello World</h1>
+  <h1>Hello World</h1>
+  <h1>Hello World</h1>
+  <h1>Hello World</h1>
+  <h1>Hello World</h1>
+  <h1>Hello World</h1>
+  <h1>Hello World</h1>
+  <h1>Hello World</h1>
+  <h1>Hello World</h1>
+  <h1>Hello World</h1>
+  <h1>Hello World</h1>
+  <h1>Hello World</h1>
+  <h1>Hello World</h1>
+  <h1>Hello World</h1>
+  <h1>Hello World</h1>
+  <h1>Hello World</h1>
+  <h1>Hello World</h1>
+  <h1>Hello World</h1>
+  <h1>Hello World</h1>
+  <h1>Hello World</h1>
 </template>

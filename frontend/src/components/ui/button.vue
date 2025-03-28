@@ -59,6 +59,7 @@ withDefaults(defineProps<Props>(), {
   transition-property: color, background-color, border-color;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
+  cursor: pointer;
 }
 
 .button:focus-visible {
@@ -78,7 +79,7 @@ withDefaults(defineProps<Props>(), {
 }
 
 .button-default:hover {
-  background-color: color-mix(in srgb, var(--primary) 90%, transparent);
+  background-color: color-mix(in srgb, var(--primary) 90%, white);
 }
 
 .button-destructive {
@@ -86,7 +87,7 @@ withDefaults(defineProps<Props>(), {
   color: var(--destructive-foreground);
 }
 .button-destructive:hover {
-  background-color: color-mix(in srgb, var(--destructive) 90%, transparent);
+  background-color: color-mix(in srgb, var(--destructive) 90%, white);
 }
 
 .button-outline {
@@ -103,7 +104,7 @@ withDefaults(defineProps<Props>(), {
   color: var(--secondary-foreground);
 }
 .button-secondary:hover {
-  background-color: color-mix(in srgb, var(--secondary) 80%, transparent);
+  background-color: color-mix(in srgb, var(--secondary) 90%, black);
 }
 
 .button-ghost:hover {
