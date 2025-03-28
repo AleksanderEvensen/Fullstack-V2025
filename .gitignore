@@ -36,3 +36,5 @@ out/
 
 
 src/main/resources/static/**/*
+
+.env
