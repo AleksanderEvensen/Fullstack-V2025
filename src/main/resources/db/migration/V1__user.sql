@@ -5,6 +5,5 @@ CREATE TABLE users(
     password   VARCHAR(100)      NOT NULL,
     enabled    TINYINT DEFAULT 0 NOT NULL,
     created_at datetime          NULL,
-    updated_at datetime          NULL,
-    CONSTRAINT uc_user_name UNIQUE (name)
+    updated_at datetime          NULL
 );
