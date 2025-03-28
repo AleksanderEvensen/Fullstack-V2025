@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
 import HelloWorld from "./components/HelloWorld.vue";
+import { Toaster, toast } from 'vue-sonner'
 </script>
 
 <template>
@@ -17,6 +18,7 @@ import HelloWorld from "./components/HelloWorld.vue";
     </div>
   </header>
   <RouterView />
+  <Toaster />
 </template>
 
 <style scoped>
