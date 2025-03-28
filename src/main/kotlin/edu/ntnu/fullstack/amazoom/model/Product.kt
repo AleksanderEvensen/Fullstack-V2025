@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 data class Product(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    val id: Long = 0L,
 
     @Column(nullable = false)
     var title: String,

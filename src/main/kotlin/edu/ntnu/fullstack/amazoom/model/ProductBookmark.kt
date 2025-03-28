@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 data class ProductBookmark(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    val id: Long = 0L,
 
     @Column(name = "product_id", nullable = false)
     var productId: Long,
