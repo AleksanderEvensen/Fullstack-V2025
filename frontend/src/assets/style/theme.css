@@ -26,7 +26,7 @@
     --chart-4: hsl(43 74% 66%);
     --chart-5: hsl(27 87% 67%);
   }
- 
+
   .dark {
     --background: hsl(240 10% 3.9%);
     --foreground: hsl(0 0% 98%);
@@ -72,5 +72,11 @@
     --font-weight-bold: 700;
     --font-weight-extrabold: 800;
     --font-weight-black: 900;
+
+    --screen-size-sm: 40rem;
+    --screen-size-md: 48rem;
+    --screen-size-lg: 64rem;
+    --screen-size-xl: 80rem;
+    --screen-size-2xl: 96rem;
   }
 }

@@ -3,6 +3,7 @@ import {
   AvatarTest,
   ButtonTest,
   CardTest,
+  DatepickerTest,
   DropdownTest,
   FormTest,
   NavigationMenuTest,
@@ -26,6 +27,7 @@ import {
     <SelectTest />
     <SwitchTest />
     <CardTest />
+    <DatepickerTest />
   </div>
 </template>
 
