@@ -6,7 +6,7 @@ import {
   type NavigationMenuContentProps,
   useForwardPropsEmits,
 } from 'reka-ui'
-import { computed, type HTMLAttributes } from 'vue'
+import { type HTMLAttributes, computed } from 'vue'
 
 const props = defineProps<NavigationMenuContentProps & { class?: HTMLAttributes['class'] }>()
 
@@ -32,97 +32,45 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
   position: absolute;
   left: 0;
   top: 0;
-  width: 100%;
+  width: auto;
 }
 
-.nav-menu-content[data-motion^="from-"] {
-  animation: contentFadeIn 0.2s ease;
+.nav-menu-content[data-motion^="from-"],
+.nav-menu-content[data-state="open"],
+.nav-menu-content[data-state="visible"] {
+  --enter-opacity: initial;
+  --enter-translate-x: initial;
+  animation: nav-view-change 0.2s ease;
 }
 
-.nav-menu-content[data-motion^="to-"] {
-  animation: contentFadeOut 0.2s ease;
+.nav-menu-content[data-motion^="to-"],
+.nav-menu-content[data-state="closed"],
+.nav-menu-content[data-state="hidden"] {
+  --enter-opacity: initial;
+  --enter-translate-x: initial;
+  animation: nav-view-change 0.2s ease;
 }
 
+/* Fade in */
+.nav-menu-content[data-motion^="from-"],
+.nav-menu-content[data-state="visible"] {
+  --enter-opacity: 0;
+}
+
+
+/* Slide in from left and right */
 .nav-menu-content[data-motion="from-end"] {
-  animation: slideInFromRight 0.2s ease;
+  --enter-translate-x: calc(var(--spacing) * 13)
 }
-
 .nav-menu-content[data-motion="from-start"] {
-  animation: slideInFromLeft 0.2s ease;
+  --enter-translate-x: calc(var(--spacing) * -13)
 }
 
-.nav-menu-content[data-motion="to-end"] {
-  animation: slideOutToRight 0.2s ease;
-}
-
-.nav-menu-content[data-motion="to-start"] {
-  animation: slideOutToLeft 0.2s ease;
-}
-
-@media (min-width: 768px) {
-  .nav-menu-content {
-    position: absolute;
-    width: auto;
+@keyframes nav-view-change {
+  0% {
+    opacity: var(--enter-opacity, 1);
+    transform: translateX(var(--enter-translate-x, 0))
   }
 }
 
-@keyframes contentFadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes contentFadeOut {
-  from {
-    opacity: 1;
-  }
-
-  to {
-    opacity: 0;
-  }
-}
-
-@keyframes slideInFromRight {
-  from {
-    transform: translateX(calc(var(--spacing) * 13));
-  }
-
-  to {
-    transform: translateX(0);
-  }
-}
-
-@keyframes slideInFromLeft {
-  from {
-    transform: translateX(calc(var(--spacing) * -13));
-  }
-
-  to {
-    transform: translateX(0);
-  }
-}
-
-@keyframes slideOutToRight {
-  from {
-    transform: translateX(0);
-  }
-
-  to {
-    transform: translateX(calc(var(--spacing) * 13));
-  }
-}
-
-@keyframes slideOutToLeft {
-  from {
-    transform: translateX(0);
-  }
-
-  to {
-    transform: translateX(calc(var(--spacing) * -13));
-  }
-}
 </style>

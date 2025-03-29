@@ -5,7 +5,7 @@ import {
   type NavigationMenuViewportProps,
   useForwardProps,
 } from 'reka-ui'
-import { computed, type HTMLAttributes } from 'vue'
+import { type HTMLAttributes, computed } from 'vue'
 
 const props = defineProps<NavigationMenuViewportProps & { class?: HTMLAttributes['class'] }>()
 
