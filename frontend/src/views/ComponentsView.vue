@@ -1,18 +1,44 @@
 <script setup lang="ts">
-import Button from "@/components/ui/button.vue";
+import {
+  ButtonTest,
+  FormTest,
+  AvatarTest,
+  DropdownTest,
+  TabsTest,
+  StepperTest,
+  SelectTest,
+  SwitchTest,
+  NavigationMenuTest,
+} from './test-components'
 </script>
 
 <template>
-
-  <Button variant="default">Default</Button>
-  <Button variant="secondary">Secondary</Button>
-  <Button variant="destructive">Destructive</Button>
-  <Button variant="outline">Outline</Button>
-  <Button variant="ghost">Ghost</Button>
-  <Button variant="link">Link</Button>
-
-  <Button size="lg">Large</Button>
-  <Button size="default">Default</Button>
-  <Button size="sm">Small</Button>
-  <Button size="icon">Icon</Button>
+  <div class="components-container">
+    <h1>Component Examples</h1>
+    <NavigationMenuTest />
+    <ButtonTest />
+    <FormTest />
+    <AvatarTest />
+    <DropdownTest />
+    <TabsTest />
+    <StepperTest />
+    <SelectTest />
+    <SwitchTest />
+  </div>
 </template>
+
+<style scoped>
+.components-container {
+  padding: calc(var(--spacing) * 6);
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 8);
+}
+
+.components-container h1 {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--foreground);
+  margin-bottom: calc(var(--spacing) * 4);
+}
+</style>

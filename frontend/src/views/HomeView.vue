@@ -4,32 +4,7 @@ import TheWelcome from "../components/TheWelcome.vue";
 
 <template>
   <main>
-    <TheWelcome />
+    <NavMenuExample />
   </main>
-  <h1>Hello World</h1>
-  <h1>Hello World</h1>
-  <h1>Hello World</h1>
-  <h1>Hello World</h1>
-  <h1>Hello World</h1>
-  <h1>Hello World</h1>
-  <h1>Hello World</h1>
-  <h1>Hello World</h1>
-  <h1>Hello World</h1>
-  <h1>Hello World</h1>
-  <h1>Hello World</h1>
-  <h1>Hello World</h1>
-  <h1>Hello World</h1>
-  <h1>Hello World</h1>
-  <h1>Hello World</h1>
-  <h1>Hello World</h1>
-  <h1>Hello World</h1>
-  <h1>Hello World</h1>
-  <h1>Hello World</h1>
-  <h1>Hello World</h1>
-  <h1>Hello World</h1>
-  <h1>Hello World</h1>
-  <h1>Hello World</h1>
-  <h1>Hello World</h1>
-  <h1>Hello World</h1>
-  <h1>Hello World</h1>
+
 </template>

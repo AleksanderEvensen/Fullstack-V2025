@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
 import { Toaster, toast } from 'vue-sonner'
-import HelloWorld from "./components/HelloWorld.vue";
 import Navbar from "./components/Navbar.vue";
 </script>
 
@@ -11,7 +10,6 @@ import Navbar from "./components/Navbar.vue";
   <RouterLink to="/">Home</RouterLink>
   <RouterLink to="/about">About</RouterLink>
   <RouterLink to="/components">Components</RouterLink>
-
   <RouterView />
   <Toaster />
 </template>

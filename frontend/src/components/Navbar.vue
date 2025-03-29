@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { GlobeIcon, LanguagesIcon, MailIcon, PlusIcon, UserIcon } from "lucide-vue-next";
 import { RouterLink } from "vue-router";
-import Button from "./ui/button.vue";
+import Button from "./ui/button/Button.vue";
 
 
 // TODO: Fix i18n
@@ -19,7 +19,9 @@ import Button from "./ui/button.vue";
     <div class="navbar-right">
       <!-- Categories Dropdown -->
       <div class="nav-item dropdown">
-        <div class="dropdown-label"><GlobeIcon class="icon" /> Categories</div>
+        <div class="dropdown-label">
+          <GlobeIcon class="icon" /> Categories
+        </div>
         <div class="dropdown-content">
           <a href="#">Electronics</a>
           <a href="#">Clothing</a>
@@ -34,7 +36,9 @@ import Button from "./ui/button.vue";
 
       <!-- Language Dropdown -->
       <div class="nav-item dropdown">
-        <div class="dropdown-label"><LanguagesIcon class="icon" />Language</div>
+        <div class="dropdown-label">
+          <LanguagesIcon class="icon" />Language
+        </div>
         <div class="dropdown-content">
           <a href="#">English</a>
           <a href="#">Norwegian</a>
@@ -42,10 +46,14 @@ import Button from "./ui/button.vue";
       </div>
 
       <!-- Messages -->
-      <div class="nav-item"><MailIcon class="icon" /> Messages</div>
+      <div class="nav-item">
+        <MailIcon class="icon" /> Messages
+      </div>
 
       <!-- Create New Listing -->
-      <div class="nav-item"><PlusIcon class="icon" /> Create Listing</div>
+      <div class="nav-item">
+        <PlusIcon class="icon" /> Create Listing
+      </div>
 
       <!-- Profile Icon -->
       <div class="nav-item">
@@ -66,7 +74,8 @@ import Button from "./ui/button.vue";
   padding: 12px 20px;
   position: sticky;
   top: 0;
-  z-index: 100; /* Make sure the navbar renders above everything */
+  z-index: 100;
+  /* Make sure the navbar renders above everything */
   margin: 0;
   border-bottom: 1px solid #333;
 }
