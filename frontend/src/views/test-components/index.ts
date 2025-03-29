@@ -7,3 +7,4 @@ export { default as StepperTest } from './StepperTest.vue'
 export { default as SelectTest } from './SelectTest.vue'
 export { default as SwitchTest } from './SwitchTest.vue'
 export { default as NavigationMenuTest } from './NavigationMenuTest.vue'
+export { default as CardTest } from "./CardTest.vue";

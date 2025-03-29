@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import {
-  ButtonTest,
-  FormTest,
   AvatarTest,
+  ButtonTest,
+  CardTest,
   DropdownTest,
-  TabsTest,
-  StepperTest,
-  SelectTest,
-  SwitchTest,
+  FormTest,
   NavigationMenuTest,
+  SelectTest,
+  StepperTest,
+  SwitchTest,
+  TabsTest,
 } from './test-components'
 </script>
 
@@ -24,6 +25,7 @@ import {
     <StepperTest />
     <SelectTest />
     <SwitchTest />
+    <CardTest />
   </div>
 </template>
 
