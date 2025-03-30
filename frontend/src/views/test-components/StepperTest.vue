@@ -119,7 +119,7 @@ function onSubmit(values: any) {
                     <Form v-slot="{ meta, values, validate }" as="" keep-values
                         :validation-schema="toTypedSchema(formSchema[stepIndex - 1])">
                         <Stepper v-slot="{ isNextDisabled, isPrevDisabled, nextStep, prevStep }" v-model="stepIndex"
-                            class="block w-full">
+                            class="stepper-block">
                             <form @submit="(e) => {
                                 e.preventDefault()
                                 validate()
@@ -128,39 +128,38 @@ function onSubmit(values: any) {
                                     onSubmit(values)
                                 }
                             }">
-                                <div class="flex w-full flex-start gap-2">
+                                <div class="stepper-nav-container">
                                     <StepperItem v-for="step in steps" :key="step.step" v-slot="{ state }"
-                                        class="relative flex w-full flex-col items-center justify-center"
-                                        :step="step.step">
+                                        class="stepper-item" :step="step.step">
                                         <StepperSeparator v-if="step.step !== steps[steps.length - 1].step"
-                                            class="absolute left-[calc(50%+20px)] right-[calc(-50%+10px)] top-5 block h-0.5 shrink-0 rounded-full bg-muted group-data-[state=completed]:bg-primary" />
+                                            class="stepper-form-separator" />
 
                                         <StepperTrigger as-child>
                                             <Button
                                                 :variant="state === 'completed' || state === 'active' ? 'default' : 'outline'"
-                                                size="icon" class="z-10 rounded-full shrink-0"
-                                                :class="[state === 'active' && 'ring-2 ring-ring ring-offset-2 ring-offset-background']"
+                                                size="icon" class="stepper-button"
+                                                :class="[state === 'active' && 'active-button']"
                                                 :disabled="state !== 'completed' && !meta.valid">
-                                                <Check v-if="state === 'completed'" class="size-5" />
+                                                <Check v-if="state === 'completed'" class="stepper-icon-small" />
                                                 <Circle v-if="state === 'active'" />
                                                 <Dot v-if="state === 'inactive'" />
                                             </Button>
                                         </StepperTrigger>
 
-                                        <div class="mt-5 flex flex-col items-center text-center">
-                                            <StepperTitle :class="[state === 'active' && 'text-primary']"
-                                                class="text-sm font-semibold transition lg:text-base">
+                                        <div class="stepper-title-container">
+                                            <StepperTitle :class="[state === 'active' && 'active-text']"
+                                                class="stepper-title">
                                                 {{ step.title }}
                                             </StepperTitle>
-                                            <StepperDescription :class="[state === 'active' && 'text-primary']"
-                                                class="sr-only text-xs text-muted-foreground transition md:not-sr-only lg:text-sm">
+                                            <StepperDescription :class="[state === 'active' && 'active-text']"
+                                                class="stepper-description">
                                                 {{ step.description }}
                                             </StepperDescription>
                                         </div>
                                     </StepperItem>
                                 </div>
 
-                                <div class="flex flex-col gap-4 mt-4">
+                                <div class="form-fields-container">
                                     <template v-if="stepIndex === 1">
                                         <FormField v-slot="{ componentField }" name="fullName">
                                             <FormItem>
@@ -229,11 +228,11 @@ function onSubmit(values: any) {
                                     </template>
                                 </div>
 
-                                <div class="flex items-center justify-between mt-4">
+                                <div class="form-actions">
                                     <Button :disabled="isPrevDisabled" variant="outline" size="sm" @click="prevStep()">
                                         Back
                                     </Button>
-                                    <div class="flex items-center gap-3">
+                                    <div class="button-group">
                                         <Button v-if="stepIndex !== 3" :type="meta.valid ? 'button' : 'submit'"
                                             :disabled="isNextDisabled" size="sm" @click="meta.valid && nextStep()">
                                             Next
@@ -254,61 +253,177 @@ function onSubmit(values: any) {
 
 <style scoped>
 .component-section {
-    display: flex;
-    flex-direction: column;
-    gap: calc(var(--spacing) * 6);
+    margin: 2rem 0;
+}
+
+h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+h3 {
+    font-size: 1.4rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
 }
 
 .component-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: calc(var(--spacing) * 6);
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+@media (min-width: 768px) {
+    .component-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 .component-example {
-    display: flex;
-    flex-direction: column;
-    gap: calc(var(--spacing) * 4);
-    padding: calc(var(--spacing) * 4);
-    background-color: var(--background);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
+    background-color: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .example-content {
-    display: flex;
-    flex-wrap: wrap;
-    gap: calc(var(--spacing) * 2);
-    align-items: flex-start;
+    margin-top: 1rem;
     width: 100%;
 }
 
 .horizontal-stepper {
     display: flex;
     width: 100%;
-    gap: calc(var(--spacing) * 2);
+    gap: 1rem;
 }
 
 .stepper-icon {
-    width: calc(var(--spacing) * 4);
-    height: calc(var(--spacing) * 4);
+    width: 1.25rem;
+    height: 1.25rem;
 }
 
 .stepper-content {
     display: flex;
     flex-direction: column;
-    gap: calc(var(--spacing) * 1);
-    margin-left: calc(var(--spacing) * 2);
+    margin-left: 0.75rem;
 }
 
 .stepper-separator {
     width: 100%;
     height: 1px;
-    background-color: var(--border);
-    margin-top: calc(var(--spacing) * 2);
+    background-color: #e0e0e0;
+    margin-top: 0.75rem;
 }
 
-@media (max-width: 768px) {
+/* New CSS for Form Stepper */
+.stepper-block {
+    display: block;
+    width: 100%;
+}
+
+.stepper-nav-container {
+    display: flex;
+    width: 100%;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.stepper-item {
+    position: relative;
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.stepper-form-separator {
+    position: absolute;
+    left: calc(50% + 20px);
+    right: calc(-50% + 10px);
+    top: 1.25rem;
+    display: block;
+    height: 0.125rem;
+    flex-shrink: 0;
+    border-radius: 9999px;
+    background-color: #e0e0e0;
+}
+
+.stepper-button {
+    z-index: 10;
+    border-radius: 9999px;
+    flex-shrink: 0;
+}
+
+.active-button {
+    border: 2px solid #0070f3;
+    outline: 2px solid #e0e0e0;
+    outline-offset: 2px;
+}
+
+.stepper-icon-small {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.stepper-title-container {
+    margin-top: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.stepper-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.stepper-description {
+    display: none;
+    font-size: 0.75rem;
+    color: #666;
+    transition: all 0.3s ease;
+}
+
+.active-text {
+    color: #0070f3;
+}
+
+.form-fields-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1rem;
+}
+
+.button-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+@media (min-width: 768px) {
+    .stepper-title {
+        font-size: 1rem;
+    }
+
+    .stepper-description {
+        display: block;
+    }
+}
+
+@media (max-width: 640px) {
     .stepper-description {
         display: none;
     }
