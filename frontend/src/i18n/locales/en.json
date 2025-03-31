@@ -1,0 +1,18 @@
+{
+  "nav": {
+    "messages": "Messages",
+    "createListing": "Create Listing",
+    "profile": "Profile",
+    "language": "Language"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "search": "Search"
+  }
+} 
