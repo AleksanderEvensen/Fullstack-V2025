@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n'
 import Button from './ui/button/Button.vue'
 import { Select, SelectValue, SelectTrigger, SelectContent, SelectItem } from './ui/select'
 import CountryFlag from './ui/country-flag/CountryFlag.vue'
-import { MenuIcon, XIcon, GlobeIcon, LanguagesIcon, MailIcon, PlusIcon, UserIcon } from 'lucide-vue-next'
+import { MenuIcon, XIcon, LanguagesIcon, MailIcon, PlusIcon, UserIcon } from 'lucide-vue-next'
 
 const { locale } = useI18n()
 const isMenuOpen = ref(false)
@@ -61,7 +61,7 @@ watch(selectedLanguage, (newValue) => {
 
         <!-- Messages -->
         <RouterLink to="/marketplace/messages" class="nav-item">
-          <Button variant="ghost">
+          <Button variant="ghost" class="icon-button">
             <MailIcon class="icon" />
             <span>{{ $t('nav.messages') }}</span>
           </Button>
@@ -77,8 +77,8 @@ watch(selectedLanguage, (newValue) => {
 
         <!-- Profile -->
         <RouterLink to="/profile" class="nav-item">
-          <Button variant="ghost" size="icon">
-            <UserIcon class="h-5 w-5" />
+          <Button variant="ghost" class="icon-button">
+            <UserIcon class="icon" />
           </Button>
         </RouterLink>
       </div>
@@ -94,29 +94,46 @@ watch(selectedLanguage, (newValue) => {
   width: 100%;
   background-color: var(--background);
   border-bottom: 1px solid var(--border);
+  padding: 0.5rem 1rem;
 }
 
 .navbar-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0.75rem 1rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  height: 40px;
 }
 
 .logo {
   height: 40px;
   display: flex;
   align-items: center;
+  padding: 0.25rem;
+  border-radius: 0.375rem;
+  transition: background-color 0.2s;
+}
+
+.logo:hover {
+  background-color: var(--muted);
 }
 
 .logo img {
   height: 100%;
+  width: auto;
+  object-fit: contain;
 }
 
 .menu-toggle {
   display: none;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  transition: background-color 0.2s;
+}
+
+.menu-toggle:hover {
+  background-color: var(--muted);
 }
 
 .navbar-content {
@@ -131,24 +148,63 @@ watch(selectedLanguage, (newValue) => {
   align-items: center;
 }
 
+.nav-item :deep(.button) {
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  transition: background-color 0.2s;
+}
+
 .icon {
   width: 1.25rem;
   height: 1.25rem;
+  stroke-width: 1.5;
 }
 
 .language-trigger {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  transition: background-color 0.2s;
+  cursor: pointer;
 }
 
 .language-option {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  transition: background-color 0.2s;
+}
+
+.language-option:hover {
+  background-color: var(--muted);
+}
+
+.icon-button {
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 @media (max-width: 768px) {
+  .navbar {
+    padding: 0.5rem;
+  }
+
+  .navbar-container {
+    height: 36px;
+  }
+
+  .logo {
+    height: 36px;
+  }
+
   .menu-toggle {
     display: flex;
   }
@@ -164,7 +220,8 @@ watch(selectedLanguage, (newValue) => {
     padding: 1rem;
     flex-direction: column;
     align-items: stretch;
-    gap: 1rem;
+    gap: 0.5rem;
+    overflow-y: auto;
   }
 
   .navbar-content.active {
@@ -173,6 +230,11 @@ watch(selectedLanguage, (newValue) => {
 
   .nav-item {
     width: 100%;
+  }
+
+  .nav-item :deep(.button) {
+    width: 100%;
+    justify-content: flex-start;
   }
 }
 </style>
