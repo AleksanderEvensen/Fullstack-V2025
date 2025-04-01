@@ -1,240 +1,248 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { RouterLink } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-import Button from './ui/button/Button.vue'
-import { Select, SelectValue, SelectTrigger, SelectContent, SelectItem } from './ui/select'
-import CountryFlag from './ui/country-flag/CountryFlag.vue'
-import { MenuIcon, XIcon, LanguagesIcon, MailIcon, PlusIcon, UserIcon } from 'lucide-vue-next'
+import { LanguagesIcon, MailIcon, MenuIcon, PlusIcon } from "lucide-vue-next";
+import { RouterLink } from "vue-router";
+import { useI18n } from "vue-i18n";
+import Button from "./ui/button/Button.vue";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "./ui/sheet";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "./ui/avatar";
+import FlagComponent from "@/components/ui/country-flag/CountryFlag.vue";
+import { ref } from "vue";
 
-const { locale } = useI18n()
-const isMenuOpen = ref(false)
-const selectedLanguage = ref('en')
+const isOpen = ref(false);
+type Locale = "en" | "no";
+const { t, locale, availableLocales } = useI18n<{ locale: Locale }>();
+const locales: Record<Locale, { flag: string; name: string }> = {
+  en: {
+    flag: "US",
+    name: "English",
+  },
+  no: {
+    flag: "NO",
+    name: "Norwegian",
+  },
+};
 
-const languages = [
-  { value: 'en', label: 'English', flag: 'GB' },
-  { value: 'no', label: 'Norwegian', flag: 'NO' },
-]
 
-const toggleMenu = () => {
-  isMenuOpen.value = !isMenuOpen.value
-}
-
-watch(selectedLanguage, (newValue) => {
-  locale.value = newValue
-})
 </script>
 
 <template>
   <nav class="navbar">
-    <div class="navbar-container">
-      <RouterLink to="/" class="logo">
-        <img src="/logo.svg" alt="Amazoom logo">
-      </RouterLink>
+    <RouterLink to="" class="logo">
+      <img src="/logo.svg" alt="Amazoom logo">
+    </RouterLink>
 
-      <Button variant="ghost" size="icon" class="menu-toggle" @click="toggleMenu">
-        <MenuIcon v-if="!isMenuOpen" class="h-6 w-6" />
-        <XIcon v-else class="h-6 w-6" />
+    <!-- Desktop Navigation -->
+    <div class="navbar-right desktop-only">
+      <!-- Language Select -->
+      <div class="nav-item">
+        <Select v-model="locale">
+          <SelectTrigger>
+            <SelectValue placeholder="Language">
+              <FlagComponent :code="locales[locale as Locale].flag" />
+              {{ locales[locale as Locale].name }}
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem v-for="locale in availableLocales as Locale[]" :key="locale" :value="locale">
+              <FlagComponent :code="locales[locale].flag" />
+              {{ locales[locale].name }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <!-- Messages -->
+      <Button variant="ghost" class="nav-item" size="sm">
+        <MailIcon class="icon" /> {{ t('nav.messages') }}
       </Button>
 
-      <div class="navbar-content" :class="{ 'active': isMenuOpen }">
-        <!-- Language Select -->
-        <div class="nav-item">
-          <Select v-model="selectedLanguage" :options="languages" :placeholder="$t('nav.language')">
-            <SelectTrigger>
-              <div class="language-trigger">
-                <LanguagesIcon class="icon" />
-                <CountryFlag v-if="selectedLanguage"
-                  :code="languages.find(l => l.value === selectedLanguage)?.flag || ''" :size="20" />
-              </div>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem v-for="language in languages" :key="language.value" :value="language.value">
-                <div class="language-option">
-                  <CountryFlag :code="language.flag" :size="20" />
-                  <span>{{ language.label }}</span>
-                </div>
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+      <!-- Create New Listing -->
+      <Button variant="ghost" class="nav-item" size="sm">
+        <PlusIcon class="icon" /> {{ t('nav.createListing') }}
+      </Button>
 
-        <!-- Messages -->
-        <RouterLink to="/marketplace/messages" class="nav-item">
-          <Button variant="ghost" class="icon-button">
-            <MailIcon class="icon" />
-            <span>{{ $t('nav.messages') }}</span>
-          </Button>
-        </RouterLink>
-
-        <!-- Create New Listing -->
-        <RouterLink to="/marketplace/create" class="nav-item">
-          <Button>
-            <PlusIcon class="icon" />
-            <span>{{ $t('nav.createListing') }}</span>
-          </Button>
-        </RouterLink>
-
-        <!-- Profile -->
-        <RouterLink to="/profile" class="nav-item">
-          <Button variant="ghost" class="icon-button">
-            <UserIcon class="icon" />
-          </Button>
-        </RouterLink>
+      <!-- Profile Avatar -->
+      <div class="nav-item">
+        <Avatar class="cursor-pointer">
+          <AvatarImage src="https://github.com/shadcn.png" alt="User" />
+          <AvatarFallback>U</AvatarFallback>
+        </Avatar>
       </div>
+    </div>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-only">
+      <Sheet v-model:open="isOpen">
+        <SheetTrigger as-child>
+          <Button variant="ghost" size="icon">
+            <MenuIcon class="h-6 w-6" />
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="right">
+          <SheetHeader>
+            <SheetTitle>Menu</SheetTitle>
+          </SheetHeader>
+          <div class="nav-items-mobile">
+            <div class="nav-items-mobile-inner">
+              <!-- Language Select -->
+              <div>
+                <Select v-model="locale">
+                  <SelectTrigger>
+                    <SelectValue placeholder="Language">
+                      <FlagComponent :code="locales[locale as Locale].flag" />
+                      {{ locales[locale as Locale].name }}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem v-for="locale in availableLocales as Locale[]" :key="locale" :value="locale">
+                      <FlagComponent :code="locales[locale].flag" />
+                      {{ locales[locale].name }}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <!-- Messages -->
+              <div class="mobile-nav-item">
+                <MailIcon class="icon" />
+                <span>{{ t('nav.messages') }}</span>
+              </div>
+
+              <!-- Create Listing -->
+              <div class="mobile-nav-item">
+                <PlusIcon class="icon" />
+                <span>{{ t('nav.createListing') }}</span>
+              </div>
+            </div>
+
+            <!-- Profile -->
+            <div class="mobile-nav-item">
+              <Avatar>
+                <AvatarImage src="https://github.com/shadcn.png" alt="User" />
+                <AvatarFallback>U</AvatarFallback>
+              </Avatar>
+              <span class="ml-3">{{ t('nav.profile') }}</span>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   </nav>
 </template>
 
-<style scoped>
+<style lang="css" scoped>
 .navbar {
-  position: sticky;
-  top: 0;
-  z-index: 49;
-  width: 100%;
-  background-color: var(--background);
-  border-bottom: 1px solid var(--border);
-  padding: 0.5rem 1rem;
-}
-
-.navbar-container {
-  max-width: 1200px;
-  margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 40px;
+  background-color: white;
+  padding: 12px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  margin: 0;
+  border-bottom: 1px solid #333;
+}
+
+.navbar .logo img {
+  height: 100%;
 }
 
 .logo {
   height: 40px;
+}
+
+.navbar-right {
   display: flex;
   align-items: center;
-  padding: 0.25rem;
-  border-radius: 0.375rem;
-  transition: background-color 0.2s;
-}
-
-.logo:hover {
-  background-color: var(--muted);
-}
-
-.logo img {
-  height: 100%;
-  width: auto;
-  object-fit: contain;
-}
-
-.menu-toggle {
-  display: none;
-  padding: 0.5rem;
-  border-radius: 0.375rem;
-  transition: background-color 0.2s;
-}
-
-.menu-toggle:hover {
-  background-color: var(--muted);
-}
-
-.navbar-content {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  margin-left: auto;
+  gap: 20px;
 }
 
 .nav-item {
   position: relative;
+  cursor: pointer;
   display: flex;
   align-items: center;
+  background: transparent;
+  border: none;
+  padding: 8px 12px;
 }
 
-.nav-item :deep(.button) {
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  transition: background-color 0.2s;
-}
 
 .icon {
-  width: 1.25rem;
-  height: 1.25rem;
-  stroke-width: 1.5;
+  margin-right: 8px;
+  font-size: 20px;
 }
 
-.language-trigger {
+.nav-items-mobile {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  padding: 0 2rem 2rem 0;
+  justify-content: space-between;
+}
+
+.nav-items-mobile-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mobile-nav-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem;
-  border-radius: 0.375rem;
-  transition: background-color 0.2s;
+  padding: 12px;
   cursor: pointer;
-}
-
-.language-option {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem;
-  border-radius: 0.375rem;
+  border-radius: 4px;
+  gap: calc(var(--spacing) * 2);
   transition: background-color 0.2s;
 }
 
-.language-option:hover {
-  background-color: var(--muted);
+.mobile-nav-item:hover {
+  background-color: #f1f1f1;
 }
 
-.icon-button {
-  padding: 0.5rem;
-  border-radius: 0.375rem;
-  transition: background-color 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+.mobile-nav-item .icon {
+  margin-right: 12px;
 }
 
+/* Responsive styles */
 @media (max-width: 768px) {
-  .navbar {
-    padding: 0.5rem;
-  }
-
-  .navbar-container {
-    height: 36px;
-  }
-
-  .logo {
-    height: 36px;
-  }
-
-  .menu-toggle {
-    display: flex;
-  }
-
-  .navbar-content {
+  .desktop-only {
     display: none;
-    position: fixed;
-    top: 64px;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: var(--background);
-    padding: 1rem;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.5rem;
-    overflow-y: auto;
   }
 
-  .navbar-content.active {
+  .mobile-only {
+    display: block;
+  }
+}
+
+@media (min-width: 769px) {
+  .desktop-only {
     display: flex;
   }
 
-  .nav-item {
-    width: 100%;
-  }
-
-  .nav-item :deep(.button) {
-    width: 100%;
-    justify-content: flex-start;
+  .mobile-only {
+    display: none;
   }
 }
 </style>

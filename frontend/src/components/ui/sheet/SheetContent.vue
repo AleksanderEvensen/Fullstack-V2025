@@ -50,7 +50,7 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
 .sheet-overlay {
   position: fixed;
   inset: 0;
-  z-index: 50;
+  z-index: 100;
   background-color: var(--overlay);
   backdrop-filter: blur(4px);
   transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -66,7 +66,7 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
 
 .sheet-content {
   position: fixed;
-  z-index: 50;
+  z-index: 101;
   gap: calc(var(--spacing) * 4);
   background-color: var(--background);
   padding: calc(var(--spacing) * 6);
