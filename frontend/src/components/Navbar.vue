@@ -90,7 +90,7 @@ watch(selectedLanguage, (newValue) => {
 .navbar {
   position: sticky;
   top: 0;
-  z-index: 50;
+  z-index: 49;
   width: 100%;
   background-color: var(--background);
   border-bottom: 1px solid var(--border);

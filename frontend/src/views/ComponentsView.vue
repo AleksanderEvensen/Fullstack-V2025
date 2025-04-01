@@ -11,6 +11,7 @@ import {
   StepperTest,
   SwitchTest,
   TabsTest,
+  SheetTest,
 } from './test-components'
 </script>
 
@@ -28,6 +29,7 @@ import {
     <SwitchTest />
     <CardTest />
     <DatepickerTest />
+    <SheetTest />
   </div>
 </template>
 
