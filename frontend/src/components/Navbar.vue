@@ -74,8 +74,7 @@ import Button from "./ui/button/Button.vue";
   padding: 12px 20px;
   position: sticky;
   top: 0;
-  z-index: 100;
-  /* Make sure the navbar renders above everything */
+  z-index: 49;
   margin: 0;
   border-bottom: 1px solid #333;
 }

@@ -9,3 +9,4 @@ export { default as SwitchTest } from './SwitchTest.vue'
 export { default as NavigationMenuTest } from './NavigationMenuTest.vue'
 export { default as CardTest } from "./CardTest.vue";
 export { default as DatepickerTest } from "./DatepickerTest.vue";
+export { default as SheetTest } from "./SheetTest.vue";
