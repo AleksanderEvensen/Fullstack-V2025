@@ -6,6 +6,7 @@ export const i18n = createI18n({
   legacy: false, // Set to false to use Composition API
   locale: 'en', // Set default locale
   fallbackLocale: 'en', // Set fallback locale
+  availableLocales: ['en', 'no'],
   messages: {
     en,
     no

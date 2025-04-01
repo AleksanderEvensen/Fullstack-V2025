@@ -27,7 +27,7 @@ const props = withDefaults(defineProps<Props>(), {
 <style lang="css">
 .dropdown-menu-sub-content {
   position: relative;
-  z-index: 50;
+  z-index: 100;
   min-width: 8rem;
   padding: calc(var(--spacing) * 1);
   background-color: var(--popover);

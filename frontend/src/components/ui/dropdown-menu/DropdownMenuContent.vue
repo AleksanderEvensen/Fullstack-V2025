@@ -22,7 +22,7 @@ const forwarded = useForwardPropsEmits(props, emits)
 
 <style lang="css">
 .dropdown-menu-content {
-  z-index: 50;
+  z-index: 100;
   min-width: 8rem;
   padding: calc(var(--spacing) * 1);
   margin: calc(var(--spacing) * 1) 0;

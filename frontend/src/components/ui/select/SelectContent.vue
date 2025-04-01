@@ -47,7 +47,7 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
 <style>
 .select-content {
   position: relative;
-  z-index: 50;
+  z-index: 150;
   max-height: calc(var(--spacing) * 96);
   min-width: calc(var(--spacing) * 32);
   overflow: hidden;

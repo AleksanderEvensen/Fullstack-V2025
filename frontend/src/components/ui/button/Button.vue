@@ -41,10 +41,7 @@ withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
-  <component
-    :is="as"
-    :class="cn(buttonVariants({ variant, size }), $attrs.class ?? '')"
-  >
+  <component :is="as" :class="cn(buttonVariants({ variant, size }), $attrs.class ?? '')">
     <slot />
   </component>
 </template>
@@ -86,6 +83,7 @@ withDefaults(defineProps<Props>(), {
   background-color: var(--destructive);
   color: var(--destructive-foreground);
 }
+
 .button-destructive:hover {
   background-color: color-mix(in srgb, var(--destructive) 90%, white);
 }
@@ -94,6 +92,7 @@ withDefaults(defineProps<Props>(), {
   border: 1px solid var(--input);
   background-color: var(--background);
 }
+
 .button-outline:hover {
   background-color: var(--accent);
   color: var(--accent-foreground);
@@ -103,6 +102,7 @@ withDefaults(defineProps<Props>(), {
   background-color: var(--secondary);
   color: var(--secondary-foreground);
 }
+
 .button-secondary:hover {
   background-color: color-mix(in srgb, var(--secondary) 90%, black);
 }
@@ -117,28 +117,37 @@ withDefaults(defineProps<Props>(), {
   text-decoration: none;
   text-underline-offset: 4px;
 }
+
 .button-link:hover {
   text-decoration: underline;
 }
 
 /* Size styles */
 .button-size-default {
-  height: calc(var(--spacing) * 10); /* h-10 */
-  padding: calc(var(--spacing) * 2) calc(var(--spacing) * 4); /* px-4 py-2 */
+  height: calc(var(--spacing) * 10);
+  /* h-10 */
+  padding: calc(var(--spacing) * 2) calc(var(--spacing) * 4);
+  /* px-4 py-2 */
 }
 
 .button-size-sm {
-  height: calc(var(--spacing) * 9); /* h-9 */
-  padding: 0 calc(var(--spacing) * 3); /* px-3 */
+  height: calc(var(--spacing) * 9);
+  /* h-9 */
+  padding: 0 calc(var(--spacing) * 3);
+  /* px-3 */
 }
 
 .button-size-lg {
-  height: calc(var(--spacing) * 11); /* h-11 */
-  padding: 0 calc(var(--spacing) * 8); /* px-8 */
+  height: calc(var(--spacing) * 11);
+  /* h-11 */
+  padding: 0 calc(var(--spacing) * 8);
+  /* px-8 */
 }
 
 .button-size-icon {
-  height: calc(var(--spacing) * 10); /* h-10 */
-  width: calc(var(--spacing) * 10); /* w-10 */
+  height: calc(var(--spacing) * 10);
+  /* h-10 */
+  width: calc(var(--spacing) * 10);
+  /* w-10 */
 }
 </style>
