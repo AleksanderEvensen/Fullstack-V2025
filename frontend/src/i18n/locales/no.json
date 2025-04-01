@@ -1,0 +1,18 @@
+{
+  "nav": {
+    "messages": "Meldinger",
+    "createListing": "Opprett annonse",
+    "profile": "Profil",
+    "language": "Språk"
+  },
+  "common": {
+    "loading": "Laster...",
+    "error": "Feil",
+    "success": "Vellykket",
+    "save": "Lagre",
+    "cancel": "Avbryt",
+    "delete": "Slett",
+    "edit": "Rediger",
+    "search": "Søk"
+  }
+} 

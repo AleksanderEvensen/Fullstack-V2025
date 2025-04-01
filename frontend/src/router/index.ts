@@ -22,6 +22,13 @@ const router = createRouter({
       name: "components",
       component: () => import("../views/ComponentsView.vue"),
     },
+
+    {
+      path: "/marketplace/messages",
+      name: "messages",
+      component: () => import("../views/MessagesView.vue"),
+    },
+    
   ],
 });
 

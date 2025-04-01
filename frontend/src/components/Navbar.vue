@@ -1,173 +1,240 @@
 <script setup lang="ts">
-import { GlobeIcon, LanguagesIcon, MailIcon, PlusIcon, UserIcon } from "lucide-vue-next";
-import { RouterLink } from "vue-router";
-import Button from "./ui/button/Button.vue";
+import { ref, watch } from 'vue'
+import { RouterLink } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+import Button from './ui/button/Button.vue'
+import { Select, SelectValue, SelectTrigger, SelectContent, SelectItem } from './ui/select'
+import CountryFlag from './ui/country-flag/CountryFlag.vue'
+import { MenuIcon, XIcon, LanguagesIcon, MailIcon, PlusIcon, UserIcon } from 'lucide-vue-next'
 
+const { locale } = useI18n()
+const isMenuOpen = ref(false)
+const selectedLanguage = ref('en')
 
-// TODO: Fix i18n
-// TODO: Fix dropdowns to use shadcn
-// TODO: Add flag font and add flags to the language dropdown
-// TODO: Maybe change to shadcn menu links
+const languages = [
+  { value: 'en', label: 'English', flag: 'GB' },
+  { value: 'no', label: 'Norwegian', flag: 'NO' },
+]
+
+const toggleMenu = () => {
+  isMenuOpen.value = !isMenuOpen.value
+}
+
+watch(selectedLanguage, (newValue) => {
+  locale.value = newValue
+})
 </script>
 
 <template>
   <nav class="navbar">
-    <RouterLink to="" class="logo">
-      <img src="/logo.svg" alt="Amazoom logo">
-    </RouterLink>
+    <div class="navbar-container">
+      <RouterLink to="/" class="logo">
+        <img src="/logo.svg" alt="Amazoom logo">
+      </RouterLink>
 
-    <div class="navbar-right">
-      <!-- Categories Dropdown -->
-      <div class="nav-item dropdown">
-        <div class="dropdown-label">
-          <GlobeIcon class="icon" /> Categories
+      <Button variant="ghost" size="icon" class="menu-toggle" @click="toggleMenu">
+        <MenuIcon v-if="!isMenuOpen" class="h-6 w-6" />
+        <XIcon v-else class="h-6 w-6" />
+      </Button>
+
+      <div class="navbar-content" :class="{ 'active': isMenuOpen }">
+        <!-- Language Select -->
+        <div class="nav-item">
+          <Select v-model="selectedLanguage" :options="languages" :placeholder="$t('nav.language')">
+            <SelectTrigger>
+              <div class="language-trigger">
+                <LanguagesIcon class="icon" />
+                <CountryFlag v-if="selectedLanguage"
+                  :code="languages.find(l => l.value === selectedLanguage)?.flag || ''" :size="20" />
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem v-for="language in languages" :key="language.value" :value="language.value">
+                <div class="language-option">
+                  <CountryFlag :code="language.flag" :size="20" />
+                  <span>{{ language.label }}</span>
+                </div>
+              </SelectItem>
+            </SelectContent>
+          </Select>
         </div>
-        <div class="dropdown-content">
-          <a href="#">Electronics</a>
-          <a href="#">Clothing</a>
-          <a href="#">Home & Kitchen</a>
-          <a href="#">Books</a>
-          <a href="#">Beauty</a>
-          <a href="#">Toys & Games</a>
-          <a href="#">Sports</a>
-          <a href="#">Automotive</a>
-        </div>
-      </div>
 
-      <!-- Language Dropdown -->
-      <div class="nav-item dropdown">
-        <div class="dropdown-label">
-          <LanguagesIcon class="icon" />Language
-        </div>
-        <div class="dropdown-content">
-          <a href="#">English</a>
-          <a href="#">Norwegian</a>
-        </div>
-      </div>
+        <!-- Messages -->
+        <RouterLink to="/marketplace/messages" class="nav-item">
+          <Button variant="ghost" class="icon-button">
+            <MailIcon class="icon" />
+            <span>{{ $t('nav.messages') }}</span>
+          </Button>
+        </RouterLink>
 
-      <!-- Messages -->
-      <div class="nav-item">
-        <MailIcon class="icon" /> Messages
-      </div>
+        <!-- Create New Listing -->
+        <RouterLink to="/marketplace/create" class="nav-item">
+          <Button>
+            <PlusIcon class="icon" />
+            <span>{{ $t('nav.createListing') }}</span>
+          </Button>
+        </RouterLink>
 
-      <!-- Create New Listing -->
-      <div class="nav-item">
-        <PlusIcon class="icon" /> Create Listing
-      </div>
-
-      <!-- Profile Icon -->
-      <div class="nav-item">
-        <Button size="icon" variant="secondary" as-child>
-          <UserIcon class="profile-icon" />
-        </Button>
+        <!-- Profile -->
+        <RouterLink to="/profile" class="nav-item">
+          <Button variant="ghost" class="icon-button">
+            <UserIcon class="icon" />
+          </Button>
+        </RouterLink>
       </div>
     </div>
   </nav>
 </template>
 
-<style lang="css" scoped>
+<style scoped>
 .navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: white;
-  padding: 12px 20px;
   position: sticky;
   top: 0;
   z-index: 49;
-  margin: 0;
-  border-bottom: 1px solid #333;
+  width: 100%;
+  background-color: var(--background);
+  border-bottom: 1px solid var(--border);
+  padding: 0.5rem 1rem;
 }
 
-.navbar .logo img {
-  height: 100%;
-}
-
-.navbar-left {
+.navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
   display: flex;
+  justify-content: space-between;
   align-items: center;
+  height: 40px;
 }
 
 .logo {
   height: 40px;
-}
-
-.navbar-right {
   display: flex;
   align-items: center;
-  margin-left: auto;
-  gap: 20px;
+  padding: 0.25rem;
+  border-radius: 0.375rem;
+  transition: background-color 0.2s;
+}
+
+.logo:hover {
+  background-color: var(--muted);
+}
+
+.logo img {
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+}
+
+.menu-toggle {
+  display: none;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  transition: background-color 0.2s;
+}
+
+.menu-toggle:hover {
+  background-color: var(--muted);
+}
+
+.navbar-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .nav-item {
-  margin: 0 15px;
   position: relative;
-  cursor: pointer;
   display: flex;
   align-items: center;
 }
 
-.nav-item:hover {
-  color: #ff9900;
-}
-
-.dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-.dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: #f9f9f9;
-  min-width: 200px;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  z-index: 1;
-  border-radius: 4px;
-  top: 40px;
-  left: 0;
-  color: #333;
-}
-
-.dropdown:hover .dropdown-content {
-  display: block;
-}
-
-.dropdown-label {
-  display: flex;
-  flex-direction: row;
-}
-
-.dropdown-content a {
-  padding: 12px 16px;
-  display: block;
-  border-bottom: 1px solid #eee;
-}
-
-.dropdown-content a:hover {
-  background-color: #f1f1f1;
+.nav-item :deep(.button) {
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  transition: background-color 0.2s;
 }
 
 .icon {
-  margin-right: 8px;
-  font-size: 20px;
+  width: 1.25rem;
+  height: 1.25rem;
+  stroke-width: 1.5;
+}
+
+.language-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  transition: background-color 0.2s;
+  cursor: pointer;
+}
+
+.language-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  transition: background-color 0.2s;
+}
+
+.language-option:hover {
+  background-color: var(--muted);
+}
+
+.icon-button {
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 @media (max-width: 768px) {
   .navbar {
-    flex-wrap: wrap;
+    padding: 0.5rem;
   }
 
-  .navbar-right {
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    gap: 15px;
-    margin-top: 10px;
+  .navbar-container {
+    height: 36px;
   }
 
-  .categories-grid,
-  .listings-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .logo {
+    height: 36px;
+  }
+
+  .menu-toggle {
+    display: flex;
+  }
+
+  .navbar-content {
+    display: none;
+    position: fixed;
+    top: 64px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--background);
+    padding: 1rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+    overflow-y: auto;
+  }
+
+  .navbar-content.active {
+    display: flex;
+  }
+
+  .nav-item {
+    width: 100%;
+  }
+
+  .nav-item :deep(.button) {
+    width: 100%;
+    justify-content: flex-start;
   }
 }
 </style>
