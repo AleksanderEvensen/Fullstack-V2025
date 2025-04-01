@@ -13,6 +13,7 @@ import {
 import { Stepper, StepperDescription, StepperItem, StepperSeparator, StepperTitle, StepperTrigger, StepperIndicator } from '@/components/ui/stepper'
 import { toTypedSchema } from '@vee-validate/zod'
 import { Check, Circle, Dot, BookUser, CreditCard, Truck } from 'lucide-vue-next'
+import type { GenericObject } from 'vee-validate'
 import { h, ref } from 'vue'
 import * as z from 'zod'
 
@@ -79,7 +80,7 @@ const checkoutSteps = [{
     icon: Check,
 }]
 
-function onSubmit(values: any) {
+function onSubmit(values: GenericObject) {
     console.log('Form submitted:', values)
 }
 </script>
