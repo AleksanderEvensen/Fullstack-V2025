@@ -28,7 +28,17 @@ const router = createRouter({
       name: "messages",
       component: () => import("../views/MessagesView.vue"),
     },
-    
+    {
+      path: "/marketplace/product/:id",
+      name: "product",
+      component: () => import("../views/ProductView.vue"),
+    },
+    {
+      path: "/marketplace/product/create",
+      name: "product-create",
+      component: () => import("../views/CreateListingView.vue"),
+    },
+
   ],
 });
 

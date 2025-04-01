@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import Button from '@/components/ui/button/Button.vue'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Input } from '@/components/ui/input';
 
 interface Message {
     id: string
@@ -59,12 +62,17 @@ const sendMessage = () => {
 
 <template>
     <div class="messages">
-        <div class="messages-sidebar">
-            <h2>Messages</h2>
-            <div class="messages-list">
+        <Card class="messages-sidebar">
+            <CardHeader>
+                <CardTitle>Messages</CardTitle>
+            </CardHeader>
+            <CardContent class="messages-list">
                 <div v-for="message in messages" :key="message.id" class="message-item"
                     :class="{ active: selectedMessage?.id === message.id }" @click="selectedMessage = message">
-                    <img :src="message.avatar" :alt="message.user" class="avatar">
+                    <Avatar class="message-avatar">
+                        <AvatarImage :src="message.avatar" :alt="message.user" />
+                        <AvatarFallback>{{ message.user[0] }}</AvatarFallback>
+                    </Avatar>
                     <div class="message-content">
                         <div class="message-header">
                             <span class="user">{{ message.user }}</span>
@@ -80,70 +88,73 @@ const sendMessage = () => {
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </CardContent>
+        </Card>
 
-        <div class="chat-view">
-            <div v-if="selectedMessage" class="chat-header">
-                <img :src="selectedMessage.avatar" :alt="selectedMessage.user" class="avatar">
-                <div class="chat-info">
-                    <h3>{{ selectedMessage.user }}</h3>
-                    <p class="product-title">{{ selectedMessage.product?.title }}</p>
+        <Card class="chat-view">
+            <CardHeader v-if="selectedMessage" class="chat-header">
+                <div class="chat-header-content">
+                    <Avatar class="chat-avatar">
+                        <AvatarImage :src="selectedMessage.avatar" :alt="selectedMessage.user" />
+                        <AvatarFallback>{{ selectedMessage.user[0] }}</AvatarFallback>
+                    </Avatar>
+                    <div class="chat-info">
+                        <CardTitle>{{ selectedMessage.user }}</CardTitle>
+                        <p class="product-title">{{ selectedMessage.product?.title }}</p>
+                    </div>
                 </div>
-            </div>
+            </CardHeader>
 
-            <div v-else class="no-chat">
-                <p>Select a conversation to start messaging</p>
-            </div>
-
-            <div v-if="selectedMessage" class="chat-messages">
-                <!-- Chat messages will go here -->
+            <CardContent v-if="selectedMessage" class="chat-messages">
                 <div class="message-bubble received">
                     <p>{{ selectedMessage.lastMessage }}</p>
                 </div>
-            </div>
+            </CardContent>
 
-            <div v-if="selectedMessage" class="chat-input">
-                <input v-model="newMessage" type="text" placeholder="Type a message..." @keyup.enter="sendMessage">
-                <Button @click="sendMessage">Send</Button>
-            </div>
-        </div>
+            <CardContent v-else class="no-chat">
+                <p>Select a conversation to start messaging</p>
+            </CardContent>
+
+            <CardContent v-if="selectedMessage" class="chat-input">
+                <div class="input-container">
+                    <Input v-model="newMessage" type="text" placeholder="Type a message..."
+                        @keyup.enter="sendMessage" />
+                    <Button @click="sendMessage">Send</Button>
+                </div>
+            </CardContent>
+        </Card>
     </div>
 </template>
 
 <style scoped>
 .messages {
     display: grid;
-    grid-template-columns: 300px 1fr;
-    gap: 1rem;
-    height: calc(100vh - 64px);
+    grid-template-columns: 350px 1fr;
+    gap: calc(var(--spacing) * 4);
+    height: 100%;
+    padding: calc(var(--spacing) * 4);
     background-color: var(--background);
 }
 
 .messages-sidebar {
-    border-right: 1px solid var(--border);
+    height: 100%;
     display: flex;
     flex-direction: column;
-}
-
-.messages-sidebar h2 {
-    padding: 1rem;
-    margin: 0;
-    border-bottom: 1px solid var(--border);
 }
 
 .messages-list {
     flex: 1;
     overflow-y: auto;
+    padding: 0;
 }
 
 .message-item {
     display: flex;
-    padding: 1rem;
-    gap: 1rem;
+    padding: calc(var(--spacing) * 4);
+    gap: calc(var(--spacing) * 4);
     cursor: pointer;
     border-bottom: 1px solid var(--border);
-    transition: background-color 0.2s;
+    transition: all 0.2s ease;
 }
 
 .message-item:hover {
@@ -154,40 +165,37 @@ const sendMessage = () => {
     background-color: var(--accent);
 }
 
-.avatar {
+.message-avatar {
     width: 40px;
     height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
 }
 
 .message-content {
     flex: 1;
     min-width: 0;
-
 }
 
 .message-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.25rem;
+    margin-bottom: calc(var(--spacing) * 1);
 }
 
 .user {
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     color: var(--foreground);
 }
 
 .timestamp {
-    font-size: 0.875rem;
+    font-size: var(--text-sm);
     color: var(--muted-foreground);
 }
 
 .last-message {
     margin: 0;
     color: var(--muted-foreground);
-    font-size: 0.875rem;
+    font-size: var(--text-sm);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -195,17 +203,17 @@ const sendMessage = () => {
 
 .product-preview {
     display: flex;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-    padding: 0.5rem;
+    gap: calc(var(--spacing) * 2);
+    margin-top: calc(var(--spacing) * 2);
+    padding: calc(var(--spacing) * 2);
     background-color: var(--accent);
-    border-radius: 0.25rem;
+    border-radius: var(--radius);
 }
 
 .product-preview img {
     width: 40px;
     height: 40px;
-    border-radius: 0.25rem;
+    border-radius: var(--radius);
     object-fit: cover;
 }
 
@@ -216,7 +224,7 @@ const sendMessage = () => {
 
 .product-title {
     margin: 0;
-    font-size: 0.875rem;
+    font-size: var(--text-sm);
     color: var(--foreground);
     white-space: nowrap;
     overflow: hidden;
@@ -225,50 +233,49 @@ const sendMessage = () => {
 
 .product-price {
     margin: 0;
-    font-size: 0.875rem;
+    font-size: var(--text-sm);
     color: var(--muted-foreground);
 }
 
-.unread-badge {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    background-color: var(--primary);
-    color: white;
-    font-size: 0.75rem;
-    padding: 0.125rem 0.375rem;
-    border-radius: 1rem;
-}
-
 .chat-view {
+    height: 100%;
     display: flex;
     flex-direction: column;
 }
 
 .chat-header {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem;
+    padding: calc(var(--spacing) * 4);
     border-bottom: 1px solid var(--border);
 }
 
-.chat-info h3 {
-    margin: 0;
-    color: var(--foreground);
+.chat-header-content {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--spacing) * 4);
+}
+
+.chat-avatar {
+    width: 48px;
+    height: 48px;
+}
+
+.chat-info {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--spacing) * 1);
 }
 
 .chat-messages {
     flex: 1;
-    padding: 1rem;
+    padding: calc(var(--spacing) * 4);
     overflow-y: auto;
 }
 
 .message-bubble {
     max-width: 70%;
-    padding: 0.75rem;
-    border-radius: 1rem;
-    margin-bottom: 1rem;
+    padding: calc(var(--spacing) * 3);
+    border-radius: var(--radius);
+    margin-bottom: calc(var(--spacing) * 4);
 }
 
 .message-bubble.received {
@@ -277,24 +284,13 @@ const sendMessage = () => {
 }
 
 .chat-input {
-    display: flex;
-    gap: 0.5rem;
-    padding: 1rem;
+    padding: calc(var(--spacing) * 4);
     border-top: 1px solid var(--border);
 }
 
-.chat-input input {
-    flex: 1;
-    padding: 0.75rem;
-    border: 1px solid var(--border);
-    border-radius: 0.5rem;
-    background-color: var(--background);
-    color: var(--foreground);
-}
-
-.chat-input input:focus {
-    outline: none;
-    border-color: var(--primary);
+.input-container {
+    display: flex;
+    gap: calc(var(--spacing) * 2);
 }
 
 .no-chat {
@@ -308,6 +304,8 @@ const sendMessage = () => {
 @media (max-width: 768px) {
     .messages {
         grid-template-columns: 1fr;
+        padding: 0;
+        gap: 0;
     }
 
     .messages-sidebar {
@@ -322,6 +320,10 @@ const sendMessage = () => {
         right: 0;
         bottom: 0;
         z-index: 50;
+    }
+
+    .chat-view {
+        border-radius: 0;
     }
 }
 </style>

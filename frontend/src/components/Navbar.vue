@@ -44,7 +44,7 @@ const locales: Record<Locale, { flag: string; name: string }> = {
 
 <template>
   <nav class="navbar">
-    <RouterLink to="" class="logo">
+    <RouterLink to="/" class="logo">
       <img src="/logo.svg" alt="Amazoom logo">
     </RouterLink>
 
@@ -69,21 +69,23 @@ const locales: Record<Locale, { flag: string; name: string }> = {
       </div>
 
       <!-- Messages -->
-      <Button variant="ghost" class="nav-item" size="sm">
+      <RouterLink to="/marketplace/messages" class="nav-item">
         <MailIcon class="icon" /> {{ t('nav.messages') }}
-      </Button>
+      </RouterLink>
 
       <!-- Create New Listing -->
-      <Button variant="ghost" class="nav-item" size="sm">
+      <RouterLink to="/marketplace/product/create" class="nav-item">
         <PlusIcon class="icon" /> {{ t('nav.createListing') }}
-      </Button>
+      </RouterLink>
 
       <!-- Profile Avatar -->
       <div class="nav-item">
-        <Avatar class="cursor-pointer">
-          <AvatarImage src="https://github.com/shadcn.png" alt="User" />
-          <AvatarFallback>U</AvatarFallback>
-        </Avatar>
+        <RouterLink to="/profile">
+          <Avatar class="cursor-pointer">
+            <AvatarImage src="https://github.com/shadcn.png" alt="User" />
+            <AvatarFallback>U</AvatarFallback>
+          </Avatar>
+        </RouterLink>
       </div>
     </div>
 
@@ -120,26 +122,26 @@ const locales: Record<Locale, { flag: string; name: string }> = {
               </div>
 
               <!-- Messages -->
-              <div class="mobile-nav-item">
+              <RouterLink to="/marketplace/messages" class="mobile-nav-item">
                 <MailIcon class="icon" />
                 <span>{{ t('nav.messages') }}</span>
-              </div>
+              </RouterLink>
 
               <!-- Create Listing -->
-              <div class="mobile-nav-item">
+              <RouterLink to="/marketplace/product/create" class="mobile-nav-item">
                 <PlusIcon class="icon" />
                 <span>{{ t('nav.createListing') }}</span>
-              </div>
+              </RouterLink>
             </div>
 
             <!-- Profile -->
-            <div class="mobile-nav-item">
+            <RouterLink to="/profile" class="mobile-nav-item">
               <Avatar>
                 <AvatarImage src="https://github.com/shadcn.png" alt="User" />
                 <AvatarFallback>U</AvatarFallback>
               </Avatar>
               <span class="ml-3">{{ t('nav.profile') }}</span>
-            </div>
+            </RouterLink>
           </div>
         </SheetContent>
       </Sheet>
