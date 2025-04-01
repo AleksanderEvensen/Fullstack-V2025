@@ -116,7 +116,6 @@ const calculateDiscount = (original: number, current: number) => {
 <template>
     <div class="container">
         <div class="product-grid">
-            <!-- Product Images -->
             <div class="product-images">
                 <div class="main-image">
                     <img :src="product.images[currentImageIndex]" :alt="product.title">
@@ -129,7 +128,6 @@ const calculateDiscount = (original: number, current: number) => {
                 </div>
             </div>
 
-
             <!-- Product Info -->
             <div class="product-info">
                 <Card>
@@ -138,6 +136,41 @@ const calculateDiscount = (original: number, current: number) => {
                         <div class="condition-badge">
                             <Badge variant="outline">{{ product.condition }}</Badge>
                         </div>
+                    </CardHeader>
+                    <CardContent>
+                        <!-- Price -->
+                        <div class="price-section">
+                            <div class="price-display">
+                                <span class="current-price">{{ formatPrice(product.price) }}</span>
+                                <span class="original-price">{{ formatPrice(product.originalPrice) }}</span>
+                                <span class="discount">
+                                    Save {{ calculateDiscount(product.originalPrice, product.price) }}%
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Delivery Info -->
+                        <div class="delivery-info">
+                            <div class="delivery-text">
+                                FREE delivery: {{ product.deliveryDate }}
+                            </div>
+                            <div class="delivery-text">
+                                Delivering to: {{ product.location }}
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="action-buttons">
+                            <Button class="buy-button" size="lg">Buy Now</Button>
+                            <Button variant="outline" class="message-button" size="lg">Message Seller</Button>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <!-- Seller Info -->
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Seller Information</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div class="seller-info">
@@ -162,33 +195,8 @@ const calculateDiscount = (original: number, current: number) => {
                                 </div>
                             </div>
                         </div>
-
-                        <div class="price-section">
-                            <div class="price-display">
-                                <span class="current-price">{{ formatPrice(product.price) }}</span>
-                                <span class="original-price">{{ formatPrice(product.originalPrice) }}</span>
-                                <span class="discount">
-                                    Save {{ calculateDiscount(product.originalPrice, product.price) }}%
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="delivery-info">
-                            <div class="delivery-text">
-                                FREE delivery: {{ product.deliveryDate }}
-                            </div>
-                            <div class="delivery-text">
-                                Delivering to: {{ product.location }}
-                            </div>
-                        </div>
-
-                        <div class="action-buttons">
-                            <Button class="buy-button" size="lg">Buy Now</Button>
-                            <Button variant="outline" class="message-button" size="lg">Message Seller</Button>
-                        </div>
                     </CardContent>
                 </Card>
-
                 <Card>
                     <CardHeader>
                         <CardTitle>About this item</CardTitle>
@@ -197,119 +205,114 @@ const calculateDiscount = (original: number, current: number) => {
                         <p>{{ product.description }}</p>
                     </CardContent>
                 </Card>
+            </div>
+        </div>
 
+        <!-- Product Details Below -->
+        <div class="product-details">
+
+            <div class="details-grid">
+                <!-- Basic Info -->
                 <Card>
                     <CardHeader>
-                        <CardTitle>Listing Details</CardTitle>
+                        <CardTitle>Basic Information</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div class="details-grid">
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Basic Information</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div class="details-list">
-                                        <div class="detail-item" v-if="product.listingDetails.modelYear">
-                                            <span class="detail-label">Model Year</span>
-                                            <span class="detail-value">{{ product.listingDetails.modelYear }}</span>
-                                        </div>
-                                        <div class="detail-item" v-if="product.listingDetails.manufacturer">
-                                            <span class="detail-label">Manufacturer</span>
-                                            <span class="detail-value">{{ product.listingDetails.manufacturer
-                                            }}</span>
-                                        </div>
-                                        <div class="detail-item" v-if="product.listingDetails.model">
-                                            <span class="detail-label">Model</span>
-                                            <span class="detail-value">{{ product.listingDetails.model }}</span>
-                                        </div>
-                                        <div class="detail-item" v-if="product.listingDetails.serialNumber">
-                                            <span class="detail-label">Serial Number</span>
-                                            <span class="detail-value">{{ product.listingDetails.serialNumber
-                                            }}</span>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-
-                            <!-- Usage Info -->
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Usage Information</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div class="details-list">
-                                        <div class="detail-item" v-if="product.listingDetails.purchaseDate">
-                                            <span class="detail-label">Purchase Date</span>
-                                            <span class="detail-value">{{ product.listingDetails.purchaseDate
-                                            }}</span>
-                                        </div>
-                                        <div class="detail-item" v-if="product.listingDetails.usageDuration">
-                                            <span class="detail-label">Usage Duration</span>
-                                            <span class="detail-value">{{ product.listingDetails.usageDuration
-                                            }}</span>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-
-                            <!-- Defects -->
-                            <Card v-if="product.listingDetails.defects?.length">
-                                <CardHeader>
-                                    <CardTitle>Known Defects</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <ul class="details-list">
-                                        <li v-for="(defect, index) in product.listingDetails.defects" :key="index"
-                                            class="detail-list-item">
-                                            {{ defect }}
-                                        </li>
-                                    </ul>
-                                </CardContent>
-                            </Card>
-
-                            <!-- Modifications -->
-                            <Card v-if="product.listingDetails.modifications?.length">
-                                <CardHeader>
-                                    <CardTitle>Modifications</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <ul class="details-list">
-                                        <li v-for="(mod, index) in product.listingDetails.modifications" :key="index"
-                                            class="detail-list-item">
-                                            {{ mod }}
-                                        </li>
-                                    </ul>
-                                </CardContent>
-                            </Card>
-
-                            <!-- Reason for Selling -->
-                            <Card v-if="product.listingDetails.reasonForSelling">
-                                <CardHeader>
-                                    <CardTitle>Reason for Selling</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <p class="detail-text">{{ product.listingDetails.reasonForSelling }}</p>
-                                </CardContent>
-                            </Card>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Specifications</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div class="properties-grid">
-                            <div v-for="prop in product.properties" :key="prop.label" class="property-item">
-                                <span class="property-label">{{ prop.label }}</span>
-                                <span class="property-value">{{ prop.value }}</span>
+                        <div class="details-list">
+                            <div class="detail-item" v-if="product.listingDetails.modelYear">
+                                <span class="detail-label">Model Year</span>
+                                <span class="detail-value">{{ product.listingDetails.modelYear }}</span>
+                            </div>
+                            <div class="detail-item" v-if="product.listingDetails.manufacturer">
+                                <span class="detail-label">Manufacturer</span>
+                                <span class="detail-value">{{ product.listingDetails.manufacturer }}</span>
+                            </div>
+                            <div class="detail-item" v-if="product.listingDetails.model">
+                                <span class="detail-label">Model</span>
+                                <span class="detail-value">{{ product.listingDetails.model }}</span>
+                            </div>
+                            <div class="detail-item" v-if="product.listingDetails.serialNumber">
+                                <span class="detail-label">Serial Number</span>
+                                <span class="detail-value">{{ product.listingDetails.serialNumber }}</span>
                             </div>
                         </div>
                     </CardContent>
                 </Card>
+
+                <!-- Usage Info -->
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Usage Information</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div class="details-list">
+                            <div class="detail-item" v-if="product.listingDetails.purchaseDate">
+                                <span class="detail-label">Purchase Date</span>
+                                <span class="detail-value">{{ product.listingDetails.purchaseDate }}</span>
+                            </div>
+                            <div class="detail-item" v-if="product.listingDetails.usageDuration">
+                                <span class="detail-label">Usage Duration</span>
+                                <span class="detail-value">{{ product.listingDetails.usageDuration }}</span>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <!-- Defects -->
+                <Card v-if="product.listingDetails.defects?.length">
+                    <CardHeader>
+                        <CardTitle>Known Defects</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <ul class="details-list">
+                            <li v-for="(defect, index) in product.listingDetails.defects" :key="index"
+                                class="detail-list-item">
+                                {{ defect }}
+                            </li>
+                        </ul>
+                    </CardContent>
+                </Card>
+
+                <!-- Modifications -->
+                <Card v-if="product.listingDetails.modifications?.length">
+                    <CardHeader>
+                        <CardTitle>Modifications</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <ul class="details-list">
+                            <li v-for="(mod, index) in product.listingDetails.modifications" :key="index"
+                                class="detail-list-item">
+                                {{ mod }}
+                            </li>
+                        </ul>
+                    </CardContent>
+                </Card>
+
+                <!-- Reason for Selling -->
+                <Card v-if="product.listingDetails.reasonForSelling">
+                    <CardHeader>
+                        <CardTitle>Reason for Selling</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p class="detail-text">{{ product.listingDetails.reasonForSelling }}</p>
+                    </CardContent>
+                </Card>
             </div>
+
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>Specifications</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div class="properties-grid">
+                        <div v-for="prop in product.properties" :key="prop.label" class="property-item">
+                            <span class="property-label">{{ prop.label }}</span>
+                            <span class="property-value">{{ prop.value }}</span>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
         </div>
     </div>
 </template>
@@ -323,14 +326,15 @@ const calculateDiscount = (original: number, current: number) => {
 
 .product-grid {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: calc(var(--spacing) * 8);
+    grid-template-columns: 1fr 350px;
+    gap: calc(var(--spacing) * 4);
+    margin-bottom: calc(var(--spacing) * 4);
 }
 
-@media (min-width: 768px) {
-    .product-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+.product-details {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--spacing) * 4);
 }
 
 /* Product Images */
@@ -636,5 +640,11 @@ const calculateDiscount = (original: number, current: number) => {
 .property-value {
     font-size: var(--font-size-sm);
     color: var(--foreground);
+}
+
+@media (max-width: 768px) {
+    .product-grid {
+        grid-template-columns: 1fr;
+    }
 }
 </style>
