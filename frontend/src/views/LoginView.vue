@@ -97,6 +97,7 @@ const onLoginSubmit: SubmissionHandler = (values) => {
 
 .input-container {
     position: relative;
+    width: 100%;
 }
 
 .input-icon {
