@@ -6,6 +6,11 @@ const router = createRouter({
   routes: [
     {
       path: "/",
+      name: "layout",
+      component: () => import("../views/layouts/AuthLayout.vue"),
+      children: [
+    {
+      path: "/",
       name: "home",
       component: HomeView,
     },
@@ -38,6 +43,19 @@ const router = createRouter({
       name: "product-create",
       component: () => import("../views/CreateListingView.vue"),
     },
+    {
+      path: "/auth/register",
+      name: "register",
+      component: () => import("../views/RegisterView.vue"),
+    },
+    {
+      path: "/auth/login",
+      name: "login",
+      component: () => import("../views/LoginView.vue"),
+    },
+      ]
+    }
+  
 
   ],
 });

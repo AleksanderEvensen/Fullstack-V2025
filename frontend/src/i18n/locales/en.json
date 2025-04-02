@@ -13,6 +13,72 @@
     "cancel": "Cancel",
     "delete": "Delete",
     "edit": "Edit",
-    "search": "Search"
+    "search": "Search",
+    "back": "Back",
+    "next": "Next"
+  },
+  "auth": {
+    "createAccount": "Create Account",
+    "fillOutForm": "Fill out the form below to create your account",
+    "steps": {
+      "profile": {
+        "title": "Profile",
+        "description": "Basic information"
+      },
+      "contact": {
+        "title": "Contact",
+        "description": "Contact details"
+      },
+      "security": {
+        "title": "Security",
+        "description": "Password setup"
+      }
+    },
+    "uploadProfilePicture": "Upload profile picture",
+    "fullName": "Full Name",
+    "fullNamePlaceholder": "Enter your full name",
+    "email": "Email",
+    "emailPlaceholder": "Enter your email",
+    "phoneNumber": "Phone Number",
+    "phoneNumberPlaceholder": "XXX XX XXX",
+    "phoneNumberHint": "Norwegian format: XXX XX XXX",
+    "address": "Address Details",
+    "streetAddress": "Street Address",
+    "streetAddressPlaceholder": "Enter street and number",
+    "postalCode": "Postal Code",
+    "postalCodePlaceholder": "0000",
+    "city": "City",
+    "cityPlaceholder": "Enter city",
+    "password": "Password",
+    "passwordPlaceholder": "Create a password",
+    "confirmPassword": "Confirm Password",
+    "confirmPasswordPlaceholder": "Confirm your password",
+    "submitButton": "Create Account",
+    "login": {
+      "title": "Sign In",
+      "description": "Access your account",
+      "passwordPlaceholder": "Enter your password",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password?",
+      "button": "Sign In",
+      "noAccount": "Don't have an account?",
+      "registerLink": "Sign up",
+      "validation": {
+        "passwordRequired": "Password is required"
+      }
+    },
+    "validation": {
+      "nameMin": "Name must be at least 2 characters",
+      "emailInvalid": "Please enter a valid email address",
+      "phoneInvalid": "Please enter a valid Norwegian phone number (format: XXX XX XXX)",
+      "streetAddressMin": "Please enter a valid street address",
+      "postalCodeInvalid": "Please enter a valid Norwegian postal code (4 digits)",
+      "cityMin": "Please enter a valid city name",
+      "passwordMin": "Password must be at least 8 characters",
+      "passwordUpper": "Password must contain at least one uppercase letter",
+      "passwordLower": "Password must contain at least one lowercase letter",
+      "passwordNumber": "Password must contain at least one number",
+      "passwordsNotMatch": "Passwords don't match"
+    }
   }
 } 
