@@ -12,6 +12,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { Datepicker } from '@/components/ui/datepicker';
 import { Stepper, StepperDescription, StepperItem, StepperSeparator, StepperTitle, StepperTrigger, StepperIndicator } from '@/components/ui/stepper';
 import { toTypedSchema } from '@vee-validate/zod';
 import { Check, Circle, Dot, Package, Info, Camera, CreditCard, Eye } from 'lucide-vue-next';
@@ -287,7 +288,7 @@ function onSubmit(values: GenericObject) {
                                         <FormItem>
                                             <FormLabel>Purchase Date (Optional)</FormLabel>
                                             <FormControl>
-                                                <Input type="date" v-bind="componentField" />
+                                                <Datepicker v-bind="componentField" />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
