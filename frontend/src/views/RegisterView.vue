@@ -688,5 +688,15 @@ const formatNorwegianPhoneNumber = (input: string): string => {
     .form-actions button:first-child {
         width: 100%;
     }
+
+    .container {
+        width: 100%;
+    }
+
+
+
+    .form-fields-container {
+        width: 100%;
+    }
 }
 </style>
