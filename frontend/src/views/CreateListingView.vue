@@ -462,9 +462,9 @@ function onSubmit(values: GenericObject) {
 
 <style scoped>
 .container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: calc(var(--spacing) * 4);
+    width: 900px;
+    margin: 2rem auto;
+    padding: 1.5rem;
 }
 
 h1 {

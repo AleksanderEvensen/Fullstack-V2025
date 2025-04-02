@@ -13,6 +13,72 @@
     "cancel": "Avbryt",
     "delete": "Slett",
     "edit": "Rediger",
-    "search": "Søk"
+    "search": "Søk",
+    "back": "Tilbake",
+    "next": "Neste"
+  },
+  "auth": {
+    "createAccount": "Opprett konto",
+    "fillOutForm": "Fyll ut skjemaet nedenfor for å opprette kontoen din",
+    "steps": {
+      "profile": {
+        "title": "Profil",
+        "description": "Grunnleggende informasjon"
+      },
+      "contact": {
+        "title": "Kontakt",
+        "description": "Kontaktdetaljer"
+      },
+      "security": {
+        "title": "Sikkerhet",
+        "description": "Passordoppsett"
+      }
+    },
+    "uploadProfilePicture": "Last opp profilbilde",
+    "fullName": "Fullt navn",
+    "fullNamePlaceholder": "Skriv inn ditt fulle navn",
+    "email": "E-post",
+    "emailPlaceholder": "Skriv inn din e-post",
+    "phoneNumber": "Telefonnummer",
+    "phoneNumberPlaceholder": "XXX XX XXX",
+    "phoneNumberHint": "Norsk format: XXX XX XXX",
+    "address": "Adressedetaljer",
+    "streetAddress": "Gateadresse",
+    "streetAddressPlaceholder": "Skriv inn gate og nummer",
+    "postalCode": "Postnummer",
+    "postalCodePlaceholder": "0000",
+    "city": "Sted",
+    "cityPlaceholder": "Skriv inn sted",
+    "password": "Passord",
+    "passwordPlaceholder": "Lag et passord",
+    "confirmPassword": "Bekreft passord",
+    "confirmPasswordPlaceholder": "Bekreft passordet ditt",
+    "submitButton": "Opprett konto",
+    "login": {
+      "title": "Logg inn",
+      "description": "Få tilgang til kontoen din",
+      "passwordPlaceholder": "Skriv inn ditt passord",
+      "rememberMe": "Husk meg",
+      "forgotPassword": "Glemt passord?",
+      "button": "Logg inn",
+      "noAccount": "Har du ikke en konto?",
+      "registerLink": "Registrer deg",
+      "validation": {
+        "passwordRequired": "Passord er påkrevd"
+      }
+    },
+    "validation": {
+      "nameMin": "Navnet må være minst 2 tegn",
+      "emailInvalid": "Vennligst skriv inn en gyldig e-postadresse",
+      "phoneInvalid": "Vennligst skriv inn et gyldig norsk telefonnummer (format: XXX XX XXX)",
+      "streetAddressMin": "Vennligst skriv inn en gyldig gateadresse",
+      "postalCodeInvalid": "Vennligst skriv inn et gyldig norsk postnummer (4 sifre)",
+      "cityMin": "Vennligst skriv inn et gyldig stedsnavn",
+      "passwordMin": "Passordet må være minst 8 tegn",
+      "passwordUpper": "Passordet må inneholde minst én stor bokstav",
+      "passwordLower": "Passordet må inneholde minst én liten bokstav",
+      "passwordNumber": "Passordet må inneholde minst ett tall",
+      "passwordsNotMatch": "Passordene stemmer ikke overens"
+    }
   }
 } 
