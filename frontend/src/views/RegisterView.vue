@@ -302,7 +302,7 @@ const previewImage = ref<string | null>(null);
 
 const handleFileChange = (e: Event) => {
     const input = e.target as HTMLInputElement;
-    if (input.files && input.files[0]) {
+    if (input.files?.[0]) {
         const reader = new FileReader();
         reader.onload = (e) => {
             previewImage.value = e.target?.result as string;
