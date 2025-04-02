@@ -80,5 +80,85 @@
       "passwordNumber": "Password must contain at least one number",
       "passwordsNotMatch": "Passwords don't match"
     }
+  },
+  "createListing": {
+    "title": "Create New Listing",
+    "description": "Fill out the form below to create your listing",
+    "createButton": "Create Listing",
+    "steps": {
+      "basicInfo": {
+        "title": "Basic Information",
+        "description": "Enter product details"
+      },
+      "productDetails": {
+        "title": "Product Details",
+        "description": "Add specifications"
+      },
+      "images": {
+        "title": "Images",
+        "description": "Upload product photos"
+      },
+      "preview": {
+        "title": "Preview",
+        "description": "Review your listing"
+      }
+    },
+    "form": {
+      "title": "Title",
+      "titlePlaceholder": "Enter product title",
+      "titleValidation": "Title must be at least 3 characters",
+      "category": "Category",
+      "categoryPlaceholder": "Select a category",
+      "categoryValidation": "Please select a category",
+      "condition": "Condition",
+      "conditionPlaceholder": "Select condition",
+      "conditionOptions": {
+        "new": "New",
+        "likeNew": "Like New",
+        "veryGood": "Very Good",
+        "good": "Good",
+        "acceptable": "Acceptable"
+      },
+      "price": "Price",
+      "pricePlaceholder": "Enter price",
+      "priceValidation": "Please enter a price",
+      "originalPrice": "Original Price (Optional)",
+      "originalPricePlaceholder": "Enter original price",
+      "description": "Description",
+      "descriptionPlaceholder": "Describe your item in detail",
+      "descriptionValidation": "Description must be at least 50 characters",
+      "modelYear": "Model Year (Optional)",
+      "modelYearPlaceholder": "Enter model year",
+      "manufacturer": "Manufacturer (Optional)",
+      "manufacturerPlaceholder": "Enter manufacturer",
+      "model": "Model (Optional)",
+      "modelPlaceholder": "Enter model",
+      "serialNumber": "Serial Number (Optional)",
+      "serialNumberPlaceholder": "Enter serial number",
+      "purchaseDate": "Purchase Date (Optional)",
+      "usageDuration": "Usage Duration (Optional)",
+      "usageDurationPlaceholder": "e.g., 6 months",
+      "reasonForSelling": "Reason for Selling (Optional)",
+      "reasonForSellingPlaceholder": "Why are you selling this item?",
+      "productImages": "Product Images",
+      "imageUploadText": "Drag and drop images here or click to upload",
+      "noImages": "No images uploaded"
+    },
+    "categories": {
+      "electronics": "Electronics",
+      "fashion": "Fashion",
+      "home": "Home & Garden",
+      "sports": "Sports & Outdoors",
+      "toys": "Toys & Games"
+    },
+    "preview": {
+      "basicInfo": "Basic Information",
+      "basicInfoDescription": "Review your listing's basic details",
+      "productDetails": "Product Details",
+      "productDetailsDescription": "Review your product specifications",
+      "imagesTitle": "Images",
+      "imagesDescription": "Review your product images",
+      "imageAlt": "Product image"
+    }
   }
 } 

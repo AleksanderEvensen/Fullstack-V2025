@@ -8,7 +8,7 @@
   "common": {
     "loading": "Laster...",
     "error": "Feil",
-    "success": "Vellykket",
+    "success": "Suksess",
     "save": "Lagre",
     "cancel": "Avbryt",
     "delete": "Slett",
@@ -27,7 +27,7 @@
       },
       "contact": {
         "title": "Kontakt",
-        "description": "Kontaktdetaljer"
+        "description": "Kontaktinformasjon"
       },
       "security": {
         "title": "Sikkerhet",
@@ -36,19 +36,19 @@
     },
     "uploadProfilePicture": "Last opp profilbilde",
     "fullName": "Fullt navn",
-    "fullNamePlaceholder": "Skriv inn ditt fulle navn",
+    "fullNamePlaceholder": "Skriv inn fullt navn",
     "email": "E-post",
-    "emailPlaceholder": "Skriv inn din e-post",
+    "emailPlaceholder": "Skriv inn e-postadressen din",
     "phoneNumber": "Telefonnummer",
     "phoneNumberPlaceholder": "XXX XX XXX",
     "phoneNumberHint": "Norsk format: XXX XX XXX",
-    "address": "Adressedetaljer",
+    "address": "Adresseopplysninger",
     "streetAddress": "Gateadresse",
     "streetAddressPlaceholder": "Skriv inn gate og nummer",
     "postalCode": "Postnummer",
     "postalCodePlaceholder": "0000",
-    "city": "Sted",
-    "cityPlaceholder": "Skriv inn sted",
+    "city": "By",
+    "cityPlaceholder": "Skriv inn by",
     "password": "Passord",
     "passwordPlaceholder": "Lag et passord",
     "confirmPassword": "Bekreft passord",
@@ -57,7 +57,7 @@
     "login": {
       "title": "Logg inn",
       "description": "Få tilgang til kontoen din",
-      "passwordPlaceholder": "Skriv inn ditt passord",
+      "passwordPlaceholder": "Skriv inn passordet ditt",
       "rememberMe": "Husk meg",
       "forgotPassword": "Glemt passord?",
       "button": "Logg inn",
@@ -73,12 +73,92 @@
       "phoneInvalid": "Vennligst skriv inn et gyldig norsk telefonnummer (format: XXX XX XXX)",
       "streetAddressMin": "Vennligst skriv inn en gyldig gateadresse",
       "postalCodeInvalid": "Vennligst skriv inn et gyldig norsk postnummer (4 sifre)",
-      "cityMin": "Vennligst skriv inn et gyldig stedsnavn",
+      "cityMin": "Vennligst skriv inn et gyldig bynavn",
       "passwordMin": "Passordet må være minst 8 tegn",
       "passwordUpper": "Passordet må inneholde minst én stor bokstav",
       "passwordLower": "Passordet må inneholde minst én liten bokstav",
       "passwordNumber": "Passordet må inneholde minst ett tall",
-      "passwordsNotMatch": "Passordene stemmer ikke overens"
+      "passwordsNotMatch": "Passordene samsvarer ikke"
+    }
+  },
+  "createListing": {
+    "title": "Opprett ny annonse",
+    "description": "Fyll ut skjemaet nedenfor for å opprette annonsen din",
+    "createButton": "Opprett annonse",
+    "steps": {
+      "basicInfo": {
+        "title": "Grunnleggende informasjon",
+        "description": "Legg inn produktdetaljer"
+      },
+      "productDetails": {
+        "title": "Produktdetaljer",
+        "description": "Legg til spesifikasjoner"
+      },
+      "images": {
+        "title": "Bilder",
+        "description": "Last opp produktbilder"
+      },
+      "preview": {
+        "title": "Forhåndsvisning",
+        "description": "Se gjennom annonsen din"
+      }
+    },
+    "form": {
+      "title": "Tittel",
+      "titlePlaceholder": "Skriv inn produkttittel",
+      "titleValidation": "Tittelen må være minst 3 tegn",
+      "category": "Kategori",
+      "categoryPlaceholder": "Velg en kategori",
+      "categoryValidation": "Vennligst velg en kategori",
+      "condition": "Tilstand",
+      "conditionPlaceholder": "Velg tilstand",
+      "conditionOptions": {
+        "new": "Ny",
+        "likeNew": "Som ny",
+        "veryGood": "Veldig god",
+        "good": "God",
+        "acceptable": "Akseptabel"
+      },
+      "price": "Pris",
+      "pricePlaceholder": "Skriv inn pris",
+      "priceValidation": "Vennligst skriv inn en pris",
+      "originalPrice": "Opprinnelig pris (valgfritt)",
+      "originalPricePlaceholder": "Skriv inn opprinnelig pris",
+      "description": "Beskrivelse",
+      "descriptionPlaceholder": "Beskriv gjenstanden din i detalj",
+      "descriptionValidation": "Beskrivelsen må være minst 50 tegn",
+      "modelYear": "Modellår (valgfritt)",
+      "modelYearPlaceholder": "Skriv inn modellår",
+      "manufacturer": "Produsent (valgfritt)",
+      "manufacturerPlaceholder": "Skriv inn produsent",
+      "model": "Modell (valgfritt)",
+      "modelPlaceholder": "Skriv inn modell",
+      "serialNumber": "Serienummer (valgfritt)",
+      "serialNumberPlaceholder": "Skriv inn serienummer",
+      "purchaseDate": "Kjøpsdato (valgfritt)",
+      "usageDuration": "Bruksvarighet (valgfritt)",
+      "usageDurationPlaceholder": "f.eks. 6 måneder",
+      "reasonForSelling": "Årsak til salg (valgfritt)",
+      "reasonForSellingPlaceholder": "Hvorfor selger du denne varen?",
+      "productImages": "Produktbilder",
+      "imageUploadText": "Dra og slipp bilder her eller klikk for å laste opp",
+      "noImages": "Ingen bilder lastet opp"
+    },
+    "categories": {
+      "electronics": "Elektronikk",
+      "fashion": "Mote",
+      "home": "Hjem & Hage",
+      "sports": "Sport & Friluft",
+      "toys": "Leker & Spill"
+    },
+    "preview": {
+      "basicInfo": "Grunnleggende informasjon",
+      "basicInfoDescription": "Se gjennom annonsens grunnleggende detaljer",
+      "productDetails": "Produktdetaljer",
+      "productDetailsDescription": "Se gjennom produktspesifikasjonene",
+      "imagesTitle": "Bilder",
+      "imagesDescription": "Se gjennom produktbildene dine",
+      "imageAlt": "Produktbilde"
     }
   }
 } 
