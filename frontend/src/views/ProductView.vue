@@ -5,6 +5,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useI18n } from 'vue-i18n';
+
+// Initialize i18n
+const { t } = useI18n();
 
 interface Seller {
     name: string;
@@ -111,6 +115,23 @@ const formatPrice = (price: number) => {
 const calculateDiscount = (original: number, current: number) => {
     return Math.round(((original - current) / original) * 100);
 };
+
+const getTranslatedCondition = (condition: string) => {
+    switch (condition) {
+        case 'New':
+            return t('product.conditionLabels.new');
+        case 'Like New':
+            return t('product.conditionLabels.likeNew');
+        case 'Very Good':
+            return t('product.conditionLabels.veryGood');
+        case 'Good':
+            return t('product.conditionLabels.good');
+        case 'Acceptable':
+            return t('product.conditionLabels.acceptable');
+        default:
+            return condition;
+    }
+};
 </script>
 
 <template>
@@ -123,7 +144,7 @@ const calculateDiscount = (original: number, current: number) => {
                 <div class="image-thumbnails">
                     <button v-for="(image, index) in product.images" :key="index" @click="currentImageIndex = index"
                         class="thumbnail-button" :class="{ 'active': currentImageIndex === index }">
-                        <img :src="image" :alt="`Product image ${index + 1}`">
+                        <img :src="image" :alt="`${t('product.imageAlt')} ${index + 1}`">
                     </button>
                 </div>
             </div>
@@ -134,7 +155,7 @@ const calculateDiscount = (original: number, current: number) => {
                     <CardHeader>
                         <CardTitle>{{ product.title }}</CardTitle>
                         <div class="condition-badge">
-                            <Badge variant="outline">{{ product.condition }}</Badge>
+                            <Badge variant="outline">{{ getTranslatedCondition(product.condition) }}</Badge>
                         </div>
                     </CardHeader>
                     <CardContent>
@@ -144,7 +165,8 @@ const calculateDiscount = (original: number, current: number) => {
                                 <span class="current-price">{{ formatPrice(product.price) }}</span>
                                 <span class="original-price">{{ formatPrice(product.originalPrice) }}</span>
                                 <span class="discount">
-                                    Save {{ calculateDiscount(product.originalPrice, product.price) }}%
+                                    {{ t('product.pricing.save') }} {{ calculateDiscount(product.originalPrice,
+                                    product.price) }}%
                                 </span>
                             </div>
                         </div>
@@ -152,17 +174,18 @@ const calculateDiscount = (original: number, current: number) => {
                         <!-- Delivery Info -->
                         <div class="delivery-info">
                             <div class="delivery-text">
-                                FREE delivery: {{ product.deliveryDate }}
+                                {{ t('product.delivery.freeDelivery') }}: {{ product.deliveryDate }}
                             </div>
                             <div class="delivery-text">
-                                Delivering to: {{ product.location }}
+                                {{ t('product.delivery.deliveringTo') }}: {{ product.location }}
                             </div>
                         </div>
 
                         <!-- Actions -->
                         <div class="action-buttons">
-                            <Button class="buy-button" size="lg">Buy Now</Button>
-                            <Button variant="outline" class="message-button" size="lg">Message Seller</Button>
+                            <Button class="buy-button" size="lg">{{ t('product.buyNow') }}</Button>
+                            <Button variant="outline" class="message-button" size="lg">{{ t('product.messageButton')
+                                }}</Button>
                         </div>
                     </CardContent>
                 </Card>
@@ -170,7 +193,7 @@ const calculateDiscount = (original: number, current: number) => {
                 <!-- Seller Info -->
                 <Card>
                     <CardHeader>
-                        <CardTitle>Seller Information</CardTitle>
+                        <CardTitle>{{ t('product.sellerInfo.title') }}</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div class="seller-info">
@@ -185,13 +208,14 @@ const calculateDiscount = (original: number, current: number) => {
                                         <StarIcon class="star-icon" />
                                         <span>{{ product.seller.rating }}</span>
                                     </div>
-                                    <span>({{ product.seller.totalRatings }} ratings)</span>
+                                    <span>({{ product.seller.totalRatings }} {{ t('product.sellerInfo.ratings')
+                                        }})</span>
                                 </div>
                                 <div class="seller-info-text">
-                                    Member since: {{ product.seller.memberSince }}
+                                    {{ t('product.sellerInfo.memberSince') }}: {{ product.seller.memberSince }}
                                 </div>
                                 <div class="seller-info-text">
-                                    {{ product.seller.positiveFeedback }} Positive Feedback
+                                    {{ product.seller.positiveFeedback }} {{ t('product.sellerInfo.positiveFeedback') }}
                                 </div>
                             </div>
                         </div>
@@ -199,7 +223,7 @@ const calculateDiscount = (original: number, current: number) => {
                 </Card>
                 <Card>
                     <CardHeader>
-                        <CardTitle>About this item</CardTitle>
+                        <CardTitle>{{ t('product.aboutThisItem') }}</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <p>{{ product.description }}</p>
@@ -215,24 +239,24 @@ const calculateDiscount = (original: number, current: number) => {
                 <!-- Basic Info -->
                 <Card>
                     <CardHeader>
-                        <CardTitle>Basic Information</CardTitle>
+                        <CardTitle>{{ t('product.details.basicInfo') }}</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div class="details-list">
                             <div class="detail-item" v-if="product.listingDetails.modelYear">
-                                <span class="detail-label">Model Year</span>
+                                <span class="detail-label">{{ t('product.labels.modelYear') }}</span>
                                 <span class="detail-value">{{ product.listingDetails.modelYear }}</span>
                             </div>
                             <div class="detail-item" v-if="product.listingDetails.manufacturer">
-                                <span class="detail-label">Manufacturer</span>
+                                <span class="detail-label">{{ t('product.labels.manufacturer') }}</span>
                                 <span class="detail-value">{{ product.listingDetails.manufacturer }}</span>
                             </div>
                             <div class="detail-item" v-if="product.listingDetails.model">
-                                <span class="detail-label">Model</span>
+                                <span class="detail-label">{{ t('product.labels.model') }}</span>
                                 <span class="detail-value">{{ product.listingDetails.model }}</span>
                             </div>
                             <div class="detail-item" v-if="product.listingDetails.serialNumber">
-                                <span class="detail-label">Serial Number</span>
+                                <span class="detail-label">{{ t('product.labels.serialNumber') }}</span>
                                 <span class="detail-value">{{ product.listingDetails.serialNumber }}</span>
                             </div>
                         </div>
@@ -242,16 +266,16 @@ const calculateDiscount = (original: number, current: number) => {
                 <!-- Usage Info -->
                 <Card>
                     <CardHeader>
-                        <CardTitle>Usage Information</CardTitle>
+                        <CardTitle>{{ t('product.details.usageInfo') }}</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div class="details-list">
                             <div class="detail-item" v-if="product.listingDetails.purchaseDate">
-                                <span class="detail-label">Purchase Date</span>
+                                <span class="detail-label">{{ t('product.labels.purchaseDate') }}</span>
                                 <span class="detail-value">{{ product.listingDetails.purchaseDate }}</span>
                             </div>
                             <div class="detail-item" v-if="product.listingDetails.usageDuration">
-                                <span class="detail-label">Usage Duration</span>
+                                <span class="detail-label">{{ t('product.labels.usageDuration') }}</span>
                                 <span class="detail-value">{{ product.listingDetails.usageDuration }}</span>
                             </div>
                         </div>
@@ -261,7 +285,7 @@ const calculateDiscount = (original: number, current: number) => {
                 <!-- Defects -->
                 <Card v-if="product.listingDetails.defects?.length">
                     <CardHeader>
-                        <CardTitle>Known Defects</CardTitle>
+                        <CardTitle>{{ t('product.details.knownDefects') }}</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <ul class="details-list">
@@ -276,7 +300,7 @@ const calculateDiscount = (original: number, current: number) => {
                 <!-- Modifications -->
                 <Card v-if="product.listingDetails.modifications?.length">
                     <CardHeader>
-                        <CardTitle>Modifications</CardTitle>
+                        <CardTitle>{{ t('product.details.modifications') }}</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <ul class="details-list">
@@ -291,7 +315,7 @@ const calculateDiscount = (original: number, current: number) => {
                 <!-- Reason for Selling -->
                 <Card v-if="product.listingDetails.reasonForSelling">
                     <CardHeader>
-                        <CardTitle>Reason for Selling</CardTitle>
+                        <CardTitle>{{ t('product.details.reasonForSelling') }}</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <p class="detail-text">{{ product.listingDetails.reasonForSelling }}</p>
@@ -302,7 +326,7 @@ const calculateDiscount = (original: number, current: number) => {
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Specifications</CardTitle>
+                    <CardTitle>{{ t('product.details.specifications') }}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div class="properties-grid">

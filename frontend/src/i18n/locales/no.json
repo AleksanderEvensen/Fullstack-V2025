@@ -8,7 +8,7 @@
   "common": {
     "loading": "Laster...",
     "error": "Feil",
-    "success": "Suksess",
+    "success": "Vellykket",
     "save": "Lagre",
     "cancel": "Avbryt",
     "delete": "Slett",
@@ -160,5 +160,47 @@
       "imagesDescription": "Se gjennom produktbildene dine",
       "imageAlt": "Produktbilde"
     }
+  },
+  "product": {
+    "conditionLabels": {
+      "new": "Ny",
+      "likeNew": "Som ny",
+      "veryGood": "Veldig god",
+      "good": "God",
+      "acceptable": "Akseptabel"
+    },
+    "aboutThisItem": "Om denne varen",
+    "buyNow": "Kjøp nå",
+    "messageButton": "Send melding til selger",
+    "sellerInfo": {
+      "title": "Selgerinformasjon",
+      "memberSince": "Medlem siden",
+      "ratings": "vurderinger",
+      "positiveFeedback": "Positiv tilbakemelding"
+    },
+    "delivery": {
+      "freeDelivery": "GRATIS levering",
+      "deliveringTo": "Levering til"
+    },
+    "pricing": {
+      "save": "Spar"
+    },
+    "details": {
+      "basicInfo": "Grunnleggende informasjon",
+      "usageInfo": "Bruksinformasjon",
+      "knownDefects": "Kjente defekter",
+      "modifications": "Modifikasjoner",
+      "reasonForSelling": "Årsak til salg",
+      "specifications": "Spesifikasjoner"
+    },
+    "labels": {
+      "modelYear": "Modellår",
+      "manufacturer": "Produsent",
+      "model": "Modell",
+      "serialNumber": "Serienummer",
+      "purchaseDate": "Kjøpsdato",
+      "usageDuration": "Bruksvarighet"
+    },
+    "imageAlt": "Produktbilde"
   }
 } 

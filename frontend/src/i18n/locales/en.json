@@ -160,5 +160,47 @@
       "imagesDescription": "Review your product images",
       "imageAlt": "Product image"
     }
+  },
+  "product": {
+    "conditionLabels": {
+      "new": "New",
+      "likeNew": "Like New",
+      "veryGood": "Very Good",
+      "good": "Good",
+      "acceptable": "Acceptable"
+    },
+    "aboutThisItem": "About this item",
+    "buyNow": "Buy Now",
+    "messageButton": "Message Seller",
+    "sellerInfo": {
+      "title": "Seller Information",
+      "memberSince": "Member since",
+      "ratings": "ratings",
+      "positiveFeedback": "Positive Feedback"
+    },
+    "delivery": {
+      "freeDelivery": "FREE delivery",
+      "deliveringTo": "Delivering to"
+    },
+    "pricing": {
+      "save": "Save"
+    },
+    "details": {
+      "basicInfo": "Basic Information",
+      "usageInfo": "Usage Information",
+      "knownDefects": "Known Defects",
+      "modifications": "Modifications",
+      "reasonForSelling": "Reason for Selling",
+      "specifications": "Specifications"
+    },
+    "labels": {
+      "modelYear": "Model Year",
+      "manufacturer": "Manufacturer",
+      "model": "Model",
+      "serialNumber": "Serial Number",
+      "purchaseDate": "Purchase Date",
+      "usageDuration": "Usage Duration"
+    },
+    "imageAlt": "Product image"
   }
 } 
