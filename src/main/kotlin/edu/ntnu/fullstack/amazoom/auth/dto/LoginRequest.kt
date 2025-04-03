@@ -10,6 +10,6 @@ data class LoginRequest(
     val email: String,
 
     @field:NotBlank(message = "Password cannot be blank")
-    @field:Size(min = 8, max = 30, message = "Password must be 8-30 characters")
+    @field:Size(min = 8, max = 30, message = "Password must be between 8 and 30 characters")
     val password: String,
 )
