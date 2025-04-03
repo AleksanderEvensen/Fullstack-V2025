@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ChevronDown, MapPin, X, FunnelIcon } from 'lucide-vue-next'
-import { RouterLink } from 'vue-router'
 import { useUrlSearchParams, watchDebounced } from '@vueuse/core'
 import { computed, ref, watch } from 'vue'
 import { MockSearchEntries } from './mock_data'
 import ItemCard from './components/ItemCard.vue'
-import { Label } from '@/components/ui/label'
 
 const queryParams = useUrlSearchParams('history', {
   removeFalsyValues: true,
@@ -41,24 +40,11 @@ const data = computed(() => MockSearchEntries)
     <p>Søk:</p>
     <div class="search-header">
       <Input v-model="searchInput" placeholder="Søkeord..." />
-      <Button variant="outline" size="icon" @click="filtersPanelOpen = !filtersPanelOpen">
-        <FunnelIcon />
-      </Button>
     </div>
 
     <div class="search-container">
       <!-- Left sidebar with filters -->
       <div v-if="filtersPanelOpen" class="filters-sidebar">
-        <div class="search-box">
-          <p>Søk:</p>
-          <div class="search-input-container">
-            <Input v-model="searchInput" placeholder="Søkeord..." class="search-input" />
-            <button v-if="queryParams" @click="searchInput = ''" class="clear-search-button">
-              <X :size="18" />
-            </button>
-          </div>
-        </div>
-
         <div class="filter-section">
           <div class="filter-header">
             <h3>Merke</h3>
@@ -150,39 +136,27 @@ const data = computed(() => MockSearchEntries)
 
       <!-- Right side with search results -->
       <div class="search-results">
-        <div class="search-controls">
-          <div class="view-options">
-            <button class="view-option active">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <line x1="3" y1="6" x2="21" y2="6"></line>
-                <line x1="3" y1="12" x2="21" y2="12"></line>
-                <line x1="3" y1="18" x2="21" y2="18"></line>
-              </svg>
-            </button>
-            <button class="view-option">
-              <MapPin :size="20" />
-              Vis på kart
-            </button>
-          </div>
-          <div class="sort-by">
-            <select class="sort-select">
-              <option>Publisert</option>
-              <option>Pris lav-høy</option>
-              <option>Pris høy-lav</option>
-              <option>Årsmodell ny-gammel</option>
-              <option>Årsmodell gammel-ny</option>
-            </select>
-          </div>
+        <div class="search-filters">
+          <Button variant="outline" @click="filtersPanelOpen = !filtersPanelOpen">
+            <FunnelIcon :size="20" />
+          </Button>
+          <Button variant="outline" class="map-view">
+            <MapPin :size="20" />
+            Vis på kart
+          </Button>
+
+          <Select default-value="published">
+            <SelectTrigger class="sort-by">
+              <SelectValue placeholder="Sortering" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="published">Publisert</SelectItem>
+                <SelectItem value="price-low">Pris lav-høy</SelectItem>
+                <SelectItem value="price-high">Pris høy-lav</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
 
         <div class="search-results-list">
@@ -212,16 +186,28 @@ header {
 
   align-items: center;
 
-  .button {
-    aspect-ratio: 1/1;
-    height: 100%;
-  }
+  margin-bottom: calc(var(--spacing) * 4);
 }
 
 .search-container {
   display: flex;
   gap: 2rem;
   width: 100%;
+}
+
+.search-filters {
+  display: flex;
+  gap: calc(var(--spacing) * 2);
+}
+
+.map-view {
+  display: flex;
+  gap: var(--spacing);
+}
+
+.sort-by {
+  align-self: flex-end;
+  width: fit-content;
 }
 
 /*

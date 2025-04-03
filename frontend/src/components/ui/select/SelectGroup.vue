@@ -13,14 +13,14 @@ const delegatedProps = computed(() => {
 </script>
 
 <template>
-  <SelectGroup :class="cn('select-group', props.class)" v-bind="delegatedProps">
+  <SelectGroup :class="cn('_select-group-component', props.class)" v-bind="delegatedProps">
     <slot />
   </SelectGroup>
 </template>
 
 <style scoped>
-.select-group {
-  padding: calc(var(--spacing) * 1);
+._select-group-component {
+  padding: var(--spacing-1);
   width: 100%;
 }
 </style>

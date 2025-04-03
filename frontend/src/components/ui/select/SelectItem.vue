@@ -22,10 +22,18 @@ const forwardedProps = useForwardProps(delegatedProps)
 </script>
 
 <template>
-  <SelectItem v-bind="forwardedProps" :class="cn('select-item', props.class)">
-    <span class="select-item-indicator">
+  <SelectItem
+    v-bind="forwardedProps"
+    :class="
+      cn(
+        'rounded-sm text-sm _select-item-component',
+        props.class,
+      )
+    "
+  >
+    <span class="_select-item-indicator-component">
       <SelectItemIndicator>
-        <Check class="select-item-check" />
+        <Check class="_select-item-indicator-check-component" />
       </SelectItemIndicator>
     </span>
 
@@ -35,43 +43,44 @@ const forwardedProps = useForwardProps(delegatedProps)
   </SelectItem>
 </template>
 
-<style scoped>
-.select-item {
-  position: relative;
-  display: flex;
-  width: 100%;
-  cursor: default;
-  user-select: none;
-  align-items: center;
-  border-radius: var(--radius-sm);
-  padding: calc(var(--spacing) * 1.5) calc(var(--spacing) * 2);
-  padding-right: calc(var(--spacing) * 8);
-  font-size: var(--font-size-sm);
-  outline: none;
-}
+<style scoped lang="scss">
+  ._select-item-component {
+    position: relative;
+    display: flex;
+    width: 100%;
+    cursor: default;
+    user-select: none;
+    align-items: center;
 
-.select-item:focus {
-  background: var(--accent);
-  color: var(--accent-foreground);
-}
+    padding-top: calc(var(--spacing) * 1.5);
+    padding-bottom: calc(var(--spacing) * 1.5);
+    padding-left: calc(var(--spacing) * 8);
+    padding-right: calc(var(--spacing) * 2);
 
-.select-item[data-disabled] {
-  pointer-events: none;
-  opacity: 0.5;
-}
+    outline: none;
 
-.select-item-indicator {
-  position: absolute;
-  right: calc(var(--spacing) * 2);
-  display: flex;
-  height: calc(var(--spacing) * 3.5);
-  width: calc(var(--spacing) * 3.5);
-  align-items: center;
-  justify-content: center;
-}
+    &:focus {
+      background-color: var(--accent);
+      color: var(--accent-foreground);
+    }
+    &[data-disabled] {
+      pointer-events: none;
+      opacity: 0.5;
+    }
+  }
 
-.select-item-check {
-  height: calc(var(--spacing) * 4);
-  width: calc(var(--spacing) * 4);
-}
+  ._select-item-indicator-component {
+    position: absolute;
+    left: calc(var(--spacing) * 2);
+    display: flex;
+    height: calc(var(--spacing) * 3.5);
+    width: calc(var(--spacing) * 3.5);
+    align-items: center;
+    justify-content: center;
+  }
+
+  ._select-item-indicator-check-component {
+    height: calc(var(--spacing) * 4);
+    width: calc(var(--spacing) * 4);
+  }
 </style>

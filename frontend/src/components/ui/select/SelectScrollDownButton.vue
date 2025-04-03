@@ -16,23 +16,24 @@ const forwardedProps = useForwardProps(delegatedProps)
 </script>
 
 <template>
-  <SelectScrollDownButton v-bind="forwardedProps" :class="cn('select-scroll-button', props.class)">
+  <SelectScrollDownButton v-bind="forwardedProps" :class="cn('_select-scroll-button-component', props.class)">
     <slot>
-      <ChevronDown class="select-scroll-icon" />
+      <ChevronDown class="_select-scroll-icon-component" />
     </slot>
   </SelectScrollDownButton>
 </template>
 
 <style scoped>
-.select-scroll-button {
+._select-scroll-button-component {
   display: flex;
   cursor: default;
   align-items: center;
   justify-content: center;
-  padding: calc(var(--spacing) * 1) 0;
+  padding-top: var(--spacing);
+  padding-bottom: var(--spacing);
 }
 
-.select-scroll-icon {
+._select-scroll-icon-component {
   width: calc(var(--spacing) * 4);
   height: calc(var(--spacing) * 4);
 }

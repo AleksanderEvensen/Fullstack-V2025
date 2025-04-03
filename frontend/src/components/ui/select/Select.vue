@@ -9,14 +9,7 @@ const forwarded = useForwardPropsEmits(props, emits)
 </script>
 
 <template>
-  <SelectRoot v-bind="forwarded" class="select-root">
+  <SelectRoot v-bind="forwarded">
     <slot />
   </SelectRoot>
 </template>
-
-<style scoped>
-.select-root {
-  border-radius: 0.375rem;
-  cursor: pointer;
-}
-</style>

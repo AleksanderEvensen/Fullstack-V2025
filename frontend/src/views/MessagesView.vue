@@ -61,7 +61,7 @@ const sendMessage = () => {
 </script>
 
 <template>
-  <div class="messages">
+  <div class="container messages">
     <Card class="messages-sidebar">
       <CardHeader>
         <CardTitle>Messages</CardTitle>

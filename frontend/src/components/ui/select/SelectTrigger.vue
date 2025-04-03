@@ -16,13 +16,37 @@ const forwardedProps = useForwardProps(delegatedProps)
 </script>
 
 <template>
-  <SelectTrigger v-bind="forwardedProps" :class="cn('select-trigger', props.class)">
+  <SelectTrigger
+    v-bind="forwardedProps"
+    :class="cn(
+      'rounded-md text-sm data-[placeholder]:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:truncate text-start',
+      props.class,
+    )"
+  >
     <slot />
     <SelectIcon as-child>
-      <ChevronDown class="select-icon" />
+      <ChevronDown class="w-4 h-4 opacity-50 shrink-0" />
     </SelectIcon>
   </SelectTrigger>
 </template>
+
+<style scoped>
+._select-trigger-component {
+  display: flex;
+  height: calc(var(--spacing) * 10);
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  border-style: solid;
+  border-width: 1px;
+  border-color: var(--input);
+  background-color: var(--background);
+  
+  padding: calc(var(--spacing) * 2) calc(var(--spacing) * 3);
+}
+
+
+</style>
 
 <style scoped>
 .select-trigger {
@@ -43,7 +67,6 @@ const forwardedProps = useForwardProps(delegatedProps)
 
 .select-trigger:focus {
   outline: none;
-  ring: 1px solid var(--ring);
 }
 
 .select-trigger:disabled {
