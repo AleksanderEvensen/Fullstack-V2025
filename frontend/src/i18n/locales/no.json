@@ -17,6 +17,11 @@
     "back": "Tilbake",
     "next": "Neste"
   },
+  "location": {
+    "found": "Fant lokasjon",
+    "notFound": "Fant ikke lokasjon",
+    "notSpecified": "Lokasjon ikke spesifisert"
+  },
   "auth": {
     "createAccount": "Opprett konto",
     "fillOutForm": "Fyll ut skjemaet nedenfor for å opprette kontoen din",

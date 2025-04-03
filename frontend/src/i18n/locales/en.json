@@ -17,6 +17,11 @@
     "back": "Back",
     "next": "Next"
   },
+  "location": {
+    "found": "Location found",
+    "notFound": "Location not found",
+    "notSpecified": "Location is not specified"
+  },
   "auth": {
     "createAccount": "Create Account",
     "fillOutForm": "Fill out the form below to create your account",
