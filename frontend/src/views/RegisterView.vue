@@ -29,7 +29,6 @@ import Label from '@/components/ui/label/Label.vue'
 import CountryFlag from '@/components/ui/country-flag/CountryFlag.vue'
 import { watchDebounced } from '@vueuse/core'
 import { searchGeocodeAdvanced } from '@/lib/api/geocoding'
-import Badge from '@/components/ui/badge/Badge.vue'
 
 const { t } = useI18n()
 
@@ -171,76 +170,48 @@ watchDebounced(
         <CardDescription>{{ t('auth.fillOutForm') }}</CardDescription>
       </CardHeader>
       <CardContent>
-        <Form
-          v-slot="{ meta, values, validate }"
-          as=""
-          keep-values
-          :validation-schema="toTypedSchema(formSchema[stepIndex - 1])"
-        >
-          <Stepper
-            v-slot="{ isNextDisabled, isPrevDisabled, nextStep, prevStep }"
-            v-model="stepIndex"
-            class="stepper-block"
-          >
-            <form
-              @submit="
-                (e) => {
-                  e.preventDefault()
-                  validate()
+        <Form v-slot="{ meta, values, validate }" as="" keep-values
+          :validation-schema="toTypedSchema(formSchema[stepIndex - 1])">
+          <Stepper v-slot="{ isNextDisabled, isPrevDisabled, nextStep, prevStep }" v-model="stepIndex"
+            class="stepper-block">
+            <form @submit="
+              (e) => {
+                e.preventDefault()
+                validate()
 
-                  if (stepIndex === steps.length && meta.valid) {
-                    onSubmit(values)
-                  }
+                if (stepIndex === steps.length && meta.valid) {
+                  onSubmit(values)
                 }
-              "
-            >
+              }
+            ">
               <div class="stepper-nav-container">
-                <StepperItem
-                  v-for="step in steps"
-                  :key="step.step"
-                  v-slot="{ state }"
-                  class="stepper-item"
-                  :step="step.step"
-                >
-                  <StepperSeparator
-                    v-if="step.step !== steps[steps.length - 1].step"
-                    class="stepper-separator"
-                    :class="{ 'separator-completed': state === 'completed' }"
-                  />
+                <StepperItem v-for="step in steps" :key="step.step" v-slot="{ state }" class="stepper-item"
+                  :step="step.step">
+                  <StepperSeparator v-if="step.step !== steps[steps.length - 1].step" class="stepper-separator"
+                    :class="{ 'separator-completed': state === 'completed' }" />
 
                   <StepperTrigger as-child>
-                    <Button
-                      :variant="state === 'completed' || state === 'active' ? 'default' : 'outline'"
-                      size="icon"
-                      class="stepper-button"
-                      :class="[
+                    <Button :variant="state === 'completed' || state === 'active' ? 'default' : 'outline'" size="icon"
+                      class="stepper-button" :class="[
                         state === 'active' && 'active-button',
                         state === 'completed' && 'completed-button',
-                      ]"
-                      :disabled="state !== 'completed' && !meta.valid"
-                    >
+                      ]" :disabled="state !== 'completed' && !meta.valid">
                       <Check v-if="state === 'completed'" class="step-icon" />
                       <span v-else class="step-number">{{ step.step }}</span>
                     </Button>
                   </StepperTrigger>
 
                   <div class="stepper-title-container">
-                    <StepperTitle
-                      :class="[
-                        state === 'active' && 'active-text',
-                        state === 'completed' && 'completed-text',
-                      ]"
-                      class="stepper-title"
-                    >
+                    <StepperTitle :class="[
+                      state === 'active' && 'active-text',
+                      state === 'completed' && 'completed-text',
+                    ]" class="stepper-title">
                       {{ step.title }}
                     </StepperTitle>
-                    <StepperDescription
-                      :class="[
-                        state === 'active' && 'active-text-muted',
-                        state === 'completed' && 'completed-text-muted',
-                      ]"
-                      class="stepper-description"
-                    >
+                    <StepperDescription :class="[
+                      state === 'active' && 'active-text-muted',
+                      state === 'completed' && 'completed-text-muted',
+                    ]" class="stepper-description">
                       {{ step.description }}
                     </StepperDescription>
                   </div>
@@ -260,13 +231,8 @@ watchDebounced(
                       <Label for="profile-picture" class="upload-button">
                         <Upload class="upload-icon" />
                       </Label>
-                      <input
-                        id="profile-picture"
-                        type="file"
-                        accept="image/*"
-                        class="hidden"
-                        @change="handleFileChange"
-                      />
+                      <input id="profile-picture" type="file" accept="image/*" class="hidden"
+                        @change="handleFileChange" />
                     </div>
                     <span class="upload-hint">{{ t('auth.uploadProfilePicture') }}</span>
                   </div>
@@ -277,12 +243,8 @@ watchDebounced(
                       <FormControl>
                         <div class="input-container">
                           <User class="input-icon" />
-                          <Input
-                            type="text"
-                            v-bind="componentField"
-                            :placeholder="t('auth.fullNamePlaceholder')"
-                            class="input-with-icon"
-                          />
+                          <Input type="text" v-bind="componentField" :placeholder="t('auth.fullNamePlaceholder')"
+                            class="input-with-icon" />
                         </div>
                       </FormControl>
                       <FormMessage class="form-message" />
@@ -299,12 +261,8 @@ watchDebounced(
                         <FormControl>
                           <div class="input-container">
                             <Mail class="input-icon" />
-                            <Input
-                              type="email"
-                              v-bind="componentField"
-                              :placeholder="t('auth.emailPlaceholder')"
-                              class="input-with-icon"
-                            />
+                            <Input type="email" v-bind="componentField" :placeholder="t('auth.emailPlaceholder')"
+                              class="input-with-icon" />
                           </div>
                         </FormControl>
                         <FormMessage class="form-message" />
@@ -320,10 +278,7 @@ watchDebounced(
                               <CountryFlag code="NO" class="country-flag" />
                             </div>
                             <div class="input-container">
-                              <Input
-                                type="tel"
-                                v-bind="componentField"
-                                :placeholder="t('auth.phoneNumberPlaceholder')"
+                              <Input type="tel" v-bind="componentField" :placeholder="t('auth.phoneNumberPlaceholder')"
                                 @input="
                                   (e: Event) => {
                                     const input = e.target as HTMLInputElement
@@ -331,8 +286,7 @@ watchDebounced(
                                     input.value = formattedValue
                                     setValue(formattedValue)
                                   }
-                                "
-                              />
+                                " />
                             </div>
                           </div>
                         </FormControl>
@@ -348,12 +302,8 @@ watchDebounced(
                         <FormItem class="form-item city-item">
                           <FormLabel class="form-label">{{ t('auth.city') }}</FormLabel>
                           <FormControl>
-                            <Input
-                              type="text"
-                              v-bind="componentField"
-                              :placeholder="t('auth.cityPlaceholder')"
-                              v-model="city"
-                            />
+                            <Input type="text" v-bind="componentField" :placeholder="t('auth.cityPlaceholder')"
+                              v-model="city" />
                           </FormControl>
                           <FormMessage class="form-message" />
                         </FormItem>
@@ -365,13 +315,8 @@ watchDebounced(
                           <FormControl>
                             <div class="input-container">
                               <MapPin class="input-icon" />
-                              <Input
-                                type="text"
-                                v-bind="componentField"
-                                v-model="streetAddress"
-                                :placeholder="t('auth.streetAddressPlaceholder')"
-                                class="input-with-icon"
-                              />
+                              <Input type="text" v-bind="componentField" v-model="streetAddress"
+                                :placeholder="t('auth.streetAddressPlaceholder')" class="input-with-icon" />
                             </div>
                           </FormControl>
                           <FormMessage class="form-message" />
@@ -383,22 +328,18 @@ watchDebounced(
                           <FormItem class="form-item postal-code-item">
                             <FormLabel class="form-label">{{ t('auth.postalCode') }} </FormLabel>
                             <FormControl>
-                              <Input
-                                type="text"
-                                v-bind="componentField"
-                                v-model="postalCode"
-                                :placeholder="t('auth.postalCodePlaceholder')"
-                                maxlength="4"
-                                class="postal-input"
-                              />
+                              <Input type="text" v-bind="componentField" v-model="postalCode"
+                                :placeholder="t('auth.postalCodePlaceholder')" maxlength="4" class="postal-input" />
                             </FormControl>
                             <FormMessage class="form-message" />
                           </FormItem>
                         </FormField>
                         <div variant="secondary" class="rounded-md location-status-badge">
                           <InfoIcon v-if="locationValid === 'empty'" class="locaiton-icon" style="color: black" />
-                          <CircleCheckIcon v-if="locationValid === 'found'" class="locaiton-icon" style="color: var(--success)" />
-                          <CircleAlertIcon v-if="locationValid === 'not-found'" class="locaiton-icon" style="color: var(--failure)" />
+                          <CircleCheckIcon v-if="locationValid === 'found'" class="locaiton-icon"
+                            style="color: var(--success)" />
+                          <CircleAlertIcon v-if="locationValid === 'not-found'" class="locaiton-icon"
+                            style="color: var(--failure)" />
                           <span>{{ locationValidText }}</span>
                         </div>
                       </div>
@@ -414,12 +355,8 @@ watchDebounced(
                       <FormControl>
                         <div class="input-container">
                           <Lock class="input-icon" />
-                          <Input
-                            type="password"
-                            v-bind="componentField"
-                            :placeholder="t('auth.passwordPlaceholder')"
-                            class="input-with-icon"
-                          />
+                          <Input type="password" v-bind="componentField" :placeholder="t('auth.passwordPlaceholder')"
+                            class="input-with-icon" />
                         </div>
                       </FormControl>
                       <FormMessage class="form-message" />
@@ -432,12 +369,8 @@ watchDebounced(
                       <FormControl>
                         <div class="input-container">
                           <Lock class="input-icon" />
-                          <Input
-                            type="password"
-                            v-bind="componentField"
-                            :placeholder="t('auth.confirmPasswordPlaceholder')"
-                            class="input-with-icon"
-                          />
+                          <Input type="password" v-bind="componentField"
+                            :placeholder="t('auth.confirmPasswordPlaceholder')" class="input-with-icon" />
                         </div>
                       </FormControl>
                       <FormMessage class="form-message" />
@@ -447,32 +380,17 @@ watchDebounced(
               </div>
 
               <div class="form-actions">
-                <Button
-                  :disabled="isPrevDisabled"
-                  variant="outline"
-                  size="lg"
-                  class="action-button back-button"
-                  @click="prevStep()"
-                >
+                <Button :disabled="isPrevDisabled" variant="outline" size="lg" class="action-button back-button"
+                  @click="prevStep()">
                   {{ t('common.back') }}
                 </Button>
                 <div class="button-group">
-                  <Button
-                    v-if="stepIndex !== steps.length"
-                    :type="meta.valid ? 'button' : 'submit'"
-                    :disabled="isNextDisabled"
-                    size="lg"
-                    class="action-button next-button"
-                    @click="meta.valid && nextStep()"
-                  >
+                  <Button v-if="stepIndex !== steps.length" :type="meta.valid ? 'button' : 'submit'"
+                    :disabled="isNextDisabled" size="lg" class="action-button next-button"
+                    @click="meta.valid && nextStep()">
                     {{ t('common.next') }}
                   </Button>
-                  <Button
-                    v-if="stepIndex === steps.length"
-                    size="lg"
-                    type="submit"
-                    class="action-button submit-button"
-                  >
+                  <Button v-if="stepIndex === steps.length" size="lg" type="submit" class="action-button submit-button">
                     {{ t('auth.submitButton') }}
                   </Button>
                 </div>

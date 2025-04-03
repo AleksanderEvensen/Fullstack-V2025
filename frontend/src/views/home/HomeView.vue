@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
 import { RouterLink } from 'vue-router'
 import { Icon } from '@/components/ui/icon'
 import { ref } from 'vue'
@@ -222,7 +221,8 @@ const popularProducts = [
 
     <!-- Categories -->
     <div class="categories-container">
-      <RouterLink v-for="(category, index) in categories" :to="`/categories/${category.name}`" class="category-item">
+      <RouterLink v-for="category in categories" :to="`/categories/${category.name}`" class="category-item"
+        :key="category.name">
         <Icon :name="category.icon" />
         <div class="category-name">{{ category.name }}</div>
       </RouterLink>
