@@ -207,5 +207,24 @@
       "usageDuration": "Bruksvarighet"
     },
     "imageAlt": "Produktbilde"
+  },
+  "home": {
+    "search": {
+      "placeholder": "Søk etter elbil eller elsykkel",
+      "button": "Søk"
+    },
+    "map": "Kart",
+    "categories": {
+      "title": "Kategorier",
+      "electricCar": "Elbil",
+      "car": "Bil",
+      "boat": "Båt",
+      "bike": "Sykkel",
+      "furniture": "Møbler",
+      "travel": "Reise",
+      "luggage": "Bagasje"
+    },
+    "popularListings": "Populære annonser",
+    "currency": "kr"
   }
 }
