@@ -93,6 +93,7 @@ defineProps<{
     padding: 12px;
 }
 
+
 .product-title {
     font-size: 1rem;
     font-weight: 500;
@@ -103,6 +104,10 @@ defineProps<{
     -webkit-box-orient: vertical;
     overflow: hidden;
     margin-bottom: 4px;
+}
+
+.product-title:hover {
+    text-decoration: underline;
 }
 
 .product-price {
