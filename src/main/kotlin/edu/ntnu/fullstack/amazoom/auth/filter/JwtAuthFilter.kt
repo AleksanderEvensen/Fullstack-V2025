@@ -23,9 +23,14 @@ class JwtAuthFilter(
         try {
             val accessToken = cookieUtils.getCookieValue(request, "accessToken")
 
-            if (!accessToken.isNullOrBlank() && jwtService.validateToken(accessToken)) {
-                val username = jwtService.getUsernameFromToken(accessToken)
-                val userDetails = userDetailsService.loadUserByUsername(username)
+            if (!accessToken.isNullOrBlank()) {
+                if(!jwtService.validateToken(accessToken)) {
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized")
+                    return
+                }
+
+                val email = jwtService.getEmailFromToken(accessToken)
+                val userDetails = userDetailsService.loadUserByUsername(email)
 
                 val authentication = UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities)
 
@@ -34,6 +39,8 @@ class JwtAuthFilter(
         } catch (ex: Exception) {
             logger.error("Failed to process authentication", ex)
             SecurityContextHolder.clearContext()
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized")
+            return
         }
 
         filterChain.doFilter(request, response)

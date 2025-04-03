@@ -1,18 +1,20 @@
 package edu.ntnu.fullstack.amazoom.auth.service
 
+import edu.ntnu.fullstack.amazoom.auth.config.AuthProperties
 import edu.ntnu.fullstack.amazoom.auth.dto.AuthResponse
 import edu.ntnu.fullstack.amazoom.auth.dto.LoginRequest
 import edu.ntnu.fullstack.amazoom.auth.dto.RegisterRequest
 import edu.ntnu.fullstack.amazoom.auth.entity.*
-import edu.ntnu.fullstack.amazoom.auth.exception.MissingRoleException
-import edu.ntnu.fullstack.amazoom.auth.exception.UserAlreadyExistsException
+import edu.ntnu.fullstack.amazoom.auth.exception.*
 import edu.ntnu.fullstack.amazoom.auth.repository.RefreshTokenRepository
 import edu.ntnu.fullstack.amazoom.auth.repository.RoleRepository
 import edu.ntnu.fullstack.amazoom.auth.repository.UserRepository
+import edu.ntnu.fullstack.amazoom.auth.util.CookieUtils
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import java.time.Instant
 
 @Service
 class AuthService(
@@ -21,7 +23,9 @@ class AuthService(
     private val passwordEncoder: PasswordEncoder,
     private val jwtService: JwtService,
     private val authenticationManager: AuthenticationManager,
-    private val roleRepository: RoleRepository
+    private val roleRepository: RoleRepository,
+    private val userDetailsService: UserDetailsService,
+    private val authProperties: AuthProperties
 ) {
     fun register(request: RegisterRequest): AuthResponse {
         if (userRepository.existsByEmail(request.email)) {
@@ -60,9 +64,9 @@ class AuthService(
         )
     }
 
-    fun authenticate(request: LoginRequest): AuthResponse{
+    fun authenticate(email: String, password: String): AuthResponse{
         val authentication = authenticationManager.authenticate(
-            UsernamePasswordAuthenticationToken(request.email, request.password)
+            UsernamePasswordAuthenticationToken(email, password)
         )
 
         val userDetails = authentication.principal as UserDetailsImpl
@@ -82,5 +86,52 @@ class AuthService(
             accessToken = accessToken,
             refreshToken = refreshToken,
         )
+    }
+
+    fun logout(
+        refreshToken: String
+    ) {
+        refreshTokenRepository.findByToken(refreshToken)?.let { token ->
+            refreshTokenRepository.delete(token)
+        }
+    }
+
+    fun refreshToken(
+        refreshToken: String,
+    ): AuthResponse {
+        // Check if the refresh token is present
+        if(!jwtService.validateToken(refreshToken)){
+            throw InvalidTokenException("Invalid refresh token")
+        }
+
+        // Check if the token exists in the database
+        val dbToken = refreshTokenRepository.findByToken(refreshToken)
+            ?: throw MissingTokenException("Refresh token not found")
+
+        // Check if the token is expired
+        if(dbToken.expiresAt.isBefore(Instant.now())){
+            refreshTokenRepository.delete(dbToken)
+            throw TokenExpiredException("Refresh token has expired")
+        }
+
+        // Get user details
+        val email = jwtService.getEmailFromToken(refreshToken)
+        val userDetails = userDetailsService.loadUserByUsername(email) as UserDetailsImpl
+
+        // Generate new tokens
+        val newAccessToken = jwtService.generateAccessToken(userDetails)
+        val newRefreshToken = jwtService.generateRefreshToken(userDetails)
+
+        // Update database
+        refreshTokenRepository.delete(dbToken)
+        refreshTokenRepository.save(
+            RefreshToken(
+                token = newRefreshToken,
+                user = userDetails.getDomainUser(),
+                expiresAt = Instant.now().plusMillis(authProperties.refreshTokenExpiration)
+            )
+        )
+
+        return AuthResponse(newAccessToken, newRefreshToken)
     }
 }
