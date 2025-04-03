@@ -1,4 +1,8 @@
 @layer utils {
+
+  .container {
+    width: 100%;
+  }
   /* Page container media queries */
   @media (width >= 40rem) {
     .container {

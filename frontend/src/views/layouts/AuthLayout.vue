@@ -1,7 +1,9 @@
 <template>
   <div class="app-container">
     <Navbar />
-    <RouterView />
+    <div class="center-view">
+      <RouterView />
+    </div>
     <Toaster />
   </div>
 </template>
@@ -17,6 +19,12 @@ import { Toaster } from 'vue-sonner'
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
-  height: 100dvh;
+}
+
+.center-view {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;  
 }
 </style>

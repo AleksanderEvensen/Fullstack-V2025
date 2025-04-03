@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/home/HomeView.vue'
+import HomeView from '@/views/home/HomeView.vue'
+import AuthLayout from '@/views/layouts/AuthLayout.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -7,12 +8,17 @@ const router = createRouter({
     {
       path: '/',
       name: 'layout',
-      component: () => import('../views/layouts/AuthLayout.vue'),
+      component: AuthLayout,
       children: [
         {
           path: '/',
           name: 'home',
           component: HomeView,
+        },
+        {
+          path: '/search',
+          name: 'search',
+          component: () => import('../views/search/SearchView.vue'),
         },
         {
           path: '/about',
