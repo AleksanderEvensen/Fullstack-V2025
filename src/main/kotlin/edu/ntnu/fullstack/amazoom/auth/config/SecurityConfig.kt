@@ -1,7 +1,6 @@
 package edu.ntnu.fullstack.amazoom.auth.config
 
 import JwtAuthFilter
-import edu.ntnu.fullstack.amazoom.auth.filter.RefreshTokenFilter
 import edu.ntnu.fullstack.amazoom.auth.repository.RefreshTokenRepository
 import edu.ntnu.fullstack.amazoom.auth.service.JwtService
 import edu.ntnu.fullstack.amazoom.auth.service.UserDetailsService
@@ -18,6 +17,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
@@ -29,8 +30,6 @@ class SecurityConfig(
     private val jwtService: JwtService,
     private val userDetailsService: UserDetailsService,
     private val cookieUtils: CookieUtils,
-    private val refreshTokenRepository: RefreshTokenRepository,
-    private val authProperties: AuthProperties,
 ) {
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
@@ -40,9 +39,11 @@ class SecurityConfig(
             }
 //            .csrf { csrf ->
 //                csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-//                csrf.csrfTokenRequestHandler(CsrfTokenRequestAttributeHandler().apply {
-//                    setCsrfRequestAttributeName(null)
-//                })
+//                csrf.ignoringRequestMatchers(
+//                    "/auth/register",
+//                    "/auth/login",
+//                    "/auth/refresh",
+//                )
 //            }
             .csrf {
                 it.disable()
@@ -52,22 +53,21 @@ class SecurityConfig(
             }
             .authorizeHttpRequests { auth ->
                 auth
-                    .requestMatchers("/auth/register", "/auth/login").permitAll()
+                    .requestMatchers(
+                        "/swagger-ui.html",
+                        "/openapi-schema.json",
+                        "/swagger-ui/**",
+                        "/auth/register",
+                        "/auth/login",
+                        "/auth/refresh"
+                    ).permitAll()
                     .anyRequest().authenticated()
             }
             .addFilterBefore(
                 JwtAuthFilter(jwtService, userDetailsService, cookieUtils),
                 UsernamePasswordAuthenticationFilter::class.java
             )
-            .addFilterBefore(
-                RefreshTokenFilter(
-                    jwtService,
-                    refreshTokenRepository,
-                    userDetailsService,
-                    cookieUtils,
-                    authProperties
-                ), JwtAuthFilter::class.java
-            )
+
 
         return http.build()
     }
