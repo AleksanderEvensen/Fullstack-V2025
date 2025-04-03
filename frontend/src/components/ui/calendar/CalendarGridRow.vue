@@ -21,7 +21,7 @@ const forwardedProps = useForwardProps(delegatedProps)
 </template>
 
 <style scoped>
-  ._calendar-grid-row-component {
-    display: flex;
-  }
+._calendar-grid-row-component {
+  display: flex;
+}
 </style>

@@ -21,12 +21,12 @@ const forwardedProps = useForwardProps(delegatedProps)
 </template>
 
 <style scoped>
-  ._calendar-header-component {
-    position: relative;
-    display: flex;
-    width: 100%;
-    align-items: center;
-    justify-content: space-between;
-    padding-top: var(--spacing);
-  }
+._calendar-header-component {
+  position: relative;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: var(--spacing);
+}
 </style>

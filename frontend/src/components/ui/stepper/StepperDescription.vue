@@ -17,7 +17,11 @@ const forwarded = useForwardProps(delegatedProps)
 </script>
 
 <template>
-  <StepperDescription v-slot="slotProps" v-bind="forwarded" :class="cn('stepper-description', props.class)">
+  <StepperDescription
+    v-slot="slotProps"
+    v-bind="forwarded"
+    :class="cn('stepper-description', props.class)"
+  >
     <slot v-bind="slotProps" />
   </StepperDescription>
 </template>

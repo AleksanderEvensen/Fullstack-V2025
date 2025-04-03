@@ -35,28 +35,28 @@ const forwarded = useForwardPropsEmits(props, emits)
 }
 
 /* Animation states */
-.dropdown-menu-content[data-state="open"] {
+.dropdown-menu-content[data-state='open'] {
   animation: contentShow 0.2s ease-out;
 }
 
-.dropdown-menu-content[data-state="closed"] {
+.dropdown-menu-content[data-state='closed'] {
   animation: contentHide 0.2s ease-in;
 }
 
 /* Side-based animations */
-.dropdown-menu-content[data-side="bottom"] {
+.dropdown-menu-content[data-side='bottom'] {
   animation-name: slideFromTop;
 }
 
-.dropdown-menu-content[data-side="top"] {
+.dropdown-menu-content[data-side='top'] {
   animation-name: slideFromBottom;
 }
 
-.dropdown-menu-content[data-side="left"] {
+.dropdown-menu-content[data-side='left'] {
   animation-name: slideFromRight;
 }
 
-.dropdown-menu-content[data-side="right"] {
+.dropdown-menu-content[data-side='right'] {
   animation-name: slideFromLeft;
 }
 

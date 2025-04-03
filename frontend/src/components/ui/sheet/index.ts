@@ -9,21 +9,18 @@ export { default as SheetHeader } from './SheetHeader.vue'
 export { default as SheetTitle } from './SheetTitle.vue'
 export { default as SheetTrigger } from './SheetTrigger.vue'
 
-export const sheetVariants = cva(
-  'sheet-content',
-  {
-    variants: {
-      side: {
-        top: 'sheet-content-top',
-        bottom: 'sheet-content-bottom',
-        left: 'sheet-content-left',
-        right: 'sheet-content-right',
-      },
-    },
-    defaultVariants: {
-      side: 'right',
+export const sheetVariants = cva('sheet-content', {
+  variants: {
+    side: {
+      top: 'sheet-content-top',
+      bottom: 'sheet-content-bottom',
+      left: 'sheet-content-left',
+      right: 'sheet-content-right',
     },
   },
-)
+  defaultVariants: {
+    side: 'right',
+  },
+})
 
 export type SheetVariants = VariantProps<typeof sheetVariants>

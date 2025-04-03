@@ -1,11 +1,7 @@
 <script setup lang="ts">
 import { cn } from '@/lib/utils'
 import { ChevronDown } from 'lucide-vue-next'
-import {
-  NavigationMenuTrigger,
-  type NavigationMenuTriggerProps,
-  useForwardProps,
-} from 'reka-ui'
+import { NavigationMenuTrigger, type NavigationMenuTriggerProps, useForwardProps } from 'reka-ui'
 import { computed, type HTMLAttributes } from 'vue'
 
 const props = defineProps<NavigationMenuTriggerProps & { class?: HTMLAttributes['class'] }>()
@@ -37,7 +33,9 @@ const forwardedProps = useForwardProps(delegatedProps)
   font-weight: var(--font-weight-medium);
   background-color: transparent;
   color: var(--foreground);
-  transition: color 0.2s, background-color 0.2s;
+  transition:
+    color 0.2s,
+    background-color 0.2s;
 }
 
 .nav-menu-trigger:hover {
@@ -51,7 +49,7 @@ const forwardedProps = useForwardProps(delegatedProps)
   color: var(--accent-foreground);
 }
 
-.nav-menu-trigger[data-state="open"] {
+.nav-menu-trigger[data-state='open'] {
   background-color: var(--accent);
   color: var(--accent-foreground);
 }
@@ -65,7 +63,7 @@ const forwardedProps = useForwardProps(delegatedProps)
   transition: transform 0.3s;
 }
 
-.nav-menu-trigger[data-state="open"] .nav-menu-trigger-icon {
+.nav-menu-trigger[data-state='open'] .nav-menu-trigger-icon {
   transform: rotate(180deg);
 }
 </style>

@@ -10,8 +10,11 @@ const { error, formItemId, formDescriptionId, formMessageId } = useFormField()
 
 <template>
   <div :class="cn('form-control', props.class)" :data-error="!!error">
-    <slot :id="formItemId" :aria-describedby="!error ? formDescriptionId : `${formDescriptionId} ${formMessageId}`"
-      :aria-invalid="!!error" />
+    <slot
+      :id="formItemId"
+      :aria-describedby="!error ? formDescriptionId : `${formDescriptionId} ${formMessageId}`"
+      :aria-invalid="!!error"
+    />
   </div>
 </template>
 
@@ -21,15 +24,15 @@ const { error, formItemId, formDescriptionId, formMessageId } = useFormField()
   width: 100%;
 }
 
-.form-control[data-error="true"] :deep(input),
-.form-control[data-error="true"] :deep(textarea),
-.form-control[data-error="true"] :deep(select) {
+.form-control[data-error='true'] :deep(input),
+.form-control[data-error='true'] :deep(textarea),
+.form-control[data-error='true'] :deep(select) {
   border-color: var(--destructive);
 }
 
-.form-control[data-error="true"] :deep(input:focus),
-.form-control[data-error="true"] :deep(textarea:focus),
-.form-control[data-error="true"] :deep(select:focus) {
+.form-control[data-error='true'] :deep(input:focus),
+.form-control[data-error='true'] :deep(textarea:focus),
+.form-control[data-error='true'] :deep(select:focus) {
   ring-color: var(--destructive);
 }
 </style>

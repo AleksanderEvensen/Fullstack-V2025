@@ -24,26 +24,25 @@ const forwardedProps = useForwardProps(delegatedProps)
 </template>
 
 <style scoped lang="scss">
-  /*'relative h-9 w-9 p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([data-selected])]:rounded-md [&:has([data-selected])]:bg-accent [&:has([data-selected][data-outside-view])]:bg-accent/50*/
+/*'relative h-9 w-9 p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([data-selected])]:rounded-md [&:has([data-selected])]:bg-accent [&:has([data-selected][data-outside-view])]:bg-accent/50*/
 
-  ._calendar-cell-component {
-    display: flex;
-    height: calc(var(--spacing) * 9);
-    width: calc(var(--spacing) * 9);
-    text-align: center;
+._calendar-cell-component {
+  display: flex;
+  height: calc(var(--spacing) * 9);
+  width: calc(var(--spacing) * 9);
+  text-align: center;
 
-    &:focus-within {
-      position: relative;
-      z-index: 20;
-    }
-
-    &:has([data-selected]) {
-      border-radius: calc(var(--radius) - 2px);
-      background-color: var(--accent);
-    }
-    &:has([data-selected][data-outside-view]) {
-      background-color: color-mix(in srgb, var(--accent) 50%, transparent);
-    }
+  &:focus-within {
+    position: relative;
+    z-index: 20;
   }
 
+  &:has([data-selected]) {
+    border-radius: calc(var(--radius) - 2px);
+    background-color: var(--accent);
+  }
+  &:has([data-selected][data-outside-view]) {
+    background-color: color-mix(in srgb, var(--accent) 50%, transparent);
+  }
+}
 </style>

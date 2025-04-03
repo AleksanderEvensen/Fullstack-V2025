@@ -1,9 +1,8 @@
 @layer reset, theme, utils;
 
-@import "./style/reset.css";
-@import "./style/theme.css";
-@import "./style/utils.css";
-
+@import './style/reset.css';
+@import './style/theme.css';
+@import './style/utils.css';
 
 .nav-menu-trigger-style {
   display: inline-flex;
@@ -29,7 +28,6 @@
   background-color: rgba(0, 0, 0, 0.05);
 }
 
-.nav-menu-trigger-style[data-state="open"] {
+.nav-menu-trigger-style[data-state='open'] {
   background-color: rgba(0, 0, 0, 0.05);
 }
-

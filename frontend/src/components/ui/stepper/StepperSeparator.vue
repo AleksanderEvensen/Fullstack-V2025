@@ -30,7 +30,7 @@ const forwarded = useForwardProps(delegatedProps)
   opacity: 0.5;
 }
 
-.stepper-separator[data-state="completed"] {
+.stepper-separator[data-state='completed'] {
   background-color: var(--accent-foreground);
 }
 </style>

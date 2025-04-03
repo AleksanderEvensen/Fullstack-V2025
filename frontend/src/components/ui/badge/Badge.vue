@@ -30,7 +30,9 @@ const props = defineProps<{
 
 .badge:focus {
   outline: none;
-  box-shadow: 0 0 0 2px var(--ring), 0 0 0 4px var(--ring-offset, white);
+  box-shadow:
+    0 0 0 2px var(--ring),
+    0 0 0 4px var(--ring-offset, white);
 }
 
 /* Variants */

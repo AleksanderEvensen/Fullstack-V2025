@@ -1,5 +1,5 @@
-import createFetchClient from 'openapi-fetch';
-import type { paths } from '@/lib/api/schema';
+import createFetchClient from 'openapi-fetch'
+import type { paths } from '@/lib/api/schema'
 
-const fetchClient = createFetchClient<paths>({});
-export const $api = fetchClient;
+const fetchClient = createFetchClient<paths>({})
+export const $api = fetchClient

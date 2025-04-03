@@ -6,7 +6,7 @@ import { type HTMLAttributes, computed } from 'vue'
 const props = defineProps<CalendarHeadingProps & { class?: HTMLAttributes['class'] }>()
 
 defineSlots<{
-  // biome-ignore lint: Allow any here
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   default: (props: { headingValue: string }) => any
 }>()
 
@@ -32,7 +32,7 @@ const forwardedProps = useForwardProps(delegatedProps)
 </template>
 
 <style scoped>
-  ._calendar-heading-component {
-    font-weight: var(--font-weight-medium);
-  }
+._calendar-heading-component {
+  font-weight: var(--font-weight-medium);
+}
 </style>

@@ -24,9 +24,7 @@ const forwardedProps = useForwardProps(delegatedProps)
 </template>
 
 <style scoped lang="scss">
-
 ._calendar-cell-trigger-component {
-
   // From Button.vue (ghost variant)
   display: inline-flex;
   align-items: center;
@@ -41,10 +39,10 @@ const forwardedProps = useForwardProps(delegatedProps)
     color: var(--accent-foreground);
   }
 
-  height: calc(var(--spacing) * 9); 
-  width: calc(var(--spacing) * 9);   
+  height: calc(var(--spacing) * 9);
+  width: calc(var(--spacing) * 9);
   padding: 0;
-  
+
   &[data-today]:not([data-selected]) {
     background-color: var(--accent);
     color: var(--accent-foreground);
@@ -55,7 +53,8 @@ const forwardedProps = useForwardProps(delegatedProps)
     color: var(--primary-foreground);
     opacity: 1;
 
-    &:hover, &:focus {
+    &:hover,
+    &:focus {
       background-color: var(--primary);
       color: var(--primary-foreground);
     }

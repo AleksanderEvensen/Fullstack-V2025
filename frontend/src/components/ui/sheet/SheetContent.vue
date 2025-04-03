@@ -26,7 +26,7 @@ const props = defineProps<SheetContentProps>()
 const emits = defineEmits<DialogContentEmits>()
 
 const delegatedProps = computed(() => {
-  const { class: _, side, ...delegated } = props
+  const { class: _, side: _1, ...delegated } = props
   return delegated
 })
 
@@ -36,7 +36,10 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
 <template>
   <DialogPortal>
     <DialogOverlay class="sheet-overlay" />
-    <DialogContent :class="cn(sheetVariants({ side }), $attrs.class ?? '')" v-bind="{ ...forwarded, ...$attrs }">
+    <DialogContent
+      :class="cn(sheetVariants({ side }), $attrs.class ?? '')"
+      v-bind="{ ...forwarded, ...$attrs }"
+    >
       <slot />
 
       <DialogClose class="sheet-close">
@@ -56,11 +59,11 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
   transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.sheet-overlay[data-state="open"] {
+.sheet-overlay[data-state='open'] {
   animation: fade-in 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.sheet-overlay[data-state="closed"] {
+.sheet-overlay[data-state='closed'] {
   animation: fade-out 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -106,7 +109,6 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
 }
 
 @media (min-width: 640px) {
-
   .sheet-content-left,
   .sheet-content-right {
     max-width: 24rem;
@@ -162,11 +164,11 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
   }
 }
 
-.sheet-content[data-state="open"] {
+.sheet-content[data-state='open'] {
   animation: sheet-in 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.sheet-content[data-state="closed"] {
+.sheet-content[data-state='closed'] {
   animation: sheet-out 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -194,11 +196,11 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
   }
 }
 
-.sheet-content-top[data-state="open"] {
+.sheet-content-top[data-state='open'] {
   animation: sheet-in-top 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.sheet-content-top[data-state="closed"] {
+.sheet-content-top[data-state='closed'] {
   animation: sheet-out-top 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -226,11 +228,11 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
   }
 }
 
-.sheet-content-bottom[data-state="open"] {
+.sheet-content-bottom[data-state='open'] {
   animation: sheet-in-bottom 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.sheet-content-bottom[data-state="closed"] {
+.sheet-content-bottom[data-state='closed'] {
   animation: sheet-out-bottom 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -258,11 +260,11 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
   }
 }
 
-.sheet-content-left[data-state="open"] {
+.sheet-content-left[data-state='open'] {
   animation: sheet-in-left 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.sheet-content-left[data-state="closed"] {
+.sheet-content-left[data-state='closed'] {
   animation: sheet-out-left 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 

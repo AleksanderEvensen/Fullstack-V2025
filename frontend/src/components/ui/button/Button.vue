@@ -1,32 +1,29 @@
 <script setup lang="ts">
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils'
 import { cva } from 'class-variance-authority'
 
-const buttonVariants = cva(
-  'button rounded-md text-sm',
-  {
-    variants: {
-      variant: {
-        default: 'button-default',
-        destructive: 'button-destructive',
-        outline: 'button-outline',
-        secondary: 'button-secondary',
-        ghost: 'button-ghost',
-        link: 'button-link',
-      },
-      size: {
-        default: 'button-size-default',
-        sm: 'rounded-md button-size-sm',
-        lg: 'rounded-md button-size-lg',
-        icon: 'button-size-icon',
-      },
+const buttonVariants = cva('button rounded-md text-sm', {
+  variants: {
+    variant: {
+      default: 'button-default',
+      destructive: 'button-destructive',
+      outline: 'button-outline',
+      secondary: 'button-secondary',
+      ghost: 'button-ghost',
+      link: 'button-link',
     },
-    defaultVariants: {
-      variant: 'default',
-      size: 'default',
+    size: {
+      default: 'button-size-default',
+      sm: 'rounded-md button-size-sm',
+      lg: 'rounded-md button-size-lg',
+      icon: 'button-size-icon',
     },
   },
-)
+  defaultVariants: {
+    variant: 'default',
+    size: 'default',
+  },
+})
 
 interface Props {
   variant?: NonNullable<Parameters<typeof buttonVariants>[0]>['variant']
@@ -34,7 +31,6 @@ interface Props {
   as?: string
 }
 
-// eslint-disable-next-line vue/define-macros-order
 withDefaults(defineProps<Props>(), {
   as: 'button',
 })
@@ -45,7 +41,6 @@ withDefaults(defineProps<Props>(), {
     <slot />
   </component>
 </template>
-
 
 <style lang="css" scoped>
 .button {
@@ -61,7 +56,9 @@ withDefaults(defineProps<Props>(), {
 
 .button:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px var(--ring), 0 0 0 4px var(--ring-offset, white);
+  box-shadow:
+    0 0 0 2px var(--ring),
+    0 0 0 4px var(--ring-offset, white);
 }
 
 .button:disabled {

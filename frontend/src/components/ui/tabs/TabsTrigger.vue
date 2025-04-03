@@ -47,7 +47,7 @@ const forwardedProps = useForwardProps(delegatedProps)
   opacity: 0.5;
 }
 
-.tabs-trigger[data-state="active"] {
+.tabs-trigger[data-state='active'] {
   background-color: var(--background);
   color: var(--foreground);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);

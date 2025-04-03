@@ -58,27 +58,27 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
   box-shadow: var(--shadow-md);
 }
 
-.select-content[data-state="open"] {
+.select-content[data-state='open'] {
   animation: selectIn 0.2s ease-out;
 }
 
-.select-content[data-state="closed"] {
+.select-content[data-state='closed'] {
   animation: selectOut 0.2s ease-in;
 }
 
-.select-content[data-side="bottom"] {
+.select-content[data-side='bottom'] {
   transform: translateY(calc(var(--spacing) * 1));
 }
 
-.select-content[data-side="top"] {
+.select-content[data-side='top'] {
   transform: translateY(calc(var(--spacing) * -1));
 }
 
-.select-content[data-side="left"] {
+.select-content[data-side='left'] {
   transform: translateX(calc(var(--spacing) * -1));
 }
 
-.select-content[data-side="right"] {
+.select-content[data-side='right'] {
   transform: translateX(calc(var(--spacing) * 1));
 }
 

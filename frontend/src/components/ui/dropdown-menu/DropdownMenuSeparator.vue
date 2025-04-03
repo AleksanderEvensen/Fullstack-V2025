@@ -1,13 +1,9 @@
 <script setup lang="ts">
 import { cn } from '@/lib/utils'
-import {
-  DropdownMenuSeparator,
-  type DropdownMenuSeparatorProps,
-} from 'reka-ui'
+import { DropdownMenuSeparator, type DropdownMenuSeparatorProps } from 'reka-ui'
 import type { HTMLAttributes } from 'vue'
 
 const props = defineProps<DropdownMenuSeparatorProps & { class?: HTMLAttributes['class'] }>()
-
 </script>
 
 <template>

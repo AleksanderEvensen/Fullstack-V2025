@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { cn } from '@/lib/utils'
-import { NavigationMenuIndicator, type NavigationMenuIndicatorProps, useForwardProps } from 'reka-ui'
+import {
+  NavigationMenuIndicator,
+  type NavigationMenuIndicatorProps,
+  useForwardProps,
+} from 'reka-ui'
 import { type HTMLAttributes, computed } from 'vue'
 
 const props = defineProps<NavigationMenuIndicatorProps & { class?: HTMLAttributes['class'] }>()
@@ -32,11 +36,11 @@ const forwardedProps = useForwardProps(delegatedProps)
   overflow: hidden;
 }
 
-.nav-menu-indicator[data-state="visible"] {
+.nav-menu-indicator[data-state='visible'] {
   animation: indicatorFadeIn 0.2s ease;
 }
 
-.nav-menu-indicator[data-state="hidden"] {
+.nav-menu-indicator[data-state='hidden'] {
   animation: indicatorFadeOut 0.2s ease;
 }
 

@@ -41,15 +41,19 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
   border: 2px solid var(--input);
   background-color: var(--input);
   padding: calc(var(--spacing) * 0.5);
-  transition: background-color 0.2s, border-color 0.2s;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
 }
 
 .switch-root:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--ring);
+  box-shadow:
+    0 0 0 2px var(--background),
+    0 0 0 4px var(--ring);
 }
 
-.switch-root[data-state="checked"] {
+.switch-root[data-state='checked'] {
   background-color: var(--primary);
   border-color: var(--primary);
 }
@@ -69,7 +73,7 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
   will-change: transform;
 }
 
-.switch-root[data-state="checked"] .switch-thumb {
+.switch-root[data-state='checked'] .switch-thumb {
   transform: translateX(calc(var(--spacing) * 5));
 }
 </style>

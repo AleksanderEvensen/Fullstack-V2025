@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Datepicker } from "@/components/ui/datepicker";
+import { Datepicker } from '@/components/ui/datepicker'
 </script>
 
 <template>

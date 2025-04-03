@@ -55,10 +55,10 @@
   }
 
   :root {
-    --spacing: .25rem;
-    --radius: .625rem;
+    --spacing: 0.25rem;
+    --radius: 0.625rem;
 
-    --text-sm: .875rem;
+    --text-sm: 0.875rem;
     --text-sm-line-height: calc(1.25 / 0.875);
     --text-base: 1rem;
     --text-base-line-height: 1.5;

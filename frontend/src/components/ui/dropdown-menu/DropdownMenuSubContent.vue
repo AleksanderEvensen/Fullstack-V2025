@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { DropdownMenuSubContent } from 'reka-ui'
-import { cn } from "@/lib/utils"
+import { cn } from '@/lib/utils'
 
 interface Props {
   class?: string
@@ -13,13 +13,17 @@ const props = withDefaults(defineProps<Props>(), {
   class: '',
   sideOffset: 2,
   alignOffset: 0,
-  loop: false
+  loop: false,
 })
 </script>
 
 <template>
-  <DropdownMenuSubContent :sideOffset="sideOffset" :alignOffset="alignOffset" :loop="loop"
-    :class="cn('dropdown-menu-sub-content', props.class)">
+  <DropdownMenuSubContent
+    :sideOffset="sideOffset"
+    :alignOffset="alignOffset"
+    :loop="loop"
+    :class="cn('dropdown-menu-sub-content', props.class)"
+  >
     <slot />
   </DropdownMenuSubContent>
 </template>
@@ -39,20 +43,20 @@ const props = withDefaults(defineProps<Props>(), {
 }
 
 /* Animation states */
-.dropdown-menu-sub-content[data-state="open"] {
+.dropdown-menu-sub-content[data-state='open'] {
   animation: subContentShow 0.2s ease-out;
 }
 
-.dropdown-menu-sub-content[data-state="closed"] {
+.dropdown-menu-sub-content[data-state='closed'] {
   animation: subContentHide 0.2s ease-in;
 }
 
 /* Side-based animations */
-.dropdown-menu-sub-content[data-side="right"] {
+.dropdown-menu-sub-content[data-side='right'] {
   animation-name: slideFromLeft;
 }
 
-.dropdown-menu-sub-content[data-side="left"] {
+.dropdown-menu-sub-content[data-side='left'] {
   animation-name: slideFromRight;
 }
 

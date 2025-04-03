@@ -15,22 +15,19 @@ const forwardedProps = useForwardProps(delegatedProps)
 </script>
 
 <template>
-  <CalendarGrid
-    :class="cn('_calendar-grid-component', props.class)"
-    v-bind="forwardedProps"
-  >
+  <CalendarGrid :class="cn('_calendar-grid-component', props.class)" v-bind="forwardedProps">
     <slot />
   </CalendarGrid>
 </template>
 
 <style scoped lang="scss">
-  ._calendar-grid-component {
-    width: 100%;
-    border-collapse: collapse;
+._calendar-grid-component {
+  width: 100%;
+  border-collapse: collapse;
 
-    & > :not([hidden]) ~ :not([hidden]) {
-      margin-top: calc(var(--spacing) * 1);
-      margin-bottom: calc(var(--spacing) * 1);
-    }
+  & > :not([hidden]) ~ :not([hidden]) {
+    margin-top: calc(var(--spacing) * 1);
+    margin-bottom: calc(var(--spacing) * 1);
   }
+}
 </style>

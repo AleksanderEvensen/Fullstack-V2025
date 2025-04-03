@@ -32,13 +32,13 @@ const forwarded = useForwardProps(delegatedProps)
   opacity: 0.5;
 }
 
-.stepper-indicator[data-state="active"] {
+.stepper-indicator[data-state='active'] {
   background-color: var(--primary);
   color: var(--primary-foreground);
   opacity: 1;
 }
 
-.stepper-indicator[data-state="completed"] {
+.stepper-indicator[data-state='completed'] {
   background-color: var(--accent);
   color: var(--accent-foreground);
   opacity: 1;

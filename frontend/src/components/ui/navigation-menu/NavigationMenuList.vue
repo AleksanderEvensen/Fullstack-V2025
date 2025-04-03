@@ -31,11 +31,11 @@ const forwardedProps = useForwardProps(delegatedProps)
 }
 
 /* Group hover states for child elements */
-.nav-menu-list[data-orientation="horizontal"] {
+.nav-menu-list[data-orientation='horizontal'] {
   flex-direction: row;
 }
 
-.nav-menu-list[data-orientation="vertical"] {
+.nav-menu-list[data-orientation='vertical'] {
   flex-direction: column;
 }
 

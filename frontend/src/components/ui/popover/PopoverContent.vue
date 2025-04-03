@@ -35,7 +35,7 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
   <PopoverPortal>
     <PopoverContent
       v-bind="{ ...forwarded, ...$attrs }"
-      :class="cn('_popover-content-component',props.class)"
+      :class="cn('_popover-content-component', props.class)"
     >
       <slot />
     </PopoverContent>
@@ -51,78 +51,116 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
   background-color: var(--popover);
   color: var(--popover-foreground);
   padding: 1rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
   outline: none;
 }
 
 /* Animation states */
-._popover-content-component[data-state="open"] {
-  animation: fadeIn 0.2s ease-out, zoomIn 0.2s ease-out;
+._popover-content-component[data-state='open'] {
+  animation:
+    fadeIn 0.2s ease-out,
+    zoomIn 0.2s ease-out;
 }
 
-._popover-content-component[data-state="closed"] {
-  animation: fadeOut 0.2s ease-in, zoomOut 0.2s ease-in;
+._popover-content-component[data-state='closed'] {
+  animation:
+    fadeOut 0.2s ease-in,
+    zoomOut 0.2s ease-in;
 }
 
 /* Positioning animations */
-._popover-content-component[data-side="bottom"] {
+._popover-content-component[data-side='bottom'] {
   transform-origin: top;
   animation: slideInFromTop 0.2s ease-out;
 }
 
-._popover-content-component[data-side="top"] {
+._popover-content-component[data-side='top'] {
   transform-origin: bottom;
   animation: slideInFromBottom 0.2s ease-out;
 }
 
-._popover-content-component[data-side="left"] {
+._popover-content-component[data-side='left'] {
   transform-origin: right;
   animation: slideInFromRight 0.2s ease-out;
 }
 
-._popover-content-component[data-side="right"] {
+._popover-content-component[data-side='right'] {
   transform-origin: left;
   animation: slideInFromLeft 0.2s ease-out;
 }
 
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes fadeOut {
-  from { opacity: 1; }
-  to { opacity: 0; }
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 @keyframes zoomIn {
-  from { transform: scale(0.95); }
-  to { transform: scale(1); }
+  from {
+    transform: scale(0.95);
+  }
+  to {
+    transform: scale(1);
+  }
 }
 
 @keyframes zoomOut {
-  from { transform: scale(1); }
-  to { transform: scale(0.95); }
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(0.95);
+  }
 }
 
 @keyframes slideInFromTop {
-  from { transform: translateY(-0.5rem); }
-  to { transform: translateY(0); }
+  from {
+    transform: translateY(-0.5rem);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 
 @keyframes slideInFromBottom {
-  from { transform: translateY(0.5rem); }
-  to { transform: translateY(0); }
+  from {
+    transform: translateY(0.5rem);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 
 @keyframes slideInFromLeft {
-  from { transform: translateX(-0.5rem); }
-  to { transform: translateX(0); }
+  from {
+    transform: translateX(-0.5rem);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
 
 @keyframes slideInFromRight {
-  from { transform: translateX(0.5rem); }
-  to { transform: translateX(0); }
+  from {
+    transform: translateX(0.5rem);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
 </style>

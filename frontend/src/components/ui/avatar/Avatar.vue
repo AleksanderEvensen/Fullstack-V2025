@@ -3,14 +3,17 @@ import type { HTMLAttributes } from 'vue'
 import { cn } from '@/lib/utils'
 import { AvatarRoot } from 'reka-ui'
 
-const props = withDefaults(defineProps<{
-  class?: HTMLAttributes['class']
-  size?: 'sm' | 'base' | 'lg'
-  shape?: 'circle' | 'square'
-}>(), {
-  size: 'sm',
-  shape: 'circle',
-})
+const props = withDefaults(
+  defineProps<{
+    class?: HTMLAttributes['class']
+    size?: 'sm' | 'base' | 'lg'
+    shape?: 'circle' | 'square'
+  }>(),
+  {
+    size: 'sm',
+    shape: 'circle',
+  },
+)
 </script>
 
 <template>

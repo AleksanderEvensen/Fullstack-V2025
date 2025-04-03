@@ -14,10 +14,10 @@ const props = defineProps<{
 </template>
 
 <style scoped>
-  ._card-content-component {
-    display: flex;
-    align-items: center;
-    padding: calc(var(--spacing) * 6);
-    padding-top: 0;
-  }
+._card-content-component {
+  display: flex;
+  align-items: center;
+  padding: calc(var(--spacing) * 6);
+  padding-top: 0;
+}
 </style>

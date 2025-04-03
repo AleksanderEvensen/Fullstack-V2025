@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import { cn } from '@/lib/utils'
-import {
-  NavigationMenuViewport,
-  type NavigationMenuViewportProps,
-  useForwardProps,
-} from 'reka-ui'
+import { NavigationMenuViewport, type NavigationMenuViewportProps, useForwardProps } from 'reka-ui'
 import { type HTMLAttributes, computed } from 'vue'
 
 const props = defineProps<NavigationMenuViewportProps & { class?: HTMLAttributes['class'] }>()
@@ -47,11 +43,11 @@ const forwardedProps = useForwardProps(delegatedProps)
   transform-origin: top center;
 }
 
-.nav-menu-viewport[data-state="open"] {
+.nav-menu-viewport[data-state='open'] {
   animation: viewportZoomIn 0.2s ease;
 }
 
-.nav-menu-viewport[data-state="closed"] {
+.nav-menu-viewport[data-state='closed'] {
   animation: viewportZoomOut 0.2s ease;
 }
 

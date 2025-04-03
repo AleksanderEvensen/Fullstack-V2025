@@ -16,10 +16,7 @@ const forwardedProps = useForwardProps(delegatedProps)
 </script>
 
 <template>
-  <CalendarNext
-    :class="cn('_calendar-next-component', props.class)"
-    v-bind="forwardedProps"
-  >
+  <CalendarNext :class="cn('_calendar-next-component', props.class)" v-bind="forwardedProps">
     <slot>
       <ChevronRight class="_calendar-next-icon" />
     </slot>
@@ -27,35 +24,33 @@ const forwardedProps = useForwardProps(delegatedProps)
 </template>
 
 <style lang="scss" scoped>
-  ._calendar-next-component {
-    // From Button.vue (outline)
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: var(--font-weight-medium);
-    transition-property: color, background-color, border-color;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 150ms;
-    cursor: pointer;
-    border: 1px solid var(--input);
-    
+._calendar-next-component {
+  // From Button.vue (outline)
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--font-weight-medium);
+  transition-property: color, background-color, border-color;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+  cursor: pointer;
+  border: 1px solid var(--input);
 
-    width: calc(var(--spacing) * 7);
-    height: calc(var(--spacing) * 7);
-    background-color: transparent;
-    padding: 0;
-    opacity: 0.5;
+  width: calc(var(--spacing) * 7);
+  height: calc(var(--spacing) * 7);
+  background-color: transparent;
+  padding: 0;
+  opacity: 0.5;
 
-    &:hover {
-      background-color: var(--accent);
-      color: var(--accent-foreground);
-      opacity: 1;
-    }
+  &:hover {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+    opacity: 1;
   }
+}
 
-  ._calendar-next-icon {
-    width: calc(var(--spacing) * 4);
-    height: calc(var(--spacing) * 4);
-  }
-
+._calendar-next-icon {
+  width: calc(var(--spacing) * 4);
+  height: calc(var(--spacing) * 4);
+}
 </style>

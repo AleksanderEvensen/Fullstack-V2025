@@ -51,7 +51,7 @@ const forwardedProps = useForwardProps(delegatedProps)
   opacity: 0.5;
 }
 
-.select-trigger>span {
+.select-trigger > span {
   overflow: hidden;
   text-overflow: ellipsis;
 }

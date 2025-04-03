@@ -49,14 +49,14 @@ const modelValue = useVModel(props, 'modelValue', emits, {
   opacity: 0.5;
 }
 
-.input[type="file"] {
+.input[type='file'] {
   border: 2px solid var(--border);
   background: transparent;
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
 }
 
-.input[type="file"]::file-selector-button {
+.input[type='file']::file-selector-button {
   border: 0;
   background: transparent;
   font-size: var(--font-size-sm);

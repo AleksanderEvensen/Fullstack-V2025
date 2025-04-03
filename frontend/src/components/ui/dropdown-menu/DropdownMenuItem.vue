@@ -8,18 +8,22 @@ import {
 } from 'reka-ui'
 import type { HTMLAttributes } from 'vue'
 
-const props = defineProps<DropdownMenuItemProps & {
-  class?: HTMLAttributes['class']
-  inset?: boolean
-}>()
+const props = defineProps<
+  DropdownMenuItemProps & {
+    class?: HTMLAttributes['class']
+    inset?: boolean
+  }
+>()
 const emits = defineEmits<DropdownMenuItemEmits>()
 
 const forwarded = useForwardPropsEmits(props, emits)
 </script>
 
 <template>
-  <DropdownMenuItem v-bind="forwarded"
-    :class="cn('dropdown-menu-item', { 'dropdown-menu-item-inset': props.inset }, props.class)">
+  <DropdownMenuItem
+    v-bind="forwarded"
+    :class="cn('dropdown-menu-item', { 'dropdown-menu-item-inset': props.inset }, props.class)"
+  >
     <slot />
   </DropdownMenuItem>
 </template>

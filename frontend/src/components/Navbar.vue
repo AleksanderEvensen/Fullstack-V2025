@@ -1,51 +1,33 @@
 <script setup lang="ts">
-import { LanguagesIcon, MailIcon, MenuIcon, PlusIcon } from "lucide-vue-next";
-import { RouterLink } from "vue-router";
-import { useI18n } from "vue-i18n";
-import Button from "./ui/button/Button.vue";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "./ui/sheet";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "./ui/avatar";
-import FlagComponent from "@/components/ui/country-flag/CountryFlag.vue";
-import { ref } from "vue";
+import { MailIcon, MenuIcon, PlusIcon } from 'lucide-vue-next'
+import { RouterLink } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+import Button from './ui/button/Button.vue'
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
+import FlagComponent from '@/components/ui/country-flag/CountryFlag.vue'
+import { ref } from 'vue'
 
-const isOpen = ref(false);
-type Locale = "en" | "no";
-const { t, locale, availableLocales } = useI18n<{ locale: Locale }>();
+const isOpen = ref(false)
+type Locale = 'en' | 'no'
+const { t, locale, availableLocales } = useI18n<{ locale: Locale }>()
 const locales: Record<Locale, { flag: string; name: string }> = {
   en: {
-    flag: "US",
-    name: "English",
+    flag: 'US',
+    name: 'English',
   },
   no: {
-    flag: "NO",
-    name: "Norwegian",
+    flag: 'NO',
+    name: 'Norwegian',
   },
-};
-
-
+}
 </script>
 
 <template>
   <nav class="navbar">
     <RouterLink to="/" class="logo">
-      <img src="/logo.svg" alt="Amazoom logo">
+      <img src="/logo.svg" alt="Amazoom logo" />
     </RouterLink>
 
     <!-- Desktop Navigation -->
@@ -60,7 +42,11 @@ const locales: Record<Locale, { flag: string; name: string }> = {
             </SelectValue>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem v-for="locale in availableLocales as Locale[]" :key="locale" :value="locale">
+            <SelectItem
+              v-for="locale in availableLocales as Locale[]"
+              :key="locale"
+              :value="locale"
+            >
               <FlagComponent :code="locales[locale].flag" />
               {{ locales[locale].name }}
             </SelectItem>
@@ -113,7 +99,11 @@ const locales: Record<Locale, { flag: string; name: string }> = {
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem v-for="locale in availableLocales as Locale[]" :key="locale" :value="locale">
+                    <SelectItem
+                      v-for="locale in availableLocales as Locale[]"
+                      :key="locale"
+                      :value="locale"
+                    >
                       <FlagComponent :code="locales[locale].flag" />
                       {{ locales[locale].name }}
                     </SelectItem>
@@ -187,7 +177,6 @@ const locales: Record<Locale, { flag: string; name: string }> = {
   border: none;
   padding: 8px 12px;
 }
-
 
 .icon {
   margin-right: 8px;

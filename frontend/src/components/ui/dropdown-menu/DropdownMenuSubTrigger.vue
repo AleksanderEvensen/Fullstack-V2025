@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { DropdownMenuSubTrigger } from 'reka-ui'
-import { cn } from "@/lib/utils"
+import { cn } from '@/lib/utils'
 
 interface Props {
   class?: string
@@ -11,19 +11,32 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   class: '',
   inset: false,
-  disabled: false
+  disabled: false,
 })
 </script>
 
 <template>
-  <DropdownMenuSubTrigger :disabled="disabled"
-    :class="cn('dropdown-menu-sub-trigger', { 'dropdown-menu-sub-trigger-inset': inset }, props.class)">
+  <DropdownMenuSubTrigger
+    :disabled="disabled"
+    :class="
+      cn('dropdown-menu-sub-trigger', { 'dropdown-menu-sub-trigger-inset': inset }, props.class)
+    "
+  >
     <slot />
     <span class="dropdown-menu-sub-trigger-icon">
       <slot name="icon">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-          class="dropdown-menu-chevron">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="dropdown-menu-chevron"
+        >
           <path d="m9 18 6-6-6-6" />
         </svg>
       </slot>
@@ -65,7 +78,7 @@ const props = withDefaults(defineProps<Props>(), {
   opacity: 0.5;
 }
 
-.dropdown-menu-sub-trigger[data-state="open"] {
+.dropdown-menu-sub-trigger[data-state='open'] {
   background-color: var(--accent);
   color: var(--accent-foreground);
 }

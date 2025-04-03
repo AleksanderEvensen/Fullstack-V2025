@@ -9,6 +9,6 @@ export const i18n = createI18n({
   availableLocales: ['en', 'no'],
   messages: {
     en,
-    no
-  }
-}) 
+    no,
+  },
+})

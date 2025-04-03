@@ -1,13 +1,9 @@
 <script setup lang="ts">
 import { cn } from '@/lib/utils'
-import {
-  DropdownMenuTrigger,
-  type DropdownMenuTriggerProps,
-} from 'reka-ui'
+import { DropdownMenuTrigger, type DropdownMenuTriggerProps } from 'reka-ui'
 import type { HTMLAttributes } from 'vue'
 
 const props = defineProps<DropdownMenuTriggerProps & { class?: HTMLAttributes['class'] }>()
-
 </script>
 
 <template>
@@ -34,7 +30,9 @@ const props = defineProps<DropdownMenuTriggerProps & { class?: HTMLAttributes['c
 
 .dropdown-menu-trigger:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px var(--ring), 0 0 0 4px var(--ring-offset, white);
+  box-shadow:
+    0 0 0 2px var(--ring),
+    0 0 0 4px var(--ring-offset, white);
 }
 
 .dropdown-menu-trigger:hover:not(:disabled) {
@@ -47,7 +45,7 @@ const props = defineProps<DropdownMenuTriggerProps & { class?: HTMLAttributes['c
   opacity: 0.5;
 }
 
-.dropdown-menu-trigger[data-state="open"] {
+.dropdown-menu-trigger[data-state='open'] {
   background-color: var(--accent);
   color: var(--accent-foreground);
 }
