@@ -119,50 +119,29 @@ function onSubmit(values: GenericObject) {
         <CardDescription>{{ t('createListing.description') }}</CardDescription>
       </CardHeader>
       <CardContent>
-        <Form
-          v-slot="{ meta, values, validate }"
-          as=""
-          keep-values
-          :validation-schema="toTypedSchema(formSchema[stepIndex - 1])"
-        >
-          <Stepper
-            v-slot="{ isNextDisabled, isPrevDisabled, nextStep, prevStep }"
-            v-model="stepIndex"
-            class="stepper-block"
-          >
-            <form
-              @submit="
-                (e) => {
-                  e.preventDefault()
-                  validate()
+        <Form v-slot="{ meta, values, validate }" as="" keep-values
+          :validation-schema="toTypedSchema(formSchema[stepIndex - 1])">
+          <Stepper v-slot="{ isNextDisabled, isPrevDisabled, nextStep, prevStep }" v-model="stepIndex"
+            class="stepper-block">
+            <form @submit="
+              (e) => {
+                e.preventDefault()
+                validate()
 
-                  if (stepIndex === steps.length && meta.valid) {
-                    onSubmit(values)
-                  }
+                if (stepIndex === steps.length && meta.valid) {
+                  onSubmit(values)
                 }
-              "
-            >
+              }
+            ">
               <div class="stepper-nav-container">
-                <StepperItem
-                  v-for="step in steps"
-                  :key="step.step"
-                  v-slot="{ state }"
-                  class="stepper-item"
-                  :step="step.step"
-                >
-                  <StepperSeparator
-                    v-if="step.step !== steps[steps.length - 1].step"
-                    class="stepper-form-separator"
-                  />
+                <StepperItem v-for="step in steps" :key="step.step" v-slot="{ state }" class="stepper-item"
+                  :step="step.step">
+                  <StepperSeparator v-if="step.step !== steps[steps.length - 1].step" class="stepper-form-separator" />
 
                   <StepperTrigger as-child>
-                    <Button
-                      :variant="state === 'completed' || state === 'active' ? 'default' : 'outline'"
-                      size="icon"
-                      class="stepper-button"
-                      :class="[state === 'active' && 'active-button']"
-                      :disabled="state !== 'completed' && !meta.valid"
-                    >
+                    <Button :variant="state === 'completed' || state === 'active' ? 'default' : 'outline'" size="icon"
+                      class="stepper-button" :class="[state === 'active' && 'active-button']"
+                      :disabled="state !== 'completed' && !meta.valid">
                       <Check v-if="state === 'completed'" class="stepper-icon-small" />
                       <Circle v-if="state === 'active'" />
                       <Dot v-if="state === 'inactive'" />
@@ -170,16 +149,10 @@ function onSubmit(values: GenericObject) {
                   </StepperTrigger>
 
                   <div class="stepper-title-container">
-                    <StepperTitle
-                      :class="[state === 'active' && 'active-text']"
-                      class="stepper-title"
-                    >
+                    <StepperTitle :class="[state === 'active' && 'active-text']" class="stepper-title">
                       {{ step.title }}
                     </StepperTitle>
-                    <StepperDescription
-                      :class="[state === 'active' && 'active-text']"
-                      class="stepper-description"
-                    >
+                    <StepperDescription :class="[state === 'active' && 'active-text']" class="stepper-description">
                       {{ step.description }}
                     </StepperDescription>
                   </div>
@@ -193,11 +166,8 @@ function onSubmit(values: GenericObject) {
                     <FormItem>
                       <FormLabel>{{ t('createListing.form.title') }}</FormLabel>
                       <FormControl>
-                        <Input
-                          type="text"
-                          v-bind="componentField"
-                          :placeholder="t('createListing.form.titlePlaceholder')"
-                        />
+                        <Input type="text" v-bind="componentField"
+                          :placeholder="t('createListing.form.titlePlaceholder')" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -209,18 +179,12 @@ function onSubmit(values: GenericObject) {
                       <Select v-bind="componentField">
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue
-                              :placeholder="t('createListing.form.categoryPlaceholder')"
-                            />
+                            <SelectValue :placeholder="t('createListing.form.categoryPlaceholder')" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
                           <SelectGroup>
-                            <SelectItem
-                              v-for="category in categories"
-                              :key="category.value"
-                              :value="category.value"
-                            >
+                            <SelectItem v-for="category in categories" :key="category.value" :value="category.value">
                               {{ category.label }}
                             </SelectItem>
                           </SelectGroup>
@@ -236,9 +200,7 @@ function onSubmit(values: GenericObject) {
                       <Select v-bind="componentField">
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue
-                              :placeholder="t('createListing.form.conditionPlaceholder')"
-                            />
+                            <SelectValue :placeholder="t('createListing.form.conditionPlaceholder')" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -246,17 +208,13 @@ function onSubmit(values: GenericObject) {
                             <SelectItem value="New">{{
                               t('createListing.form.conditionOptions.new')
                             }}</SelectItem>
-                            <SelectItem value="Like New"
-                              >{{ t('createListing.form.conditionOptions.likeNew') }}
+                            <SelectItem value="Like New">{{ t('createListing.form.conditionOptions.likeNew') }}
                             </SelectItem>
-                            <SelectItem value="Very Good"
-                              >{{ t('createListing.form.conditionOptions.veryGood') }}
+                            <SelectItem value="Very Good">{{ t('createListing.form.conditionOptions.veryGood') }}
                             </SelectItem>
-                            <SelectItem value="Good"
-                              >{{ t('createListing.form.conditionOptions.good') }}
+                            <SelectItem value="Good">{{ t('createListing.form.conditionOptions.good') }}
                             </SelectItem>
-                            <SelectItem value="Acceptable"
-                              >{{ t('createListing.form.conditionOptions.acceptable') }}
+                            <SelectItem value="Acceptable">{{ t('createListing.form.conditionOptions.acceptable') }}
                             </SelectItem>
                           </SelectGroup>
                         </SelectContent>
@@ -265,15 +223,12 @@ function onSubmit(values: GenericObject) {
                     </FormItem>
                   </FormField>
 
-                  <FormField v-slot="{ componentField, setValue }" name="price">
+                  <FormField v-slot="{ componentField }" name="price">
                     <FormItem>
                       <FormLabel>{{ t('createListing.form.price') }}</FormLabel>
                       <FormControl>
-                        <Input
-                          type="number"
-                          v-bind="componentField"
-                          :placeholder="t('createListing.form.pricePlaceholder')"
-                        />
+                        <Input type="number" v-bind="componentField"
+                          :placeholder="t('createListing.form.pricePlaceholder')" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -283,11 +238,8 @@ function onSubmit(values: GenericObject) {
                     <FormItem>
                       <FormLabel>{{ t('createListing.form.originalPrice') }}</FormLabel>
                       <FormControl>
-                        <Input
-                          type="number"
-                          v-bind="componentField"
-                          :placeholder="t('createListing.form.originalPricePlaceholder')"
-                        />
+                        <Input type="number" v-bind="componentField"
+                          :placeholder="t('createListing.form.originalPricePlaceholder')" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -297,11 +249,8 @@ function onSubmit(values: GenericObject) {
                     <FormItem>
                       <FormLabel>{{ t('createListing.form.description') }}</FormLabel>
                       <FormControl>
-                        <Textarea
-                          v-bind="componentField"
-                          :placeholder="t('createListing.form.descriptionPlaceholder')"
-                          :rows="6"
-                        />
+                        <Textarea v-bind="componentField" :placeholder="t('createListing.form.descriptionPlaceholder')"
+                          :rows="6" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -314,11 +263,8 @@ function onSubmit(values: GenericObject) {
                     <FormItem>
                       <FormLabel>{{ t('createListing.form.modelYear') }}</FormLabel>
                       <FormControl>
-                        <Input
-                          type="text"
-                          v-bind="componentField"
-                          :placeholder="t('createListing.form.modelYearPlaceholder')"
-                        />
+                        <Input type="text" v-bind="componentField"
+                          :placeholder="t('createListing.form.modelYearPlaceholder')" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -328,11 +274,8 @@ function onSubmit(values: GenericObject) {
                     <FormItem>
                       <FormLabel>{{ t('createListing.form.manufacturer') }}</FormLabel>
                       <FormControl>
-                        <Input
-                          type="text"
-                          v-bind="componentField"
-                          :placeholder="t('createListing.form.manufacturerPlaceholder')"
-                        />
+                        <Input type="text" v-bind="componentField"
+                          :placeholder="t('createListing.form.manufacturerPlaceholder')" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -342,11 +285,8 @@ function onSubmit(values: GenericObject) {
                     <FormItem>
                       <FormLabel>{{ t('createListing.form.model') }}</FormLabel>
                       <FormControl>
-                        <Input
-                          type="text"
-                          v-bind="componentField"
-                          :placeholder="t('createListing.form.modelPlaceholder')"
-                        />
+                        <Input type="text" v-bind="componentField"
+                          :placeholder="t('createListing.form.modelPlaceholder')" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -356,11 +296,8 @@ function onSubmit(values: GenericObject) {
                     <FormItem>
                       <FormLabel>{{ t('createListing.form.serialNumber') }}</FormLabel>
                       <FormControl>
-                        <Input
-                          type="text"
-                          v-bind="componentField"
-                          :placeholder="t('createListing.form.serialNumberPlaceholder')"
-                        />
+                        <Input type="text" v-bind="componentField"
+                          :placeholder="t('createListing.form.serialNumberPlaceholder')" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -380,11 +317,8 @@ function onSubmit(values: GenericObject) {
                     <FormItem>
                       <FormLabel>{{ t('createListing.form.usageDuration') }}</FormLabel>
                       <FormControl>
-                        <Input
-                          type="text"
-                          v-bind="componentField"
-                          :placeholder="t('createListing.form.usageDurationPlaceholder')"
-                        />
+                        <Input type="text" v-bind="componentField"
+                          :placeholder="t('createListing.form.usageDurationPlaceholder')" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -394,11 +328,8 @@ function onSubmit(values: GenericObject) {
                     <FormItem>
                       <FormLabel>{{ t('createListing.form.reasonForSelling') }}</FormLabel>
                       <FormControl>
-                        <Textarea
-                          v-bind="componentField"
-                          :placeholder="t('createListing.form.reasonForSellingPlaceholder')"
-                          :rows="3"
-                        />
+                        <Textarea v-bind="componentField"
+                          :placeholder="t('createListing.form.reasonForSellingPlaceholder')" :rows="3" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -408,7 +339,7 @@ function onSubmit(values: GenericObject) {
                 <!-- Step 3: Images -->
                 <template v-if="stepIndex === 3">
                   <div class="image-upload-section">
-                    <FormField v-slot="{ componentField }" name="images">
+                    <FormField name="images">
                       <FormItem>
                         <FormLabel>{{ t('createListing.form.productImages') }}</FormLabel>
                         <FormControl>
@@ -431,8 +362,7 @@ function onSubmit(values: GenericObject) {
                     <Card>
                       <CardHeader>
                         <CardTitle>{{ t('createListing.preview.basicInfo') }}</CardTitle>
-                        <CardDescription
-                          >{{ t('createListing.preview.basicInfoDescription') }}
+                        <CardDescription>{{ t('createListing.preview.basicInfoDescription') }}
                         </CardDescription>
                       </CardHeader>
                       <CardContent>
@@ -531,22 +461,14 @@ function onSubmit(values: GenericObject) {
                     <Card>
                       <CardHeader>
                         <CardTitle>{{ t('createListing.preview.imagesTitle') }}</CardTitle>
-                        <CardDescription
-                          >{{ t('createListing.preview.imagesDescription') }}
+                        <CardDescription>{{ t('createListing.preview.imagesDescription') }}
                         </CardDescription>
                       </CardHeader>
                       <CardContent>
                         <div class="preview-images" v-if="values.images?.length">
                           <div class="image-grid">
-                            <div
-                              v-for="(image, index) in values.images"
-                              :key="index"
-                              class="image-preview"
-                            >
-                              <img
-                                :src="image"
-                                :alt="`${t('createListing.preview.imageAlt')} ${index + 1}`"
-                              />
+                            <div v-for="(image, index) in values.images" :key="index" class="image-preview">
+                              <img :src="image" :alt="`${t('createListing.preview.imageAlt')} ${index + 1}`" />
                             </div>
                           </div>
                         </div>
@@ -565,13 +487,8 @@ function onSubmit(values: GenericObject) {
                   {{ t('common.back') }}
                 </Button>
                 <div class="button-group">
-                  <Button
-                    v-if="stepIndex !== 4"
-                    :type="meta.valid ? 'button' : 'submit'"
-                    :disabled="isNextDisabled"
-                    size="sm"
-                    @click="meta.valid && nextStep()"
-                  >
+                  <Button v-if="stepIndex !== 4" :type="meta.valid ? 'button' : 'submit'" :disabled="isNextDisabled"
+                    size="sm" @click="meta.valid && nextStep()">
                     {{ t('common.next') }}
                   </Button>
                   <Button v-if="stepIndex === 4" size="sm" type="submit">
