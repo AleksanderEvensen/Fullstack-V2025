@@ -140,13 +140,8 @@ const getTranslatedCondition = (condition: string) => {
           <img :src="product.images[currentImageIndex]" :alt="product.title" />
         </div>
         <div class="image-thumbnails">
-          <button
-            v-for="(image, index) in product.images"
-            :key="index"
-            @click="currentImageIndex = index"
-            class="thumbnail-button"
-            :class="{ active: currentImageIndex === index }"
-          >
+          <button v-for="(image, index) in product.images" :key="index" @click="currentImageIndex = index"
+            class="thumbnail-button" :class="{ active: currentImageIndex === index }">
             <img :src="image" :alt="`${t('product.imageAlt')} ${index + 1}`" />
           </button>
         </div>
@@ -171,16 +166,6 @@ const getTranslatedCondition = (condition: string) => {
                   {{ t('product.pricing.save') }}
                   {{ calculateDiscount(product.originalPrice, product.price) }}%
                 </span>
-              </div>
-            </div>
-
-            <!-- Delivery Info -->
-            <div class="delivery-info">
-              <div class="delivery-text">
-                {{ t('product.delivery.freeDelivery') }}: {{ product.deliveryDate }}
-              </div>
-              <div class="delivery-text">
-                {{ t('product.delivery.deliveringTo') }}: {{ product.location }}
               </div>
             </div>
 
@@ -212,9 +197,7 @@ const getTranslatedCondition = (condition: string) => {
                     <StarIcon class="star-icon" />
                     <span>{{ product.seller.rating }}</span>
                   </div>
-                  <span
-                    >({{ product.seller.totalRatings }} {{ t('product.sellerInfo.ratings') }})</span
-                  >
+                  <span>({{ product.seller.totalRatings }} {{ t('product.sellerInfo.ratings') }})</span>
                 </div>
                 <div class="seller-info-text">
                   {{ t('product.sellerInfo.memberSince') }}: {{ product.seller.memberSince }}
@@ -294,11 +277,7 @@ const getTranslatedCondition = (condition: string) => {
           </CardHeader>
           <CardContent>
             <ul class="details-list">
-              <li
-                v-for="(defect, index) in product.listingDetails.defects"
-                :key="index"
-                class="detail-list-item"
-              >
+              <li v-for="(defect, index) in product.listingDetails.defects" :key="index" class="detail-list-item">
                 {{ defect }}
               </li>
             </ul>
@@ -312,11 +291,7 @@ const getTranslatedCondition = (condition: string) => {
           </CardHeader>
           <CardContent>
             <ul class="details-list">
-              <li
-                v-for="(mod, index) in product.listingDetails.modifications"
-                :key="index"
-                class="detail-list-item"
-              >
+              <li v-for="(mod, index) in product.listingDetails.modifications" :key="index" class="detail-list-item">
                 {{ mod }}
               </li>
             </ul>
@@ -626,7 +601,7 @@ const getTranslatedCondition = (condition: string) => {
 }
 
 /* Make certain sections span full width */
-.details-grid > :nth-child(n + 3) {
+.details-grid> :nth-child(n + 3) {
   grid-column: 1 / -1;
 }
 
