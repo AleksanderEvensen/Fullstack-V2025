@@ -9,9 +9,10 @@ import type { FunctionalComponent } from 'vue'
 import type { LucideProps } from 'lucide-vue-next'
 
 type IconType = FunctionalComponent<LucideProps>
+export type IconName = keyof typeof icons
 
 interface Props {
-    name: keyof typeof icons
+    name: IconName
 }
 
 const props = defineProps<Props>()

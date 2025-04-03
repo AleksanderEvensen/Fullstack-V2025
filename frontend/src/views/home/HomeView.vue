@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { RouterLink } from 'vue-router'
-import { Icon } from '@/components/ui/icon'
+import { Icon, type IconName } from '@/components/ui/icon'
 import { ref } from 'vue'
 import ProductGrid from '@/views/home/components/ProductGrid.vue'
 import { MapIcon, Search } from 'lucide-vue-next'
@@ -10,7 +10,12 @@ import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 
-const categories = ref([
+type CategoryType = {
+  name: string
+  icon: IconName
+}
+
+const categories = ref<CategoryType[]>([
   {
     name: 'Elbil',
     icon: 'Car',
