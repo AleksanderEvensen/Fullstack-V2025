@@ -30,6 +30,10 @@
     }
   }
 
+
+  .rounded-xs {
+    border-radius: calc(var(--radius) - 6px);
+  }
   .rounded-sm {
     border-radius: calc(var(--radius) - 4px);
   }

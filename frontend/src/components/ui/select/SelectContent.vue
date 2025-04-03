@@ -34,7 +34,7 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
 
 <template>
   <SelectPortal>
-    <SelectContent v-bind="{ ...forwarded, ...$attrs }" :class="cn('select-content', props.class)">
+    <SelectContent v-bind="{ ...forwarded, ...$attrs }" :class="cn('rounded-md select-content', props.class)">
       <SelectScrollUpButton />
       <SelectViewport class="select-viewport">
         <slot />
@@ -51,11 +51,10 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
   max-height: calc(var(--spacing) * 96);
   min-width: calc(var(--spacing) * 32);
   overflow: hidden;
-  border-radius: var(--radius);
   border: 1px solid var(--border);
   background: var(--popover);
   color: var(--popover-foreground);
-  box-shadow: var(--shadow-md);
+  /* box-shadow: var(--shadow-md); */
 }
 
 .select-content[data-state='open'] {
@@ -83,6 +82,9 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
 }
 
 .select-viewport {
+  height: var(--reka-select-trigger-height);
+  width: 100%;
+  min-width: var(--reka-select-trigger-width);
   padding: calc(var(--spacing) * 1);
 }
 
