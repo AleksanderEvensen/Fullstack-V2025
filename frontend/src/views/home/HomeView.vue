@@ -13,7 +13,7 @@ const { t } = useI18n()
 const categories = ref([
   {
     name: 'Elbil',
-    icon: 'Sofa',
+    icon: 'Car',
   },
   {
     name: 'Bil',
