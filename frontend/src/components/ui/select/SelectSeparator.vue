@@ -13,13 +13,13 @@ const delegatedProps = computed(() => {
 </script>
 
 <template>
-  <SelectSeparator v-bind="delegatedProps" :class="cn('select-separator', props.class)" />
+  <SelectSeparator v-bind="delegatedProps" :class="cn('_select-separator-component', props.class)" />
 </template>
 
 <style scoped>
-.select-separator {
-  margin: calc(var(--spacing) * 1) calc(var(--spacing) * -1);
+._select-separator-component {
   height: 1px;
   background-color: var(--muted);
+  margin: var(--spacing) calc(var(--spacing) * -1);
 }
 </style>

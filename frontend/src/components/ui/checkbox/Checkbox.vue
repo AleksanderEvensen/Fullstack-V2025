@@ -4,7 +4,7 @@ import { CheckIcon } from 'lucide-vue-next'
 </script>
 
 <template>
-  <CheckboxRoot class="checkbox rounded-sm">
+  <CheckboxRoot class="checkbox rounded-xs">
     <CheckboxIndicator class="checkbox-indicator">
       <CheckIcon class="checkbox-icon" />
     </CheckboxIndicator>
@@ -22,6 +22,7 @@ import { CheckIcon } from 'lucide-vue-next'
   background-color: var(--background);
   transition: all 0.2s ease-in-out;
   cursor: pointer;
+  overflow: hidden;
 }
 
 .checkbox:focus-visible {
@@ -48,7 +49,6 @@ import { CheckIcon } from 'lucide-vue-next'
 
 .checkbox-indicator[data-state='checked'] {
   background-color: black;
-  border-radius: calc(var(--radius) - 4px);
 }
 
 .checkbox-icon {

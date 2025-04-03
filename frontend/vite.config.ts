@@ -10,21 +10,20 @@ export default defineConfig({
   server: {
     port: 8081,
     proxy: {
-      "/api": {
-        target: "http://localhost:8080",
+      '/api': {
+        target: 'http://localhost:8080',
         ws: true,
         changeOrigin: true,
       },
-      // Configure graphql proxy once we implement it
     },
   },
 
   build: {
-    outDir: "../src/main/resources/static",
+    outDir: '../src/main/resources/static',
   },
   resolve: {
     alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
-});
+})

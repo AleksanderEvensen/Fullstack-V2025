@@ -12,6 +12,7 @@ import {
   SwitchTest,
   TabsTest,
   SheetTest,
+  CollapsibleTest,
 } from './test-components'
 </script>
 
@@ -30,6 +31,7 @@ import {
     <CardTest />
     <DatepickerTest />
     <SheetTest />
+    <CollapsibleTest />
   </div>
 </template>
 

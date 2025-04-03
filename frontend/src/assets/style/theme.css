@@ -70,6 +70,8 @@
     --text-2xl: 1.5rem;
     --text-2xl-line-height: calc(2 / 1.5);
 
+    --font-weight-thin: 200;
+    --font-weight-normal: 500;
     --font-weight-medium: 500;
     --font-weight-semibold: 600;
     --font-weight-bold: 700;

@@ -16,47 +16,56 @@ const forwardedProps = useForwardProps(delegatedProps)
 </script>
 
 <template>
-  <SelectTrigger v-bind="forwardedProps" :class="cn('select-trigger', props.class)">
+  <SelectTrigger
+    v-bind="forwardedProps"
+    :class="cn(
+      'rounded-md text-sm _select-trigger-component',
+      props.class,
+    )"
+  >
     <slot />
     <SelectIcon as-child>
-      <ChevronDown class="select-icon" />
+      <ChevronDown class="_select-trigger-icon" />
     </SelectIcon>
   </SelectTrigger>
 </template>
 
-<style scoped>
-.select-trigger {
+<style scoped lang="scss">
+._select-trigger-component {
   display: flex;
-  height: calc(var(--spacing) * 9);
+  height: calc(var(--spacing) * 10);
   width: 100%;
   align-items: center;
   justify-content: space-between;
-  white-space: nowrap;
-  border-radius: var(--radius);
-  border: 1px solid var(--input);
-  background: transparent;
+  border-style: solid;
+  border-width: 1px;
+  border-color: var(--input);
+  background-color: var(--background);
+  
   padding: calc(var(--spacing) * 2) calc(var(--spacing) * 3);
-  font-size: var(--font-size-sm);
-  box-shadow: var(--shadow-sm);
+
   text-align: start;
+
+  &[data-placeholder] {
+    color: var(--muted-foreground);
+  }
+
+  &:focus {
+    outline: none;
+    // focus:ring-2 focus:ring-ring focus:ring-offset-2
+  }
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+  & > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 
-.select-trigger:focus {
-  outline: none;
-  ring: 1px solid var(--ring);
-}
-
-.select-trigger:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-
-.select-trigger > span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.select-icon {
+._select-trigger-icon {
   width: calc(var(--spacing) * 4);
   height: calc(var(--spacing) * 4);
   opacity: 0.5;

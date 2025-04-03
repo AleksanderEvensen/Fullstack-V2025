@@ -205,7 +205,7 @@ const popularProducts = [
 </script>
 
 <template>
-  <div class="home-page">
+  <div class="container home-page">
     <div class="search-header">
       <div class="search-container">
         <Input class="search-input" :placeholder="t('home.search.placeholder')" />
@@ -351,7 +351,7 @@ const popularProducts = [
 }
 
 /* Responsive adjustments */
-@media (max-width: 768px) {
+@media (max-width: 64rem) {
   .category-row {
     justify-content: flex-start;
     gap: 5px;
