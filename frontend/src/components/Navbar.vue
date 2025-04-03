@@ -42,11 +42,7 @@ const locales: Record<Locale, { flag: string; name: string }> = {
             </SelectValue>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem
-              v-for="locale in availableLocales as Locale[]"
-              :key="locale"
-              :value="locale"
-            >
+            <SelectItem v-for="locale in availableLocales as Locale[]" :key="locale" :value="locale">
               <FlagComponent :code="locales[locale].flag" />
               {{ locales[locale].name }}
             </SelectItem>
@@ -99,11 +95,7 @@ const locales: Record<Locale, { flag: string; name: string }> = {
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem
-                      v-for="locale in availableLocales as Locale[]"
-                      :key="locale"
-                      :value="locale"
-                    >
+                    <SelectItem v-for="locale in availableLocales as Locale[]" :key="locale" :value="locale">
                       <FlagComponent :code="locales[locale].flag" />
                       {{ locales[locale].name }}
                     </SelectItem>
@@ -152,6 +144,9 @@ const locales: Record<Locale, { flag: string; name: string }> = {
   margin: 0;
   border-bottom: 1px solid #333;
 }
+
+
+
 
 .navbar .logo img {
   height: 100%;

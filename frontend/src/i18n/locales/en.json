@@ -207,5 +207,24 @@
       "usageDuration": "Usage Duration"
     },
     "imageAlt": "Product image"
+  },
+  "home": {
+    "search": {
+      "placeholder": "Search for electric car or electric bike",
+      "button": "Search"
+    },
+    "map": "Map",
+    "categories": {
+      "title": "Categories",
+      "electricCar": "Electric Car",
+      "car": "Car",
+      "boat": "Boat",
+      "bike": "Bike",
+      "furniture": "Furniture",
+      "travel": "Travel",
+      "luggage": "Luggage"
+    },
+    "popularListings": "Popular listings",
+    "currency": "kr"
   }
 }

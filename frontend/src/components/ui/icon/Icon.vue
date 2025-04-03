@@ -3,7 +3,8 @@
 </template>
 
 <script>
-import * as icons from 'lucide-vue-next'
+import * as icons from 'lucide-vue-next';
+
 export default {
     props: {
         name: {
