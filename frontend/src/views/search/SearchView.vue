@@ -1,12 +1,22 @@
 <script setup lang="ts">
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { ChevronDown, MapPin, X, FunnelIcon } from 'lucide-vue-next'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { MapPin, FunnelIcon, ChevronRight } from 'lucide-vue-next'
 import { useUrlSearchParams, watchDebounced } from '@vueuse/core'
 import { computed, ref, watch } from 'vue'
 import { MockSearchEntries } from './mock_data'
 import ItemCard from './components/ItemCard.vue'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { Label } from '@/components/ui/label'
+import { Checkbox } from '@/components/ui/checkbox'
 
 const queryParams = useUrlSearchParams('history', {
   removeFalsyValues: true,
@@ -45,93 +55,83 @@ const data = computed(() => MockSearchEntries)
     <div class="search-container">
       <!-- Left sidebar with filters -->
       <div v-if="filtersPanelOpen" class="filters-sidebar">
-        <div class="filter-section">
-          <div class="filter-header">
-            <h3>Merke</h3>
-            <ChevronDown class="filter-expand-icon" />
-          </div>
-          <div class="filter-options">
-            <div class="filter-option">
-              <input type="checkbox" id="4speed" class="filter-checkbox" />
-              <label for="4speed">4Speed (0)</label>
-            </div>
-            <div class="filter-option">
-              <input type="checkbox" id="4wmoto" class="filter-checkbox" />
-              <label for="4wmoto">4W-Moto (0)</label>
-            </div>
-            <div class="filter-option">
-              <input type="checkbox" id="aixam" class="filter-checkbox" />
-              <label for="aixam">Aixam (0)</label>
-            </div>
-            <div class="filter-option">
-              <input type="checkbox" id="ajp" class="filter-checkbox" />
-              <label for="ajp">AJP (0)</label>
-            </div>
-            <div class="filter-option">
-              <input type="checkbox" id="americanironhorse" class="filter-checkbox" />
-              <label for="americanironhorse">American Iron Horse (0)</label>
-            </div>
-            <div class="filter-option">
-              <input type="checkbox" id="aprilia" class="filter-checkbox" />
-              <label for="aprilia">Aprilia (0)</label>
-            </div>
-            <div class="filter-option">
-              <input type="checkbox" id="arcticcat" class="filter-checkbox" />
-              <label for="arcticcat">Arctic-cat (0)</label>
-            </div>
-            <div class="filter-option">
-              <input type="checkbox" id="ariel" class="filter-checkbox" />
-              <label for="ariel">Ariel (0)</label>
-            </div>
-            <div class="filter-option">
-              <input type="checkbox" id="beta" class="filter-checkbox" />
-              <label for="beta">Beta (0)</label>
-            </div>
-            <div class="filter-option">
-              <input type="checkbox" id="honda" class="filter-checkbox" />
-              <label for="honda">Honda (72)</label>
-            </div>
-            <button class="show-more-button">Vis alle</button>
-          </div>
-        </div>
+        <Collapsible :default-open="true">
+          <CollapsibleTrigger as-child>
+            <Button variant="ghost" class="category-collapse">
+              <span>Merke</span>
+              <ChevronRight class="category-collapse-icon" />
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent class="filter-container">
+            <Label class="filter-check">
+              <Checkbox />
+              4Speed (0)
+            </Label>
+            <Label class="filter-check">
+              <Checkbox />
+              4W-Moto (0)
+            </Label>
+            <Label class="filter-check">
+              <Checkbox />
+              Aixam (0)
+            </Label>
+            <Label class="filter-check">
+              <Checkbox />
+              AJP (0)
+            </Label>
+            <Label class="filter-check">
+              <Checkbox />
+              American Iron Horse (0)
+            </Label>
+            <Label class="filter-check">
+              <Checkbox />
+              Aprilia (0)
+            </Label>
+            <Label class="filter-check">
+              <Checkbox />
+              Arctic-cat (0)
+            </Label>
+            <Label class="filter-check">
+              <Checkbox />
+              Ariel (0)
+            </Label>
+            <Label class="filter-check">
+              <Checkbox />
+              Beta (0)
+            </Label>
+            <Label class="filter-check">
+              <Checkbox />
+              Honda (72)
+            </Label>
+          </CollapsibleContent>
+        </Collapsible>
 
-        <div class="filter-section">
-          <div class="filter-header">
-            <h3>Betaling og eierskifte</h3>
-            <ChevronDown class="filter-expand-icon" />
-          </div>
-          <div class="filter-options">
-            <div class="filter-option">
-              <input type="checkbox" id="smidigmc" class="filter-checkbox" />
-              <label for="smidigmc">Smidig MC-handel (0)</label>
-            </div>
-          </div>
-        </div>
-
-        <div class="filter-section">
-          <div class="filter-header">
-            <h3>Type</h3>
-            <ChevronDown class="filter-expand-icon" />
-          </div>
-          <div class="filter-options">
-            <div class="filter-option">
-              <input type="checkbox" id="adventure" class="filter-checkbox" />
-              <label for="adventure">Adventure (6)</label>
-            </div>
-            <div class="filter-option">
-              <input type="checkbox" id="atv" class="filter-checkbox" />
-              <label for="atv">ATV (0)</label>
-            </div>
-            <div class="filter-option">
-              <input type="checkbox" id="chopper" class="filter-checkbox" />
-              <label for="chopper">Chopper (1)</label>
-            </div>
-            <div class="filter-option">
-              <input type="checkbox" id="classicnaked" class="filter-checkbox" />
-              <label for="classicnaked">Classic/Nakne (32)</label>
-            </div>
-          </div>
-        </div>
+        <Collapsible :default-open="true">
+          <CollapsibleTrigger as-child>
+            <Button variant="ghost" class="category-collapse">
+              <span>Type</span>
+              <ChevronRight class="category-collapse-icon" />
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent class="filter-container">
+            <Label class="filter-check">
+              <Checkbox />
+              Adventure (6)
+            </Label>
+            <Label class="filter-check">
+              <Checkbox />
+              ATV (0)
+            </Label>
+            <Label class="filter-check">
+              <Checkbox />
+              Chopper (1)
+            </Label>
+            <Label class="filter-check">
+              <Checkbox />
+              Classic/Nakne (32)
+            </Label>
+          </CollapsibleContent>
+        </Collapsible>
       </div>
 
       <!-- Right side with search results -->
@@ -167,7 +167,7 @@ const data = computed(() => MockSearchEntries)
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped lang="css">
 header {
   margin-top: 2rem;
   margin-bottom: 1.5rem;
@@ -206,8 +206,58 @@ header {
 }
 
 .sort-by {
-  align-self: flex-end;
+  margin-left: auto;
   width: fit-content;
+}
+
+.category-collapse {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+
+  & > .category-collapse-icon {
+    transition: 0.1s ease;
+  }
+
+  &[data-state='open'] > .category-collapse-icon {
+    rotate: 90deg;
+  }
+}
+.filter-container {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 2);
+  padding: calc(var(--spacing) * 5);
+  font-size: var(--font-size-sm);
+  & > label {
+    font-weight: 400 !important;
+  }
+}
+
+.search-results {
+  flex: 1;
+  container-type: inline-size;
+  container-name: search-results;
+}
+
+.filters-sidebar {
+  width: 300px;
+  flex-shrink: 0;
+}
+
+.search-results-list {
+  display: grid;
+  gap: var(--spacing);
+  grid-template-rows: auto;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+
+@container search-results (min-width: 700px) {
+  .search-results-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 /*
@@ -230,7 +280,8 @@ header {
   */
 
 /* Filters sidebar */
-.filters-sidebar {
+
+/*.filters-sidebar {
   width: 300px;
   flex-shrink: 0;
 }
@@ -315,10 +366,10 @@ header {
   padding: 0.5rem 0;
   cursor: pointer;
   text-align: left;
-}
+}*/
 
 /* Search results */
-.search-results {
+/*.search-results {
   flex: 1;
 }
 
@@ -373,7 +424,7 @@ header {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-}
+}*/
 
 /* Responsive */
 @media (max-width: 900px) {

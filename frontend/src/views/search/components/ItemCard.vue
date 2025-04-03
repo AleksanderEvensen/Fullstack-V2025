@@ -15,51 +15,50 @@ function formatCurrency(value: number) {
 </script>
 
 <template>
-  <div class="search-result-item">
-    <div class="result-image">
-      <img src="https://dummyimage.com/400x320/000/ffffff" :alt="item.title" />
-      <Button variant="secondary" size="icon" class="favorite-button">
-        <Heart />
-      </Button>
-      <!-- <button class="favorite-button">
-        <Heart />
-      </button> -->
-    </div>
-    <div v-if="item.type === 'mobility'" class="result-content">
-      <h3 class="result-title">{{ item.title }}</h3>
-      <div class="result-details">
-        <div class="detail-row">
-          <span class="year">{{ item.year }}</span>
-          <span class="separator">•</span>
-          <span class="fuel">{{ item.fuelType === 'electric' ? 'Elektrisitet' : 'Bensin' }}</span>
-        </div>
-
-        <div class="result-price">{{ formatCurrency(item.price) }}</div>
-
-        <div class="seller-info">
-          <Avatar class="seller-avatar">
-            <AvatarImage :src="item.seller.avatar" :alt="item.seller.name" />
-            <AvatarFallback>{{ item.seller.name.charAt(0) }}</AvatarFallback>
-          </Avatar>
-          <span class="seller-name">{{ item.seller.name }}</span>
+  <div class="search-item-container">
+    <div class="search-result-item">
+      <div class="result-image">
+        <img src="https://dummyimage.com/400x320/000/ffffff" :alt="item.title" />
+        <Button variant="secondary" size="icon" class="favorite-button">
+          <Heart />
+        </Button>
+      </div>
+      <div v-if="item.type === 'mobility'" class="result-content">
+        <h3 class="result-title">{{ item.title }}</h3>
+        <div class="result-details">
+          <div class="detail-row">
+            <span class="year">{{ item.year }}</span>
+            <span class="separator">•</span>
+            <span class="fuel">{{ item.fuelType === 'electric' ? 'Elektrisitet' : 'Bensin' }}</span>
+          </div>
+  
+          <div class="result-price">{{ formatCurrency(item.price) }}</div>
+  
+          <div class="seller-info">
+            <Avatar class="seller-avatar">
+              <AvatarImage :src="item.seller.avatar" :alt="item.seller.name" />
+              <AvatarFallback>{{ item.seller.name.charAt(0) }}</AvatarFallback>
+            </Avatar>
+            <span class="seller-name">{{ item.seller.name }}</span>
+          </div>
         </div>
       </div>
-    </div>
-    <div v-if="item.type === 'default'" class="result-content">
-      <h3 class="result-title">{{ item.title }}</h3>
-      <div class="result-details">
-        <!-- <div class="detail-row">
-                  <span class="separator">•</span>
-                </div> -->
-
-        <div class="result-price">{{ formatCurrency(item.price) }}</div>
-
-        <div class="seller-info">
-          <Avatar class="seller-avatar">
-            <AvatarImage :src="item.seller.avatar" :alt="item.seller.name" />
-            <AvatarFallback>{{ item.seller.name.charAt(0) }}</AvatarFallback>
-          </Avatar>
-          <span class="seller-name">{{ item.seller.name }}</span>
+      <div v-if="item.type === 'default'" class="result-content">
+        <h3 class="result-title">{{ item.title }}</h3>
+        <div class="result-details">
+          <!-- <div class="detail-row">
+                    <span class="separator">•</span>
+                  </div> -->
+  
+          <div class="result-price">{{ formatCurrency(item.price) }}</div>
+  
+          <div class="seller-info">
+            <Avatar class="seller-avatar">
+              <AvatarImage :src="item.seller.avatar" :alt="item.seller.name" />
+              <AvatarFallback>{{ item.seller.name.charAt(0) }}</AvatarFallback>
+            </Avatar>
+            <span class="seller-name">{{ item.seller.name }}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -68,6 +67,11 @@ function formatCurrency(value: number) {
 
 
 <style scoped>
+
+.search-item-container {
+  container-type: inline-size;
+  container-name: search-item-container;
+}
 .search-result-item {
   display: flex;
   border: 1px solid var(--border);
@@ -154,11 +158,10 @@ function formatCurrency(value: number) {
     white-space: nowrap;
 }
 
-@media (max-width: 900px) {
+@container search-item-container (max-width: 475px) {
   .search-result-item {
     flex-direction: column;
   }
-  
   .result-image {
     width: 100%;
   }
