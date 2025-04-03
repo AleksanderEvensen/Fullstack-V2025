@@ -226,5 +226,15 @@
     },
     "recentListings": "Recent listings",
     "currency": "kr"
+  },
+  "profile": {
+    "memberSince": "Member since",
+    "ratings": "ratings",
+    "myListings": "My Listings",
+    "favorites": "Favorites",
+    "items": "items",
+    "location": "Location",
+    "editProfile": "Edit Profile",
+    "createListing": "Create New Listing"
   }
 }

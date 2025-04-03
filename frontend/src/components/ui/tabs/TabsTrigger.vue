@@ -15,9 +15,7 @@ const forwardedProps = useForwardProps(delegatedProps)
 
 <template>
   <TabsTrigger v-bind="forwardedProps" :class="cn('tabs-trigger', props.class)">
-    <span class="tabs-trigger-text">
-      <slot />
-    </span>
+    <slot />
   </TabsTrigger>
 </template>
 
@@ -33,6 +31,9 @@ const forwardedProps = useForwardProps(delegatedProps)
   font-weight: var(--font-weight-medium);
   color: var(--muted-foreground);
   transition: all 0.2s ease;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .tabs-trigger:focus-visible {
@@ -51,11 +52,5 @@ const forwardedProps = useForwardProps(delegatedProps)
   background-color: var(--background);
   color: var(--foreground);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.tabs-trigger-text {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 </style>

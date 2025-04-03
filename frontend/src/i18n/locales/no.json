@@ -226,5 +226,15 @@
     },
     "recentListings": "Nye annonser",
     "currency": "kr"
+  },
+  "profile": {
+    "memberSince": "Medlem siden",
+    "ratings": "vurderinger",
+    "myListings": "Mine annonser",
+    "favorites": "Favoritter",
+    "items": "elementer",
+    "location": "Sted",
+    "editProfile": "Rediger profil",
+    "createListing": "Opprett ny annonse"
   }
 }
