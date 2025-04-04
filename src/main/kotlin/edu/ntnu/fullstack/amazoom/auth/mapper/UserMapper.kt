@@ -6,7 +6,7 @@ import edu.ntnu.fullstack.amazoom.auth.entity.User
 object UserMapper {
 
     /**
-     * Converts a Category entity to a CategoryResponse DTO.
+     * Converts a User entity to a UserDTO.
      */
     fun toDto(user: User): UserDto {
         return UserDto(
