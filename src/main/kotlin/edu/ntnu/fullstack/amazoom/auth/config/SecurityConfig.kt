@@ -55,7 +55,7 @@ class SecurityConfig(
                 auth
                     .requestMatchers(
                         "/swagger-ui.html",
-                        "/openapi-schema.json",
+                        "/openapi-schema.json/**",
                         "/swagger-ui/**",
                         "/auth/register",
                         "/auth/login",
