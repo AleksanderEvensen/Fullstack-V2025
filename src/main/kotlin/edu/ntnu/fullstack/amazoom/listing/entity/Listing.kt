@@ -23,7 +23,7 @@ data class Listing(
     @Column(nullable = false, name = "listing_condition")
     val condition: ListingCondition,
 
-    @ManyToOne(cascade = [CascadeType.ALL])
+    @ManyToOne(cascade = [CascadeType.MERGE])
     @JoinColumn(name = "seller_id", nullable = false)
     val seller: User,
 
