@@ -33,6 +33,7 @@ CREATE TABLE listings
     title              VARCHAR(255)          NOT NULL,
     category_id        BIGINT                NOT NULL,
     listing_condition  VARCHAR(255)          NOT NULL,
+    seller_id          BIGINT                NOT NULL,
     price              DOUBLE                NOT NULL,
     original_price     DOUBLE                NULL,
     `description`      TEXT                  NOT NULL,
@@ -51,6 +52,9 @@ ALTER TABLE categories
 
 ALTER TABLE listings
     ADD CONSTRAINT FK_LISTINGS_ON_CATEGORY FOREIGN KEY (category_id) REFERENCES categories (id);
+
+ALTER TABLE listings
+    ADD CONSTRAINT FK_LISTINGS_ON_SELLER FOREIGN KEY (seller_id) REFERENCES users (id);
 
 ALTER TABLE listing_defects
     ADD CONSTRAINT fk_listing_defects_on_listing FOREIGN KEY (listing_id) REFERENCES listings (id);

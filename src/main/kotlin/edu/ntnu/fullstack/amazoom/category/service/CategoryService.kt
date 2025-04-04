@@ -5,6 +5,7 @@ import edu.ntnu.fullstack.amazoom.category.dto.CategoryResponse
 import edu.ntnu.fullstack.amazoom.category.entity.Category
 import edu.ntnu.fullstack.amazoom.category.mapper.CategoryMapper
 import edu.ntnu.fullstack.amazoom.category.repository.CategoryRepository
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 
 @Service
@@ -12,12 +13,10 @@ class CategoryService(
     private val categoryRepository: CategoryRepository
 )  {
 
+    @PreAuthorize("hasRole('ADMIN')")
     fun createCategory(request: CreateOrUpdateCategoryRequest): CategoryResponse {
-        // 1) Convert request -> entity
         val entity: Category = CategoryMapper.toEntity(request)
-        // 2) Save
         val saved: Category = categoryRepository.save(entity)
-        // 3) Return response
         return CategoryMapper.toResponse(saved)
     }
 
@@ -27,6 +26,7 @@ class CategoryService(
         return CategoryMapper.toResponse(category)
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     fun updateCategory(id: Long, request: CreateOrUpdateCategoryRequest): CategoryResponse {
         val existing = categoryRepository.findById(id)
             .orElseThrow { NoSuchElementException("No Category found with id=$id") }
@@ -35,6 +35,7 @@ class CategoryService(
         return CategoryMapper.toResponse(savedEntity)
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     fun deleteCategory(id: Long) {
         // Optional check if Category exists
         if (!categoryRepository.existsById(id)) {

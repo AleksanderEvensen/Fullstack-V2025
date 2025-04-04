@@ -4,6 +4,7 @@ import edu.ntnu.fullstack.amazoom.category.dto.CreateOrUpdateCategoryRequest
 import edu.ntnu.fullstack.amazoom.category.dto.CategoryResponse
 import edu.ntnu.fullstack.amazoom.category.service.CategoryService
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 /**
@@ -23,8 +24,9 @@ class CategoryController(
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    fun createCategory(@RequestBody request: CreateOrUpdateCategoryRequest): CategoryResponse {
-        return categoryService.createCategory(request)
+    fun createCategory(@RequestBody request: CreateOrUpdateCategoryRequest): ResponseEntity<CategoryResponse> {
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(categoryService.createCategory(request))
     }
 
     /**
@@ -34,8 +36,8 @@ class CategoryController(
      * @return the retrieved category
      */
     @GetMapping("/{id}")
-    fun getCategory(@PathVariable id: Long): CategoryResponse {
-        return categoryService.getCategory(id)
+    fun getCategory(@PathVariable id: Long): ResponseEntity<CategoryResponse> {
+        return ResponseEntity.ok(categoryService.getCategory(id))
     }
 
     /**
@@ -49,8 +51,8 @@ class CategoryController(
     fun updateCategory(
         @PathVariable id: Long,
         @RequestBody request: CreateOrUpdateCategoryRequest
-    ): CategoryResponse {
-        return categoryService.updateCategory(id, request)
+    ): ResponseEntity<CategoryResponse> {
+        return ResponseEntity.ok(categoryService.updateCategory(id, request))
     }
 
     /**
@@ -60,8 +62,9 @@ class CategoryController(
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun deleteCategory(@PathVariable id: Long) {
+    fun deleteCategory(@PathVariable id: Long): ResponseEntity<Void> {
         categoryService.deleteCategory(id)
+        return ResponseEntity.noContent().build()
     }
 
     /**
@@ -70,7 +73,7 @@ class CategoryController(
      * @return a list of all categories
      */
     @GetMapping
-    fun listAllCategories(): List<CategoryResponse> {
-        return categoryService.listAllCategories()
+    fun listAllCategories(): ResponseEntity<List<CategoryResponse>> {
+        return ResponseEntity.ok(categoryService.listAllCategories())
     }
 }

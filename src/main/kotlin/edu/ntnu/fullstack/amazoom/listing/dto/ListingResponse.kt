@@ -1,5 +1,7 @@
 package edu.ntnu.fullstack.amazoom.listing.dto
 
+import edu.ntnu.fullstack.amazoom.auth.dto.UserDto
+import edu.ntnu.fullstack.amazoom.auth.entity.User
 import edu.ntnu.fullstack.amazoom.listing.entity.ListingCondition
 
 
@@ -11,7 +13,7 @@ data class ListingResponse(
     val price: Double,
     val originalPrice: Double?,
     val description: String,
-
+    var seller: UserDto,
     val modelYear: String?,
     val manufacturer: String?,
     val model: String?,

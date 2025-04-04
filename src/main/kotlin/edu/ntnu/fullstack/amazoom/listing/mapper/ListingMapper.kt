@@ -1,5 +1,7 @@
 package edu.ntnu.fullstack.amazoom.listing.mapper
 
+import edu.ntnu.fullstack.amazoom.auth.entity.User
+import edu.ntnu.fullstack.amazoom.auth.mapper.UserMapper
 import edu.ntnu.fullstack.amazoom.listing.dto.CreateOrUpdateListingRequest
 import edu.ntnu.fullstack.amazoom.listing.dto.ListingResponse
 import edu.ntnu.fullstack.amazoom.listing.entity.Listing
@@ -10,10 +12,11 @@ object ListingMapper {
     /**
      * Converts a CreateOrUpdateListingRequest plus a Category into a Listing entity.
      */
-    fun toEntity(request: CreateOrUpdateListingRequest, category: Category): Listing {
+    fun toEntity(request: CreateOrUpdateListingRequest, category: Category, seller: User): Listing {
         return Listing(
             title = request.title,
             category = category,
+            seller = seller,
             condition = request.condition,
             price = request.price,
             originalPrice = request.originalPrice,
@@ -81,6 +84,7 @@ object ListingMapper {
             defects = entity.defects,
             modifications = entity.modifications,
             reasonForSelling = entity.reasonForSelling,
+            seller = UserMapper.toDto(entity.seller),
             images = entity.images
         )
     }
