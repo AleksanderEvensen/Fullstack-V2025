@@ -1,5 +1,0 @@
-
-
-ALTER TABLE users ADD COLUMN
-    email VARCHAR(100) NOT NULL,
-ADD CONSTRAINT uc_user_email UNIQUE (email);
