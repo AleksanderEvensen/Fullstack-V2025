@@ -1,5 +1,6 @@
 package edu.ntnu.fullstack.amazoom.listing.entity
 
+import edu.ntnu.fullstack.amazoom.auth.entity.User
 import edu.ntnu.fullstack.amazoom.category.entity.Category
 import jakarta.persistence.*
 
@@ -21,6 +22,10 @@ data class Listing(
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, name = "listing_condition")
     val condition: ListingCondition,
+
+    @ManyToOne(cascade = [CascadeType.MERGE])
+    @JoinColumn(name = "seller_id", nullable = false)
+    val seller: User,
 
     @Column(nullable = false)
     val price: Double,

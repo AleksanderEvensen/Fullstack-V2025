@@ -25,7 +25,9 @@ class UserDetailsImpl (
     private val user: User
 ) : UserDetails {
     override fun getAuthorities(): Collection<GrantedAuthority> {
-        return user.roles.map { SimpleGrantedAuthority("ROLE_${it.name}") }
+        return user.roles.map {
+            SimpleGrantedAuthority(it.name.toString())
+        }
     }
 
     fun getDomainUser(): User = user
@@ -37,4 +39,5 @@ class UserDetailsImpl (
     override fun isAccountNonLocked() = true
     override fun isCredentialsNonExpired() = true
     override fun isEnabled() = true
+    fun getSub() = user.id
 }
