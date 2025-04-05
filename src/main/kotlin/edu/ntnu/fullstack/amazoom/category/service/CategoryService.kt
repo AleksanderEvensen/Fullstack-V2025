@@ -3,6 +3,7 @@ package edu.ntnu.fullstack.amazoom.category.service
 import edu.ntnu.fullstack.amazoom.category.dto.CreateOrUpdateCategoryRequest
 import edu.ntnu.fullstack.amazoom.category.dto.CategoryResponse
 import edu.ntnu.fullstack.amazoom.category.entity.Category
+import edu.ntnu.fullstack.amazoom.category.exception.CategoryNotFoundException
 import edu.ntnu.fullstack.amazoom.category.mapper.CategoryMapper
 import edu.ntnu.fullstack.amazoom.category.repository.CategoryRepository
 import org.springframework.security.access.prepost.PreAuthorize
@@ -22,14 +23,14 @@ class CategoryService(
 
     fun getCategory(id: Long): CategoryResponse {
         val category = categoryRepository.findById(id)
-            .orElseThrow { NoSuchElementException("No Category found with id=$id") }
+            .orElseThrow { CategoryNotFoundException("No Category found with id=$id") }
         return CategoryMapper.toResponse(category)
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     fun updateCategory(id: Long, request: CreateOrUpdateCategoryRequest): CategoryResponse {
         val existing = categoryRepository.findById(id)
-            .orElseThrow { NoSuchElementException("No Category found with id=$id") }
+            .orElseThrow { CategoryNotFoundException("No Category found with id=$id") }
         val updatedEntity = CategoryMapper.updateEntity(existing, request)
         val savedEntity = categoryRepository.save(updatedEntity)
         return CategoryMapper.toResponse(savedEntity)
@@ -37,9 +38,8 @@ class CategoryService(
 
     @PreAuthorize("hasRole('ADMIN')")
     fun deleteCategory(id: Long) {
-        // Optional check if Category exists
         if (!categoryRepository.existsById(id)) {
-            throw NoSuchElementException("No Category found with id=$id")
+            throw CategoryNotFoundException("No Category found with id=$id")
         }
         categoryRepository.deleteById(id)
     }

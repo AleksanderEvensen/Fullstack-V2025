@@ -1,6 +1,6 @@
 package edu.ntnu.fullstack.amazoom.auth.controller
 
-import edu.ntnu.fullstack.amazoom.auth.dto.ErrorResponse
+import edu.ntnu.fullstack.amazoom.common.dto.ErrorResponse
 import edu.ntnu.fullstack.amazoom.auth.exception.*
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

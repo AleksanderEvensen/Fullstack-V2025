@@ -1,4 +1,4 @@
-package edu.ntnu.fullstack.amazoom.auth.dto
+package edu.ntnu.fullstack.amazoom.common.dto
 
 data class ErrorResponse (
     val message: String,

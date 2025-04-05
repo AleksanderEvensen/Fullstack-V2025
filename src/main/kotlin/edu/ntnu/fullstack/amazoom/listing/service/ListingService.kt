@@ -2,6 +2,7 @@ package edu.ntnu.fullstack.amazoom.listing.service
 
 import edu.ntnu.fullstack.amazoom.auth.repository.UserRepository
 import edu.ntnu.fullstack.amazoom.auth.service.UserDetailsImpl
+import edu.ntnu.fullstack.amazoom.category.exception.CategoryNotFoundException
 import edu.ntnu.fullstack.amazoom.category.repository.CategoryRepository
 import edu.ntnu.fullstack.amazoom.listing.dto.CreateOrUpdateListingRequest
 import edu.ntnu.fullstack.amazoom.listing.dto.ListingResponse
@@ -21,7 +22,7 @@ class ListingService(
 
     fun createListing(request: CreateOrUpdateListingRequest): ListingResponse {
         val category = categoryRepository.findById(request.categoryId)
-            .orElseThrow { NoSuchElementException("No category found with ID=${request.categoryId}") }
+            .orElseThrow { CategoryNotFoundException("No category found with ID=${request.categoryId}") }
 
         val sellerId = getAuthenticatedUserId()
         val seller = userRepository.findById(sellerId)
