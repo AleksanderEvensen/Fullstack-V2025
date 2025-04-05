@@ -1,30 +1,35 @@
 package edu.ntnu.fullstack.amazoom.listing.service
 
 import edu.ntnu.fullstack.amazoom.auth.repository.UserRepository
-import edu.ntnu.fullstack.amazoom.auth.service.UserDetailsImpl
 import edu.ntnu.fullstack.amazoom.category.exception.CategoryNotFoundException
 import edu.ntnu.fullstack.amazoom.category.repository.CategoryRepository
+import edu.ntnu.fullstack.amazoom.common.service.CurrentUser
 import edu.ntnu.fullstack.amazoom.listing.dto.CreateOrUpdateListingRequest
 import edu.ntnu.fullstack.amazoom.listing.dto.ListingResponse
 import edu.ntnu.fullstack.amazoom.listing.mapper.ListingMapper
 import edu.ntnu.fullstack.amazoom.listing.repository.ListingRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.security.access.prepost.PreAuthorize
-import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
 
 @Service
 class ListingService(
     private val listingRepository: ListingRepository,
     private val categoryRepository: CategoryRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val currentUser: CurrentUser
 ) {
 
     fun createListing(request: CreateOrUpdateListingRequest): ListingResponse {
         val category = categoryRepository.findById(request.categoryId)
             .orElseThrow { CategoryNotFoundException("No category found with ID=${request.categoryId}") }
 
-        val sellerId = getAuthenticatedUserId()
+        val sellerId = currentUser.getCurrentAuthenticatedUser()
+            .orElseThrow { IllegalStateException("No authenticated user found") }
+            .getSub()
+
         val seller = userRepository.findById(sellerId)
             .orElseThrow { NoSuchElementException("No user found with ID=$sellerId") }
 
@@ -58,13 +63,14 @@ class ListingService(
         listingRepository.deleteById(id)
     }
 
-    fun listAllListings(): List<ListingResponse> {
-        return listingRepository.findAll()
-            .map { ListingMapper.toResponseDto(it) }
+    fun getPaginatedAndSortedListings(page: Int, size: Int, sortBy: String, direction: Sort.Direction): Page<ListingResponse> {
+        val pageable = PageRequest.of(page, size, Sort.by(direction, sortBy))
+        val listingsPage = listingRepository.findAll(pageable)
+        return listingsPage.map { ListingMapper.toResponseDto(it) }
     }
 
     fun isListingOwner(listingId: Long, userId: Long): Boolean {
-        val listing = listingRepository.findById(listingId);
+        val listing = listingRepository.findById(listingId)
         return if (listing.isPresent) {
             val listingEntity = listing.get()
             listingEntity.seller.id == userId
@@ -73,14 +79,4 @@ class ListingService(
         }
     }
 
-
-    fun getAuthenticatedUserId(): Long {
-        val authentication = SecurityContextHolder.getContext().authentication
-        val principal = authentication.principal
-        return if (principal is UserDetailsImpl) {
-            principal.getSub()
-        } else {
-            principal.toString().toLong()
-        }
-    }
 }

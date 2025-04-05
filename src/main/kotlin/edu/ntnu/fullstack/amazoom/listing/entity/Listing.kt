@@ -60,6 +60,13 @@ data class Listing(
     @ElementCollection
     @CollectionTable(name = "listing_images", joinColumns = [JoinColumn(name = "listing_id")])
     @Column(name = "image_url")
-    val images: List<String> = emptyList()
+    val images: List<String> = emptyList(),
+
+    // creation and update timestamps
+    @Column(name = "created_at", updatable = false)
+    val createdAt: Long = System.currentTimeMillis(),
+
+    @Column(name = "updated_at")
+    val updatedAt: Long = System.currentTimeMillis()
 )
 
