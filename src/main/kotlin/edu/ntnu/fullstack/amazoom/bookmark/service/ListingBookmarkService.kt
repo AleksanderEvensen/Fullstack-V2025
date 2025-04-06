@@ -49,8 +49,16 @@ class ListingBookmarkService(
     }
 
 
-    @PreAuthorize("listingBookmarkRepository.existsByUserIdAndListingId(#currentUser.currentAuthenticatedUser.get().sub, #id)")
     fun deleteBookmark(id: Long) {
+        val authenticatedUser = currentUser.getCurrentAuthenticatedUser().getOrNull()
+            ?: throw IllegalStateException("No authenticated user found")
+
+        val user: User = userRepository.findById(authenticatedUser.getSub())
+            .orElseThrow { NoSuchElementException("No user found with id=${authenticatedUser.getSub()}") }
+
+        if (!listingBookmarkRepository.existsByUserIdAndListingId(user.id, id)) {
+            throw IllegalStateException("User is not authorized to delete this bookmark")
+        }
         if (!listingBookmarkRepository.existsById(id)) {
             throw NoSuchElementException("No bookmark found with id=$id")
         }
