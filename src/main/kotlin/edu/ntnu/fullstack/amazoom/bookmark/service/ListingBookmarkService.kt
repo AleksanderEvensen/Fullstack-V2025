@@ -2,9 +2,9 @@ package edu.ntnu.fullstack.amazoom.bookmark.service
 
 import edu.ntnu.fullstack.amazoom.auth.entity.User
 import edu.ntnu.fullstack.amazoom.auth.repository.UserRepository
+import edu.ntnu.fullstack.amazoom.bookmark.controller.CreateOrUpdateListingBookmarkRequest
+import edu.ntnu.fullstack.amazoom.bookmark.controller.ListingBookmarkResponse
 import edu.ntnu.fullstack.amazoom.bookmark.exception.BookmarkOwnListingException
-import edu.ntnu.fullstack.amazoom.bookmark.dto.CreateOrUpdateListingBookmarkRequest
-import edu.ntnu.fullstack.amazoom.bookmark.dto.ListingBookmarkResponse
 import edu.ntnu.fullstack.amazoom.bookmark.entity.ListingBookmark
 import edu.ntnu.fullstack.amazoom.bookmark.exception.BookmarkAlreadyExists
 import edu.ntnu.fullstack.amazoom.bookmark.mapper.ListingBookmarkMapper
