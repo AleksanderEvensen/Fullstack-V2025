@@ -61,8 +61,7 @@ class ListingBookmarkService(
         val authenticatedUser = currentUser.getCurrentAuthenticatedUser().getOrNull()
             ?: throw IllegalStateException("No authenticated user found")
 
-        val allBookmarks = listingBookmarkRepository.findAll()
-            .filter { it.user.id == authenticatedUser.getSub() }
+        val allBookmarks = listingBookmarkRepository.findAllForUser(authenticatedUser.getSub())
 
         return allBookmarks.map { ListingBookmarkMapper.toResponse(it) }
     }
