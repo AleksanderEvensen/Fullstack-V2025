@@ -3,6 +3,7 @@ package edu.ntnu.fullstack.amazoom.listing.dto
 import edu.ntnu.fullstack.amazoom.auth.dto.UserDto
 import edu.ntnu.fullstack.amazoom.auth.entity.User
 import edu.ntnu.fullstack.amazoom.listing.entity.ListingCondition
+import java.time.LocalDateTime
 
 
 data class ListingResponse(
@@ -23,6 +24,7 @@ data class ListingResponse(
     val defects: List<String>,
     val modifications: List<String>,
     val reasonForSelling: String?,
+    val createdAt: LocalDateTime,
 
     // Images
     val images: List<String>

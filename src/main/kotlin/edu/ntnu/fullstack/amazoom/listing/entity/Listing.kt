@@ -3,6 +3,7 @@ package edu.ntnu.fullstack.amazoom.listing.entity
 import edu.ntnu.fullstack.amazoom.auth.entity.User
 import edu.ntnu.fullstack.amazoom.category.entity.Category
 import jakarta.persistence.*
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "listings")
@@ -44,7 +45,7 @@ data class Listing(
     val purchaseDate: String? = null,
     val usageDuration: String? = null,
 
-    @ElementCollection
+    @ElementCollection()
     @CollectionTable(name = "listing_defects", joinColumns = [JoinColumn(name = "listing_id")])
     @Column(name = "defect")
     val defects: List<String> = emptyList(),
@@ -64,13 +65,13 @@ data class Listing(
 
     // creation and update timestamps
     @Column(name = "created_at", updatable = false)
-    val createdAt: Long = System.currentTimeMillis(),
+    val createdAt: LocalDateTime = LocalDateTime.now(),
 
     @Column(name = "updated_at")
-    var updatedAt: Long = System.currentTimeMillis()
+    var updatedAt: LocalDateTime = LocalDateTime.now(),
 ) {
     @PreUpdate
     fun preUpdate() {
-        updatedAt = System.currentTimeMillis()
+        updatedAt = LocalDateTime.now()
     }
 }

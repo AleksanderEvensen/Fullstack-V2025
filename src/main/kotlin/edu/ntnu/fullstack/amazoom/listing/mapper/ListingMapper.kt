@@ -85,6 +85,7 @@ object ListingMapper {
             modifications = entity.modifications,
             reasonForSelling = entity.reasonForSelling,
             seller = UserMapper.toDto(entity.seller),
+            createdAt = entity.createdAt,
             images = entity.images
         )
     }
