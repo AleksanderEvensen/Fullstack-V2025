@@ -1,8 +1,7 @@
 package edu.ntnu.fullstack.amazoom.bookmark.controller
 
-import edu.ntnu.fullstack.amazoom.bookmark.dto.CreateOrUpdateListingBookmarkRequest
-import edu.ntnu.fullstack.amazoom.bookmark.dto.ListingBookmarkResponse
 import edu.ntnu.fullstack.amazoom.bookmark.service.ListingBookmarkService
+import edu.ntnu.fullstack.amazoom.listing.dto.ListingResponse
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -45,3 +44,14 @@ class ListingBookmarkController(private val listingBookmarkService: ListingBookm
         return ResponseEntity.ok(responses)
     }
 }
+
+
+
+data class ListingBookmarkResponse(
+    val id: Long,
+    val listing: ListingResponse,
+)
+
+data class CreateOrUpdateListingBookmarkRequest(
+    val listingId: Long,
+)
