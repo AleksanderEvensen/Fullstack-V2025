@@ -67,6 +67,10 @@ data class Listing(
     val createdAt: Long = System.currentTimeMillis(),
 
     @Column(name = "updated_at")
-    val updatedAt: Long = System.currentTimeMillis()
-)
-
+    var updatedAt: Long = System.currentTimeMillis()
+) {
+    @PreUpdate
+    fun preUpdate() {
+        updatedAt = System.currentTimeMillis()
+    }
+}
