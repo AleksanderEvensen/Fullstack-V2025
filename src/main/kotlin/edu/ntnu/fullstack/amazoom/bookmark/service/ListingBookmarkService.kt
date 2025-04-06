@@ -13,7 +13,6 @@ import edu.ntnu.fullstack.amazoom.common.service.CurrentUser
 import edu.ntnu.fullstack.amazoom.listing.entity.Listing
 import edu.ntnu.fullstack.amazoom.listing.exception.ListingNotFoundException
 import edu.ntnu.fullstack.amazoom.listing.repository.ListingRepository
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import kotlin.jvm.optionals.getOrNull
 
