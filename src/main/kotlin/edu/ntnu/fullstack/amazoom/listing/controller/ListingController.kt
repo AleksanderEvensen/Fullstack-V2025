@@ -3,7 +3,10 @@ package edu.ntnu.fullstack.amazoom.listing.controller
 import edu.ntnu.fullstack.amazoom.listing.dto.CreateOrUpdateListingRequest
 import edu.ntnu.fullstack.amazoom.listing.dto.ListingResponse
 import edu.ntnu.fullstack.amazoom.listing.service.ListingService
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 /**
@@ -70,7 +73,13 @@ class ListingController(
      * @return a list of all listing responses
      */
     @GetMapping
-    fun listAll(): List<ListingResponse> {
-        return listingService.listAllListings()
+    fun getPaginatedAndSortedListings(
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "10") size: Int,
+        @RequestParam(defaultValue = "price") sortBy: String,
+        @RequestParam(defaultValue = "ASC") direction: Sort.Direction
+    ): ResponseEntity<Page<ListingResponse>> {
+        val paginatedListings = listingService.getPaginatedAndSortedListings(page, size, sortBy, direction)
+        return ResponseEntity.ok(paginatedListings)
     }
 }

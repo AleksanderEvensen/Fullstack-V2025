@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 
 
-@ControllerAdvice(basePackages = ["edu.ntnu.fullstack.amazoom.category"])
+@ControllerAdvice(basePackages = ["edu.ntnu.fullstack.amazoom"])
 class CategoryExceptionHandler {
 
     @ExceptionHandler(CategoryNotFoundException::class)
