@@ -18,6 +18,9 @@ interface Props {
 const props = defineProps<Props>()
 
 const icon = computed<IconType>(() => {
+    if (icons[props.name] === undefined) {
+        return icons['AlertTriangle'] as IconType
+    }
     return icons[props.name] as IconType
 })
 </script>

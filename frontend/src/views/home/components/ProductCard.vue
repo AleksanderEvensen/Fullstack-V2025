@@ -4,22 +4,12 @@ import { HeartIcon, MessageCircleIcon } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useI18n } from 'vue-i18n'
+import { formatAddress } from '@/lib/utils'
+import type { components } from '@/lib/api/schema'
 
 const { t } = useI18n()
 
-interface Product {
-    id: number
-    title: string
-    price: number
-    location: string
-    image: string
-    seller: {
-        name: string
-        avatar: string
-    }
-    condition: string
-    postedAt: string
-}
+type Product = components['schemas']['ListingResponse']
 
 defineProps<{
     product: Product
@@ -29,7 +19,7 @@ defineProps<{
 <template>
     <div class="product-card">
         <RouterLink :to="`/marketplace/product/${product.id}`" class="product-image">
-            <img :src="product.image" :alt="product.title" />
+            <img :src="product.images[0]" :alt="product.title" />
         </RouterLink>
         <div class="product-info">
             <RouterLink :to="`/marketplace/product/${product.id}`" class="product-title">
@@ -39,12 +29,13 @@ defineProps<{
             <div class="product-meta">
                 <div class="seller-info">
                     <Avatar class="seller-avatar">
-                        <AvatarImage :src="product.seller.avatar" :alt="product.seller.name" />
-                        <AvatarFallback>{{ product.seller.name[0] }}</AvatarFallback>
+                        <AvatarImage :src="product.seller.profileImageUrl ?? ''" :alt="product.seller.firstName" />
+                        <AvatarFallback>{{ product.seller.firstName[0] }}</AvatarFallback>
                     </Avatar>
-                    <span class="seller-name">{{ product.seller.name }}</span>
+                    <span class="seller-name">{{ product.seller.firstName }}</span>
                 </div>
-                <div class="product-location">{{ product.location }}</div>
+                <div class="product-location" v-if="product.seller.address">{{ formatAddress(product.seller.address) }}
+                </div>
             </div>
             <div class="product-actions">
                 <Button variant="ghost" size="icon" class="action-button">

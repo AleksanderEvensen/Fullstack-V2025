@@ -1,19 +1,8 @@
 <script setup lang="ts">
+import type { components } from '@/lib/api/schema';
 import ProductCard from './ProductCard.vue'
 
-interface Product {
-    id: number
-    title: string
-    price: number
-    location: string
-    image: string
-    seller: {
-        name: string
-        avatar: string
-    }
-    condition: string
-    postedAt: string
-}
+type Product = components['schemas']['ListingResponse']
 
 defineProps<{
     products: Product[]

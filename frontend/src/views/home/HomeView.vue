@@ -3,205 +3,22 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { RouterLink } from 'vue-router'
 import { Icon, type IconName } from '@/components/ui/icon'
-import { ref } from 'vue'
 import ProductGrid from '@/views/home/components/ProductGrid.vue'
 import { MapIcon, Search } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
-
+import { getListings } from '@/lib/api/queries/listings'
+import { getCategories } from '@/lib/api/queries/categories'
 const { t } = useI18n()
-
-type CategoryType = {
-  name: string
-  icon: IconName
+const { data } = getListings({
+  page: 0,
+  size: 10,
+  direction: 'DESC',
+  sortBy: 'createdAt',
+})
+const { data: categoriesData, isLoading: categoriesLoading } = getCategories()
+function icon(iconName: string): IconName {
+  return iconName as IconName
 }
-
-const categories = ref<CategoryType[]>([
-  {
-    name: 'Elbil',
-    icon: 'Car',
-  },
-  {
-    name: 'Bil',
-    icon: 'Car',
-  },
-  {
-    name: 'Båt',
-    icon: 'Ship',
-  },
-  {
-    name: 'Sykkel',
-    icon: 'Bike',
-  },
-  {
-    name: 'Møbler',
-    icon: 'Sofa',
-  },
-  {
-    name: 'Reise',
-    icon: 'Plane',
-  },
-  {
-    name: 'Bagasje',
-    icon: 'Luggage',
-  },
-  {
-    name: 'Test2',
-    icon: 'Luggage',
-  },
-  {
-    name: 'Test3',
-    icon: 'Luggage',
-  },
-  {
-    name: 'Test4',
-    icon: 'Luggage',
-  },
-  {
-    name: 'Test4',
-    icon: 'Luggage',
-  },
-  {
-    name: 'Test4',
-    icon: 'Luggage',
-  },
-  {
-    name: 'Test4',
-    icon: 'Luggage',
-  },
-])
-
-const popularProducts = [
-  {
-    id: 1,
-    title: 'Tesla Model 3 Long Range',
-    price: 5700000,
-    location: 'Oslo',
-    image: 'https://picsum.photos/id/1/400/400',
-    seller: {
-      name: 'Tesla Motors',
-      avatar: 'https://github.com/shadcn.png'
-    },
-    condition: 'New',
-    postedAt: '2024-03-15'
-  },
-  {
-    id: 2,
-    title: 'COWI - Senior Developer Position',
-    price: 0,
-    location: 'Oslo',
-    image: 'https://picsum.photos/id/2/400/400',
-    seller: {
-      name: 'COWI',
-      avatar: 'https://github.com/shadcn.png'
-    },
-    condition: 'Job Listing',
-    postedAt: '2024-03-14'
-  },
-  {
-    id: 3,
-    title: 'Nike Air Max 270',
-    price: 700,
-    location: 'Trondheim',
-    image: 'https://picsum.photos/id/3/400/400',
-    seller: {
-      name: 'Sneaker Store',
-      avatar: 'https://github.com/shadcn.png'
-    },
-    condition: 'Like New',
-    postedAt: '2024-03-13'
-  },
-  {
-    id: 4,
-    title: 'Nike Air Max 270',
-    price: 700,
-    location: 'Trondheim',
-    image: 'https://picsum.photos/id/3/400/400',
-    seller: {
-      name: 'Sneaker Store',
-      avatar: 'https://github.com/shadcn.png'
-    },
-    condition: 'Like New',
-    postedAt: '2024-03-13'
-  },
-  {
-    id: 3,
-    title: 'Nike Air Max 270',
-    price: 700,
-    location: 'Trondheim',
-    image: 'https://picsum.photos/id/3/400/400',
-    seller: {
-      name: 'Sneaker Store',
-      avatar: 'https://github.com/shadcn.png'
-    },
-    condition: 'Like New',
-    postedAt: '2024-03-13'
-  },
-  {
-    id: 3,
-    title: 'Nike Air Max 270',
-    price: 700,
-    location: 'Trondheim',
-    image: 'https://picsum.photos/id/3/400/400',
-    seller: {
-      name: 'Sneaker Store',
-      avatar: 'https://github.com/shadcn.png'
-    },
-    condition: 'Like New',
-    postedAt: '2024-03-13'
-  },
-  {
-    id: 3,
-    title: 'Nike Air Max 270',
-    price: 700,
-    location: 'Trondheim',
-    image: 'https://picsum.photos/id/3/400/400',
-    seller: {
-      name: 'Sneaker Store',
-      avatar: 'https://github.com/shadcn.png'
-    },
-    condition: 'Like New',
-    postedAt: '2024-03-13'
-  },
-  {
-    id: 3,
-    title: 'Nike Air Max 270',
-    price: 700,
-    location: 'Trondheim',
-    image: 'https://picsum.photos/id/3/400/400',
-    seller: {
-      name: 'Sneaker Store',
-      avatar: 'https://github.com/shadcn.png'
-    },
-    condition: 'Like New',
-    postedAt: '2024-03-13'
-  },
-  {
-    id: 3,
-    title: 'Nike Air Max 270',
-    price: 700,
-    location: 'Trondheim',
-    image: 'https://picsum.photos/id/3/400/400',
-    seller: {
-      name: 'Sneaker Store',
-      avatar: 'https://github.com/shadcn.png'
-    },
-    condition: 'Like New',
-    postedAt: '2024-03-13'
-  },
-  {
-    id: 3,
-    title: 'Nike Air Max 270',
-    price: 700,
-    location: 'Trondheim',
-    image: 'https://picsum.photos/id/3/400/400',
-    seller: {
-      name: 'Sneaker Store',
-      avatar: 'https://github.com/shadcn.png'
-    },
-    condition: 'Like New',
-    postedAt: '2024-03-13'
-  }
-]
 </script>
 
 <template>
@@ -226,17 +43,17 @@ const popularProducts = [
 
     <!-- Categories -->
     <div class="categories-container">
-      <RouterLink v-for="category in categories" :to="`/categories/${category.name}`" class="category-item"
+      <RouterLink v-for="category in categoriesData" :to="`/categories/${category.name}`" class="category-item"
         :key="category.name">
-        <Icon :name="category.icon" />
+        <Icon :name="icon(category.icon)" />
         <div class="category-name">{{ category.name }}</div>
       </RouterLink>
     </div>
 
     <!-- Popular announcements -->
     <div class="popular-section">
-      <h2 class="section-title">{{ t('home.popularListings') }}</h2>
-      <ProductGrid :products="popularProducts" />
+      <h2 class="section-title">{{ t('home.recentListings') }}</h2>
+      <ProductGrid :products="data?.content ?? []" />
     </div>
   </div>
 </template>
@@ -352,10 +169,6 @@ const popularProducts = [
 
 /* Responsive adjustments */
 @media (max-width: 64rem) {
-  .category-row {
-    justify-content: flex-start;
-    gap: 5px;
-  }
 
   .category-item {
     width: calc(25% - 10px);

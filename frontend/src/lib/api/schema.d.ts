@@ -36,6 +36,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/auth/register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["register"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["refresh"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["logout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["login"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/listings": {
         parameters: {
             query?: never;
@@ -43,7 +107,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["listAll"];
+        get: operations["getPaginatedAndSortedListings"];
         put?: never;
         post: operations["createListing"];
         delete?: never;
@@ -68,6 +132,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/bookmarks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listAllBookmarksForUser"];
+        put?: never;
+        post: operations["createBookmark"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/bookmarks/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["deleteBookmark"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -77,7 +173,7 @@ export interface components {
             /** Format: int64 */
             categoryId: number;
             /** @enum {string} */
-            condition: "New" | "Like_New" | "Very_Good" | "Good" | "Acceptable";
+            condition: "NEW" | "LIKE_NEW" | "VERY_GOOD" | "GOOD" | "ACCEPTABLE";
             /** Format: double */
             price: number;
             /** Format: double */
@@ -94,6 +190,13 @@ export interface components {
             reasonForSelling?: string;
             images?: string[];
         };
+        Address: {
+            streetName?: string;
+            streetNumber?: string;
+            postalCode?: string;
+            city?: string;
+            country?: string;
+        };
         ListingResponse: {
             /** Format: int64 */
             id: number;
@@ -101,12 +204,13 @@ export interface components {
             /** Format: int64 */
             categoryId: number;
             /** @enum {string} */
-            condition: "New" | "Like_New" | "Very_Good" | "Good" | "Acceptable";
+            condition: "NEW" | "LIKE_NEW" | "VERY_GOOD" | "GOOD" | "ACCEPTABLE";
             /** Format: double */
             price: number;
             /** Format: double */
             originalPrice?: number;
             description: string;
+            seller: components["schemas"]["UserDto"];
             modelYear?: string;
             manufacturer?: string;
             model?: string;
@@ -116,7 +220,18 @@ export interface components {
             defects: string[];
             modifications: string[];
             reasonForSelling?: string;
+            /** Format: date-time */
+            createdAt: string;
             images: string[];
+        };
+        UserDto: {
+            /** Format: int64 */
+            id: number;
+            firstName: string;
+            lastName: string;
+            email: string;
+            address?: components["schemas"]["Address"];
+            profileImageUrl?: string;
         };
         CreateOrUpdateCategoryRequest: {
             name: string;
@@ -131,6 +246,65 @@ export interface components {
             description: string;
             translationString: string;
             icon: string;
+        };
+        RegisterRequest: {
+            firstName: string;
+            lastName: string;
+            email: string;
+            password: string;
+            phoneNumber: string;
+        };
+        AuthResponse: {
+            accessToken: string;
+            refreshToken: string;
+            message: string;
+        };
+        LoginRequest: {
+            email: string;
+            password: string;
+        };
+        CreateOrUpdateListingBookmarkRequest: {
+            /** Format: int64 */
+            listingId: number;
+        };
+        ListingBookmarkResponse: {
+            /** Format: int64 */
+            id: number;
+            listing: components["schemas"]["ListingResponse"];
+        };
+        PageListingResponse: {
+            /** Format: int32 */
+            totalPages?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            size?: number;
+            content?: components["schemas"]["ListingResponse"][];
+            /** Format: int32 */
+            number?: number;
+            sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            numberOfElements?: number;
+            pageable?: components["schemas"]["PageableObject"];
+            empty?: boolean;
+        };
+        PageableObject: {
+            /** Format: int64 */
+            offset?: number;
+            sort?: components["schemas"]["SortObject"];
+            /** Format: int32 */
+            pageNumber?: number;
+            /** Format: int32 */
+            pageSize?: number;
+            paged?: boolean;
+            unpaged?: boolean;
+        };
+        SortObject: {
+            empty?: boolean;
+            sorted?: boolean;
+            unsorted?: boolean;
         };
     };
     responses: never;
@@ -277,7 +451,31 @@ export interface operations {
             };
         };
     };
-    listAll: {
+    register: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["AuthResponse"];
+                };
+            };
+        };
+    };
+    refresh: {
         parameters: {
             query?: never;
             header?: never;
@@ -292,7 +490,74 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ListingResponse"][];
+                    "*/*": components["schemas"]["AuthResponse"];
+                };
+            };
+        };
+    };
+    logout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    login: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["AuthResponse"];
+                };
+            };
+        };
+    };
+    getPaginatedAndSortedListings: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+                sortBy?: string;
+                direction?: "ASC" | "DESC";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageListingResponse"];
                 };
             };
         };
@@ -362,6 +627,70 @@ export interface operations {
                 content: {
                     "*/*": components["schemas"]["CategoryResponse"];
                 };
+            };
+        };
+    };
+    listAllBookmarksForUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ListingBookmarkResponse"][];
+                };
+            };
+        };
+    };
+    createBookmark: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateOrUpdateListingBookmarkRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ListingBookmarkResponse"];
+                };
+            };
+        };
+    };
+    deleteBookmark: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
