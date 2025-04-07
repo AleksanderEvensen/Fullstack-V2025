@@ -2,6 +2,7 @@ package edu.ntnu.fullstack.amazoom.chat.entity
 
 import edu.ntnu.fullstack.amazoom.chat.dto.ChatMessageDto
 import edu.ntnu.fullstack.amazoom.common.entity.User
+import edu.ntnu.fullstack.amazoom.listing.entity.Listing
 import jakarta.persistence.*
 import java.time.Instant
 
@@ -17,6 +18,10 @@ data class ChatMessage(
 
     @ManyToOne(fetch = FetchType.LAZY)
     val recipient: User,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "listing_id", nullable = false)
+    val listing: Listing,
 
     @Column(nullable = false, length = 2000)
     val content: String,

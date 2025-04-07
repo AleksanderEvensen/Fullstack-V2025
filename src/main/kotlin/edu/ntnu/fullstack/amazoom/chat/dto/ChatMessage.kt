@@ -12,12 +12,6 @@ data class ChatMessageDto(
     val read: Boolean
 )
 
-data class ChatPartnerDto(
-    val user: UserDto,
-    val unreadCount: Long,
-    val lastMessage: LastMessageDto
-)
-
 data class LastMessageDto (
     val content: String,
     val timestamp: Instant,
@@ -27,10 +21,12 @@ data class LastMessageDto (
 data class ReadReceiptDto(
     val senderId: UUID,
     val recipientId: UUID,
-    val timestamp: Instant
+    val timestamp: Instant,
+    val listingId: Long
 )
 
 data class ChatMessageRequestDto(
+    val listingId: Long,
     val recipientId: UUID,
     val content: String
 )

@@ -1,7 +1,7 @@
 package edu.ntnu.fullstack.amazoom.chat.controller
 
 import edu.ntnu.fullstack.amazoom.chat.dto.ChatMessageDto
-import edu.ntnu.fullstack.amazoom.chat.dto.ChatPartnerDto
+import edu.ntnu.fullstack.amazoom.chat.dto.ConversationSummaryDto
 import edu.ntnu.fullstack.amazoom.chat.service.ChatMessageService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -19,31 +19,34 @@ class ChatMessageController(
     fun getConversations(
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "20") size: Int
-    ): ResponseEntity<Page<ChatPartnerDto>> {
+    ): ResponseEntity<Page<ConversationSummaryDto>> {
         val pageable = PageRequest.of(page, size)
-        return ResponseEntity.ok(chatMessageService.getChatPartners(pageable))
+        return ResponseEntity.ok(chatMessageService.getUniqueConversations(pageable))
     }
 
-    @GetMapping("/conversation/{otherUserId}")
+    @GetMapping("/conversation/{listingId}/{otherUserId}")
     fun getConversation(
+        @PathVariable listingId: Long,
         @PathVariable otherUserId: UUID,
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "20") size: Int
     ): ResponseEntity<Page<ChatMessageDto>> {
         val pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "timestamp"))
         return ResponseEntity.ok(
-            chatMessageService.getMessagesBetweenUsers(
+            chatMessageService.getMessagesForConversation(
                 otherUserId,
+                listingId,
                 pageable
             )
         )
     }
 
-    @PostMapping("/read/{otherUserId}")
+    @PostMapping("/read/{listingId}/{otherUserId}")
     fun markMessagesAsRead(
+        @PathVariable listingId: Long,
         @PathVariable otherUserId: UUID,
     ): ResponseEntity<Unit> {
-        chatMessageService.markMessagesAsRead(otherUserId)
+        chatMessageService.markMessagesAsRead(otherUserId, listingId)
         return ResponseEntity.noContent().build()
     }
 }

@@ -4,12 +4,14 @@ import edu.ntnu.fullstack.amazoom.chat.dto.*
 import edu.ntnu.fullstack.amazoom.chat.entity.ChatMessage
 import edu.ntnu.fullstack.amazoom.chat.repository.ChatMessageRepository
 import edu.ntnu.fullstack.amazoom.common.service.UserService
+import edu.ntnu.fullstack.amazoom.listing.service.ListingService
 import jakarta.transaction.Transactional
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Service
+import org.springframework.web.util.HtmlUtils
 import java.time.Instant
 import java.util.UUID
 
@@ -17,63 +19,81 @@ import java.util.UUID
 class ChatMessageService(
     private val chatMessageRepository: ChatMessageRepository,
     private val simpMessagingTemplate: SimpMessagingTemplate,
-    private val userService: UserService
+    private val userService: UserService,
+    private val listingService: ListingService
 ) {
-    fun getChatPartners(pageable: Pageable): Page<ChatPartnerDto> {
-        val currentUserId = userService.getCurrentUser().id
+    fun getUniqueConversations(pageable: Pageable): Page<ConversationSummaryDto> {
+        val currentUser = userService.getCurrentUser()
+        val currentUserId = currentUser.id
 
-        return chatMessageRepository.findDistinctChatPartners(currentUserId, pageable).map { user ->
-            val latestMessagePageable = PageRequest.of(0, 1)
-            val latestMessage = chatMessageRepository.findLatestMessageBetweenUsers(
-                currentUserId,
-                user.id,
-                latestMessagePageable
-            ).firstOrNull()
+        val uniqueConversations = chatMessageRepository.findUniqueConversationIds(currentUserId, pageable)
 
-            val unreadCount = chatMessageRepository.countUnreadMessagesFromUser(currentUserId, user.id)
+        return uniqueConversations.map { conversation ->
+            val otherUserId = conversation.otherUserId
+            val listingId = conversation.listingId
 
-            ChatPartnerDto(
-                user = user.toDto(),
-                unreadCount = unreadCount,
-                lastMessage = latestMessage?.let { LastMessageDto(
-                    content = latestMessage.content,
-                    timestamp = latestMessage.timestamp,
-                    isFromCurrentUser = latestMessage.sender.id == currentUserId
-                ) } ?: LastMessageDto(
-                    content = "",
-                    timestamp = Instant.EPOCH,
-                    isFromCurrentUser = false
+            val otherUser = userService.getUserById(otherUserId)
+            val listing = listingService.getListing(listingId)
+            val unreadCount = chatMessageRepository.countUnreadMessagesForConversation(currentUserId, otherUserId, listingId)
+
+            val latestMessagePage = PageRequest.of(0, 1)
+            val latestMessage = chatMessageRepository.findMessagesBetweenUsersForListing(currentUserId, otherUserId, listingId, latestMessagePage).firstOrNull()
+
+            val lastMessageDto = latestMessage?.let {
+                LastMessageDto(
+                    content = it.content,
+                    timestamp = it.timestamp,
+                    isFromCurrentUser = it.sender.id == currentUserId
                 )
+            }
+
+
+            // Build the conversation summary
+            ConversationSummaryDto(
+                user = otherUser.toDto(),
+                listingId = listingId,
+                listingTitle = listing.title,
+                unreadCount = unreadCount,
+                lastMessage = lastMessageDto
             )
         }
     }
 
-    fun getMessagesBetweenUsers(
+    @Transactional
+    fun getMessagesForConversation(
         otherUserId: UUID,
+        listingId: Long,
         pageable: Pageable,
     ): Page<ChatMessageDto> {
         val userId = userService.getCurrentUser().id
 
-        val messages = chatMessageRepository.findMessagesBetweenUsers(userId, otherUserId, pageable)
+        val messages = chatMessageRepository.findMessagesBetweenUsersForListing(
+            userId,
+            otherUserId,
+            listingId,
+            pageable
+        )
 
-        return messages.map {
-            it.toDto()
-        }
+        markMessagesAsRead(otherUserId, listingId)
+
+        return messages.map { it.toDto() }
     }
 
     @Transactional
     fun markMessagesAsRead(
-        otherUserId: UUID
+        otherUserId: UUID,
+        listingId: Long
     ) {
         val userId = userService.getCurrentUser().id
 
-        val count = chatMessageRepository.markMessagesAsRead(userId, otherUserId)
+        val count = chatMessageRepository.markMessagesAsRead(userId, otherUserId, listingId)
 
         if (count > 0) {
             val readReceipt = ReadReceiptDto(
                 senderId = userId,
                 recipientId = otherUserId,
-                timestamp = Instant.now()
+                timestamp = Instant.now(),
+                listingId = listingId
             )
 
             simpMessagingTemplate.convertAndSendToUser(
@@ -89,10 +109,17 @@ class ChatMessageService(
         val sender = userService.getCurrentUser()
         val recipient = userService.getUserById(request.recipientId)
 
+        val listing = listingService.getListing(request.listingId)
+
+        verifyConversationAccess(sender.id, recipient.id, listing.id)
+
+        val sanitizedContent = HtmlUtils.htmlEscape(request.content)
+
         val chatMessage = ChatMessage(
             sender = sender,
             recipient = recipient,
-            content = request.content,
+            listing = listing,
+            content = sanitizedContent,
             timestamp = Instant.now(),
             read = false
         )
@@ -107,5 +134,13 @@ class ChatMessageService(
         )
 
         return messageDto
+    }
+
+    private fun verifyConversationAccess(senderId: UUID, recipientId: UUID, listingId: Long) {
+        val listing = listingService.getListing(listingId)
+
+        if (listing.seller.id != senderId && listing.seller.id != recipientId) {
+            throw IllegalArgumentException("Invalid conversation: neither participant is the listing owner")
+        }
     }
 }
