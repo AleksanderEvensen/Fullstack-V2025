@@ -1,6 +1,6 @@
 package edu.ntnu.fullstack.amazoom.bookmark.mapper
 
-import edu.ntnu.fullstack.amazoom.auth.entity.User
+import edu.ntnu.fullstack.amazoom.common.entity.User
 import edu.ntnu.fullstack.amazoom.bookmark.controller.ListingBookmarkResponse
 import edu.ntnu.fullstack.amazoom.bookmark.entity.ListingBookmark
 import edu.ntnu.fullstack.amazoom.listing.entity.Listing

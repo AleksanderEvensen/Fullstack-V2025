@@ -1,9 +1,9 @@
 package edu.ntnu.fullstack.amazoom.listing.service
 
-import edu.ntnu.fullstack.amazoom.auth.repository.UserRepository
+import edu.ntnu.fullstack.amazoom.common.repository.UserRepository
 import edu.ntnu.fullstack.amazoom.category.exception.CategoryNotFoundException
 import edu.ntnu.fullstack.amazoom.category.repository.CategoryRepository
-import edu.ntnu.fullstack.amazoom.common.service.CurrentUser
+import edu.ntnu.fullstack.amazoom.common.service.UserService
 import edu.ntnu.fullstack.amazoom.listing.dto.CreateOrUpdateListingRequest
 import edu.ntnu.fullstack.amazoom.listing.dto.ListingResponse
 import edu.ntnu.fullstack.amazoom.listing.mapper.ListingMapper
@@ -13,20 +13,21 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
+import java.util.UUID
 
 @Service
 class ListingService(
     private val listingRepository: ListingRepository,
     private val categoryRepository: CategoryRepository,
     private val userRepository: UserRepository,
-    private val currentUser: CurrentUser
+    private val userService: UserService
 ) {
 
     fun createListing(request: CreateOrUpdateListingRequest): ListingResponse {
         val category = categoryRepository.findById(request.categoryId)
             .orElseThrow { CategoryNotFoundException("No category found with ID=${request.categoryId}") }
 
-        val sellerId = currentUser.getCurrentAuthenticatedUser()
+        val sellerId = userService.getCurrentAuthenticatedUser()
             .orElseThrow { IllegalStateException("No authenticated user found") }
             .getSub()
 
@@ -69,7 +70,7 @@ class ListingService(
         return listingsPage.map { ListingMapper.toResponseDto(it) }
     }
 
-    fun isListingOwner(listingId: Long, userId: Long): Boolean {
+    fun isListingOwner(listingId: Long, userId: UUID): Boolean {
         val listing = listingRepository.findById(listingId)
         return if (listing.isPresent) {
             val listingEntity = listing.get()

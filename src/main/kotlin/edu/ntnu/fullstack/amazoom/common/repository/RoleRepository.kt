@@ -1,7 +1,7 @@
-package edu.ntnu.fullstack.amazoom.auth.repository
+package edu.ntnu.fullstack.amazoom.common.repository
 
-import edu.ntnu.fullstack.amazoom.auth.entity.Role
-import edu.ntnu.fullstack.amazoom.auth.entity.RoleName
+import edu.ntnu.fullstack.amazoom.common.entity.Role
+import edu.ntnu.fullstack.amazoom.common.entity.RoleName
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 

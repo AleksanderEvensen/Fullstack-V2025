@@ -1,6 +1,6 @@
 package edu.ntnu.fullstack.amazoom.listing.entity
 
-import edu.ntnu.fullstack.amazoom.auth.entity.User
+import edu.ntnu.fullstack.amazoom.common.entity.User
 import edu.ntnu.fullstack.amazoom.category.entity.Category
 import jakarta.persistence.*
 import java.time.LocalDateTime

@@ -1,4 +1,4 @@
-package edu.ntnu.fullstack.amazoom.auth.entity
+package edu.ntnu.fullstack.amazoom.common.entity
 
 import jakarta.persistence.*
 

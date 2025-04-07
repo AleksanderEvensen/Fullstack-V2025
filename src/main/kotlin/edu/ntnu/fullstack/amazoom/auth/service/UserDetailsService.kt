@@ -1,7 +1,7 @@
 package edu.ntnu.fullstack.amazoom.auth.service
 
-import edu.ntnu.fullstack.amazoom.auth.entity.User
-import edu.ntnu.fullstack.amazoom.auth.repository.UserRepository
+import edu.ntnu.fullstack.amazoom.common.entity.User
+import edu.ntnu.fullstack.amazoom.common.repository.UserRepository
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails

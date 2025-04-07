@@ -2,6 +2,8 @@ package edu.ntnu.fullstack.amazoom.auth.controller
 
 import edu.ntnu.fullstack.amazoom.common.dto.ErrorResponse
 import edu.ntnu.fullstack.amazoom.auth.exception.*
+import edu.ntnu.fullstack.amazoom.common.exception.MissingRoleException
+import edu.ntnu.fullstack.amazoom.common.exception.UserAlreadyExistsException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.BadCredentialsException

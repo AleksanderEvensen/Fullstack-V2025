@@ -1,6 +1,6 @@
 package edu.ntnu.fullstack.amazoom.listing.mapper
 
-import edu.ntnu.fullstack.amazoom.auth.entity.User
+import edu.ntnu.fullstack.amazoom.common.entity.User
 import edu.ntnu.fullstack.amazoom.auth.mapper.UserMapper
 import edu.ntnu.fullstack.amazoom.listing.dto.CreateOrUpdateListingRequest
 import edu.ntnu.fullstack.amazoom.listing.dto.ListingResponse

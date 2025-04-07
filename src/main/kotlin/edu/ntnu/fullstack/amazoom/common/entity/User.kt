@@ -1,14 +1,17 @@
-package edu.ntnu.fullstack.amazoom.auth.entity
+package edu.ntnu.fullstack.amazoom.common.entity
 
+import edu.ntnu.fullstack.amazoom.auth.entity.RefreshToken
+import edu.ntnu.fullstack.amazoom.common.dto.UserDto
 import jakarta.persistence.*
 import java.time.Instant
+import java.util.UUID
 
 @Entity
 @Table(name = "users")
 data class User(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
+    @GeneratedValue(strategy = GenerationType.UUID)
+    val id: UUID = UUID.randomUUID(),
 
     @Column(nullable = false)
     val firstName: String,
@@ -26,7 +29,7 @@ data class User(
     val phoneNumber: String,
 
     @Embedded
-    val address: Address,
+    val address: Address? = null,
 
     val profileImageUrl: String? = null,
 
@@ -44,17 +47,26 @@ data class User(
     val refreshTokens: MutableList<RefreshToken> = mutableListOf()
 ) {
     fun getFullName() = "$firstName $lastName"
+
+    fun toDto(): UserDto {
+        return UserDto(
+            id,
+            firstName,
+            lastName,
+            profileImageUrl
+        )
+    }
 }
 
 @Embeddable
 data class Address(
-    val streetName: String? = null,
+    val streetName: String,
 
-    val streetNumber: String? = null,
+    val streetNumber: String,
 
-    val postalCode: String? = null,
+    val postalCode: String,
 
-    val city: String? = null,
+    val city: String,
 
-    val country: String? = null
+    val country: String
 )

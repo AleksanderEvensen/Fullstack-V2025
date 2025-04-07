@@ -1,5 +1,6 @@
 package edu.ntnu.fullstack.amazoom.auth.entity
 
+import edu.ntnu.fullstack.amazoom.common.entity.User
 import jakarta.persistence.*
 import java.time.Instant
 
