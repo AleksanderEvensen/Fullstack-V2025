@@ -1,12 +1,11 @@
 package edu.ntnu.fullstack.amazoom.listing.dto
 
-import edu.ntnu.fullstack.amazoom.auth.dto.UserDto
-import edu.ntnu.fullstack.amazoom.auth.entity.User
+import edu.ntnu.fullstack.amazoom.common.dto.UserDto
 import edu.ntnu.fullstack.amazoom.listing.entity.ListingCondition
 import java.time.LocalDateTime
 
 
-data class ListingResponse(
+data class ListingDto(
     val id: Long,
     val title: String,
     val categoryId: Long,

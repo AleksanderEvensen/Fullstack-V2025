@@ -1,7 +1,7 @@
 package edu.ntnu.fullstack.amazoom.auth.mapper
 
 import edu.ntnu.fullstack.amazoom.auth.dto.UserDto
-import edu.ntnu.fullstack.amazoom.auth.entity.User
+import edu.ntnu.fullstack.amazoom.common.entity.User
 
 object UserMapper {
 

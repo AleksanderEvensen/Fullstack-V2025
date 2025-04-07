@@ -1,7 +1,7 @@
 package edu.ntnu.fullstack.amazoom.category.mapper
 
 import edu.ntnu.fullstack.amazoom.category.dto.CreateOrUpdateCategoryRequest
-import edu.ntnu.fullstack.amazoom.category.dto.CategoryResponse
+import edu.ntnu.fullstack.amazoom.category.dto.CategoryDto
 import edu.ntnu.fullstack.amazoom.category.entity.Category
 
 object CategoryMapper {
@@ -33,9 +33,8 @@ object CategoryMapper {
     /**
      * Converts a Category entity to a CategoryResponse DTO.
      */
-    fun toResponse(category: Category): CategoryResponse {
-        return CategoryResponse(
-            id = category.id,
+    fun toResponse(category: Category): CategoryDto {
+        return CategoryDto(
             name = category.name,
             description = category.description,
             translationString = category.translationString,

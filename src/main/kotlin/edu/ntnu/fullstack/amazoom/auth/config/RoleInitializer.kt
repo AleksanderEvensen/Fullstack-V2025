@@ -1,8 +1,8 @@
 package edu.ntnu.fullstack.amazoom.auth.config
 
-import edu.ntnu.fullstack.amazoom.auth.entity.Role
-import edu.ntnu.fullstack.amazoom.auth.entity.RoleName
-import edu.ntnu.fullstack.amazoom.auth.repository.RoleRepository
+import edu.ntnu.fullstack.amazoom.common.entity.Role
+import edu.ntnu.fullstack.amazoom.common.entity.RoleName
+import edu.ntnu.fullstack.amazoom.common.repository.RoleRepository
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

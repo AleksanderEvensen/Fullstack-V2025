@@ -1,7 +1,6 @@
 package edu.ntnu.fullstack.amazoom.category.dto
 
-data class CategoryResponse(
-    val id: Long,
+data class CategoryDto(
     val name: String,
     val description: String,
     val translationString: String,
