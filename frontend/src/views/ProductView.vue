@@ -1,107 +1,21 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { StarIcon } from 'lucide-vue-next'
+
+import { computed, ref } from 'vue'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useI18n } from 'vue-i18n'
-
-// Initialize i18n
+import { getListing } from '@/lib/api/queries/listings'
+import { useRoute } from 'vue-router'
+import type { components } from '@/lib/api/schema'
+import { formatAddress } from '@/lib/utils'
 const { t } = useI18n()
-
-interface Seller {
-  name: string
-  avatar: string
-  memberSince: string
-  rating: number
-  totalRatings: number
-  positiveFeedback: string
-}
-
-interface ProductProperty {
-  label: string
-  value: string
-}
-
-interface ListingDetails {
-  modelYear?: string
-  manufacturer?: string
-  model?: string
-  serialNumber?: string
-  purchaseDate?: string
-  usageDuration?: string
-  defects?: string[]
-  modifications?: string[]
-  reasonForSelling?: string
-}
-
-interface Product {
-  id: string
-  title: string
-  price: number
-  originalPrice: number
-  condition: 'New' | 'Like New' | 'Very Good' | 'Good' | 'Acceptable'
-  description: string
-  category: string
-  subcategory: string
-  images: string[]
-  seller: Seller
-  location: string
-  deliveryDate: string
-  properties: ProductProperty[]
-  listingDetails: ListingDetails
-}
-
-// Mock data - replace with actual API call
-const product = ref<Product>({
-  id: '1',
-  title: 'Sony WH-1000XM5 Wireless Noise Cancelling Headphones',
-  price: 348.0,
-  originalPrice: 399.99,
-  condition: 'Like New',
-  description:
-    'Industry-leading noise cancellation. Exceptional sound quality. Nearly new condition, includes original packaging and accessories.',
-  category: 'Electronics',
-  subcategory: 'Headphones',
-  images: ['/headphones-1.jpg', '/headphones-2.jpg', '/headphones-3.jpg'],
-  seller: {
-    name: 'Sony Official Store',
-    avatar: 'https://github.com/shadcn.png',
-    memberSince: 'Jan 2015',
-    rating: 5,
-    totalRatings: 2387,
-    positiveFeedback: '99.8%',
-  },
-  location: 'San Francisco, 94105',
-  deliveryDate: 'Tuesday, April 1',
-  properties: [
-    { label: 'Brand', value: 'Sony' },
-    { label: 'Model', value: 'WH-1000XM5' },
-    { label: 'Color', value: 'Silver' },
-    { label: 'Connectivity', value: 'Bluetooth 5.2' },
-    { label: 'Battery Life', value: 'Up to 30 hours' },
-    { label: 'Noise Cancelling', value: 'Yes' },
-    { label: 'Warranty', value: '1 year remaining' },
-    {
-      label: 'Package Contents',
-      value: 'Headphones, Carrying case, USB-C charging cable, 3.5mm audio cable',
-    },
-  ],
-  listingDetails: {
-    modelYear: '2023',
-    manufacturer: 'Sony Corporation',
-    model: 'WH-1000XM5',
-    serialNumber: 'SN123456789',
-    purchaseDate: '2023-06-15',
-    usageDuration: '8 months',
-    defects: ['Minor scratch on left ear cup', 'Small dent on headband'],
-    modifications: ['Custom ear pads installed', 'Firmware updated to latest version'],
-    reasonForSelling: 'Upgrading to newer model',
-  },
-})
-
+const id = useRoute().params.id as unknown as number
+const { data: product, isLoading } = getListing(id)
 const currentImageIndex = ref(0)
+
+type Address = components['schemas']['Address']
 
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat('NO', {
@@ -113,6 +27,8 @@ const formatPrice = (price: number) => {
 const calculateDiscount = (original: number, current: number) => {
   return Math.round(((original - current) / original) * 100)
 }
+
+
 
 const getTranslatedCondition = (condition: string) => {
   switch (condition) {
@@ -130,10 +46,14 @@ const getTranslatedCondition = (condition: string) => {
       return condition
   }
 }
+
+const shouldDisplayOriginalPrice = computed(() => {
+  return product.value?.originalPrice && product.value.originalPrice > product.value.price
+})
 </script>
 
 <template>
-  <div class="container">
+  <div class="container" v-if="product">
     <div class="product-grid">
       <div class="product-images">
         <div class="main-image">
@@ -161,10 +81,14 @@ const getTranslatedCondition = (condition: string) => {
             <div class="price-section">
               <div class="price-display">
                 <span class="current-price">{{ formatPrice(product.price) }}</span>
-                <span class="original-price">{{ formatPrice(product.originalPrice) }}</span>
-                <span class="discount">
+                <span class="original-price" v-if="shouldDisplayOriginalPrice">{{
+                  formatPrice(product.originalPrice!)
+                }}</span>
+                <span class="discount" v-if="shouldDisplayOriginalPrice && product.originalPrice">
+                  {{ formatPrice(product.originalPrice - product.price) }}
                   {{ t('product.pricing.save') }}
                   {{ calculateDiscount(product.originalPrice, product.price) }}%
+
                 </span>
               </div>
             </div>
@@ -187,24 +111,13 @@ const getTranslatedCondition = (condition: string) => {
           <CardContent>
             <div class="seller-info">
               <Avatar class="seller-avatar">
-                <AvatarImage :src="product.seller.avatar" :alt="product.seller.name" />
-                <AvatarFallback>{{ product.seller.name[0] }}</AvatarFallback>
+                <AvatarImage :src="product.seller.profileImageUrl ?? ''" :alt="product.seller.firstName" />
+                <AvatarFallback>{{ product.seller.firstName[0] }}</AvatarFallback>
               </Avatar>
               <div class="seller-details">
-                <h3>{{ product.seller.name }}</h3>
-                <div class="seller-rating">
-                  <div class="rating-stars">
-                    <StarIcon class="star-icon" />
-                    <span>{{ product.seller.rating }}</span>
-                  </div>
-                  <span>({{ product.seller.totalRatings }} {{ t('product.sellerInfo.ratings') }})</span>
-                </div>
-                <div class="seller-info-text">
-                  {{ t('product.sellerInfo.memberSince') }}: {{ product.seller.memberSince }}
-                </div>
-                <div class="seller-info-text">
-                  {{ product.seller.positiveFeedback }}
-                  {{ t('product.sellerInfo.positiveFeedback') }}
+                <h3>{{ product.seller.firstName }} {{ product.seller.lastName }}</h3>
+                <div class="seller-info-text" v-if="product.seller.address">
+                  {{ formatAddress(product.seller.address) }}
                 </div>
               </div>
             </div>
@@ -231,21 +144,21 @@ const getTranslatedCondition = (condition: string) => {
           </CardHeader>
           <CardContent>
             <div class="details-list">
-              <div class="detail-item" v-if="product.listingDetails.modelYear">
+              <div class="detail-item" v-if="product.modelYear">
                 <span class="detail-label">{{ t('product.labels.modelYear') }}</span>
-                <span class="detail-value">{{ product.listingDetails.modelYear }}</span>
+                <span class="detail-value">{{ product.modelYear }}</span>
               </div>
-              <div class="detail-item" v-if="product.listingDetails.manufacturer">
+              <div class="detail-item" v-if="product.manufacturer">
                 <span class="detail-label">{{ t('product.labels.manufacturer') }}</span>
-                <span class="detail-value">{{ product.listingDetails.manufacturer }}</span>
+                <span class="detail-value">{{ product.manufacturer }}</span>
               </div>
-              <div class="detail-item" v-if="product.listingDetails.model">
+              <div class="detail-item" v-if="product.model">
                 <span class="detail-label">{{ t('product.labels.model') }}</span>
-                <span class="detail-value">{{ product.listingDetails.model }}</span>
+                <span class="detail-value">{{ product.model }}</span>
               </div>
-              <div class="detail-item" v-if="product.listingDetails.serialNumber">
+              <div class="detail-item" v-if="product.serialNumber">
                 <span class="detail-label">{{ t('product.labels.serialNumber') }}</span>
-                <span class="detail-value">{{ product.listingDetails.serialNumber }}</span>
+                <span class="detail-value">{{ product.serialNumber }}</span>
               </div>
             </div>
           </CardContent>
@@ -258,26 +171,26 @@ const getTranslatedCondition = (condition: string) => {
           </CardHeader>
           <CardContent>
             <div class="details-list">
-              <div class="detail-item" v-if="product.listingDetails.purchaseDate">
+              <div class="detail-item" v-if="product.purchaseDate">
                 <span class="detail-label">{{ t('product.labels.purchaseDate') }}</span>
-                <span class="detail-value">{{ product.listingDetails.purchaseDate }}</span>
+                <span class="detail-value">{{ product.purchaseDate }}</span>
               </div>
-              <div class="detail-item" v-if="product.listingDetails.usageDuration">
+              <div class="detail-item" v-if="product.usageDuration">
                 <span class="detail-label">{{ t('product.labels.usageDuration') }}</span>
-                <span class="detail-value">{{ product.listingDetails.usageDuration }}</span>
+                <span class="detail-value">{{ product.usageDuration }}</span>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <!-- Defects -->
-        <Card v-if="product.listingDetails.defects?.length">
+        <Card v-if="product.defects.length">
           <CardHeader>
             <CardTitle>{{ t('product.details.knownDefects') }}</CardTitle>
           </CardHeader>
           <CardContent>
             <ul class="details-list">
-              <li v-for="(defect, index) in product.listingDetails.defects" :key="index" class="detail-list-item">
+              <li v-for="(defect, index) in product.defects" :key="index" class="detail-list-item">
                 {{ defect }}
               </li>
             </ul>
@@ -285,13 +198,13 @@ const getTranslatedCondition = (condition: string) => {
         </Card>
 
         <!-- Modifications -->
-        <Card v-if="product.listingDetails.modifications?.length">
+        <Card v-if="product.modifications?.length">
           <CardHeader>
             <CardTitle>{{ t('product.details.modifications') }}</CardTitle>
           </CardHeader>
           <CardContent>
             <ul class="details-list">
-              <li v-for="(mod, index) in product.listingDetails.modifications" :key="index" class="detail-list-item">
+              <li v-for="(mod, index) in product.modifications" :key="index" class="detail-list-item">
                 {{ mod }}
               </li>
             </ul>
@@ -299,29 +212,15 @@ const getTranslatedCondition = (condition: string) => {
         </Card>
 
         <!-- Reason for Selling -->
-        <Card v-if="product.listingDetails.reasonForSelling">
+        <Card v-if="product.reasonForSelling">
           <CardHeader>
             <CardTitle>{{ t('product.details.reasonForSelling') }}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p class="detail-text">{{ product.listingDetails.reasonForSelling }}</p>
+            <p class="detail-text">{{ product.reasonForSelling }}</p>
           </CardContent>
         </Card>
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>{{ t('product.details.specifications') }}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div class="properties-grid">
-            <div v-for="prop in product.properties" :key="prop.label" class="property-item">
-              <span class="property-label">{{ prop.label }}</span>
-              <span class="property-value">{{ prop.value }}</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   </div>
 </template>
@@ -615,40 +514,6 @@ const getTranslatedCondition = (condition: string) => {
 .product-properties h2 {
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
-}
-
-.properties-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: calc(var(--spacing) * 2);
-  padding: calc(var(--spacing) * 2);
-  border-radius: var(--radius-lg);
-}
-
-@media (min-width: 640px) {
-  .properties-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-.property-item {
-  display: flex;
-  flex-direction: column;
-  gap: calc(var(--spacing) * 1);
-  padding: calc(var(--spacing) * 2);
-  border-radius: var(--radius);
-  background-color: var(--accent);
-}
-
-.property-label {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--muted-foreground);
-}
-
-.property-value {
-  font-size: var(--font-size-sm);
-  color: var(--foreground);
 }
 
 @media (max-width: 768px) {
