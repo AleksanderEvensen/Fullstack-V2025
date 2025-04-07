@@ -1,6 +1,5 @@
 package edu.ntnu.fullstack.amazoom.bookmark.controller
 
-import edu.ntnu.fullstack.amazoom.auth.annotation.Authenticated
 import edu.ntnu.fullstack.amazoom.bookmark.service.ListingBookmarkService
 import edu.ntnu.fullstack.amazoom.listing.dto.ListingResponse
 import org.springframework.http.ResponseEntity
@@ -17,7 +16,6 @@ class ListingBookmarkController(private val listingBookmarkService: ListingBookm
      * @return the created bookmark response
      */
     @PostMapping
-    @Authenticated
     fun createBookmark(@RequestBody request: CreateOrUpdateListingBookmarkRequest): ResponseEntity<ListingBookmarkResponse> {
         val response = listingBookmarkService.createBookmark(request)
         return ResponseEntity.ok(response)
@@ -30,7 +28,6 @@ class ListingBookmarkController(private val listingBookmarkService: ListingBookm
      * @return a response entity with no content
      */
     @DeleteMapping("/{id}")
-    @Authenticated
     fun deleteBookmark(@PathVariable id: Long): ResponseEntity<Void> {
         listingBookmarkService.deleteBookmark(id)
         return ResponseEntity.noContent().build()
@@ -42,7 +39,6 @@ class ListingBookmarkController(private val listingBookmarkService: ListingBookm
      * @return a list of bookmark responses
      */
     @GetMapping
-    @Authenticated
     fun listAllBookmarksForUser(): ResponseEntity<List<ListingBookmarkResponse>> {
         val responses = listingBookmarkService.listAllBookmarksForUser()
         return ResponseEntity.ok(responses)
