@@ -5,7 +5,8 @@ import edu.ntnu.fullstack.amazoom.category.exception.CategoryNotFoundException
 import edu.ntnu.fullstack.amazoom.category.repository.CategoryRepository
 import edu.ntnu.fullstack.amazoom.common.service.UserService
 import edu.ntnu.fullstack.amazoom.listing.dto.CreateOrUpdateListingRequest
-import edu.ntnu.fullstack.amazoom.listing.dto.ListingResponse
+import edu.ntnu.fullstack.amazoom.listing.dto.ListingDto
+import edu.ntnu.fullstack.amazoom.listing.entity.Listing
 import edu.ntnu.fullstack.amazoom.listing.mapper.ListingMapper
 import edu.ntnu.fullstack.amazoom.listing.repository.ListingRepository
 import org.springframework.data.domain.Page
@@ -23,7 +24,7 @@ class ListingService(
     private val userService: UserService
 ) {
 
-    fun createListing(request: CreateOrUpdateListingRequest): ListingResponse {
+    fun createListing(request: CreateOrUpdateListingRequest): ListingDto {
         val category = categoryRepository.findById(request.categoryId)
             .orElseThrow { CategoryNotFoundException("No category found with ID=${request.categoryId}") }
 
@@ -39,14 +40,13 @@ class ListingService(
         return ListingMapper.toResponseDto(savedEntity)
     }
 
-    fun getListing(id: Long): ListingResponse {
-        val listing = listingRepository.findById(id)
+    fun getListing(id: Long): Listing {
+        return listingRepository.findById(id)
             .orElseThrow { NoSuchElementException("Listing with id $id not found") }
-        return ListingMapper.toResponseDto(listing)
     }
 
     @PreAuthorize("hasRole('ADMIN') or @listingService.isListingOwner(#id, authentication)")
-    fun updateListing(id: Long, request: CreateOrUpdateListingRequest): ListingResponse {
+    fun updateListing(id: Long, request: CreateOrUpdateListingRequest): ListingDto {
         val existingListing = listingRepository.findById(id)
             .orElseThrow { NoSuchElementException("Listing with id $id not found") }
         val category = categoryRepository.findById(request.categoryId)
@@ -64,7 +64,12 @@ class ListingService(
         listingRepository.deleteById(id)
     }
 
-    fun getPaginatedAndSortedListings(page: Int, size: Int, sortBy: String, direction: Sort.Direction): Page<ListingResponse> {
+    fun getPaginatedAndSortedListings(
+        page: Int,
+        size: Int,
+        sortBy: String,
+        direction: Sort.Direction
+    ): Page<ListingDto> {
         val pageable = PageRequest.of(page, size, Sort.by(direction, sortBy))
         val listingsPage = listingRepository.findAll(pageable)
         return listingsPage.map { ListingMapper.toResponseDto(it) }
