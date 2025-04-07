@@ -1,5 +1,6 @@
 package edu.ntnu.fullstack.amazoom.listing.controller
 
+import edu.ntnu.fullstack.amazoom.auth.annotation.Authenticated
 import edu.ntnu.fullstack.amazoom.listing.dto.CreateOrUpdateListingRequest
 import edu.ntnu.fullstack.amazoom.listing.dto.ListingResponse
 import edu.ntnu.fullstack.amazoom.listing.service.ListingService
@@ -26,6 +27,7 @@ class ListingController(
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @Authenticated
     fun createListing(@RequestBody request: CreateOrUpdateListingRequest): ListingResponse {
         return listingService.createListing(request)
     }
@@ -49,6 +51,7 @@ class ListingController(
      * @return the updated listing response
      */
     @PutMapping("/{id}")
+    @Authenticated
     fun updateListing(
         @PathVariable id: Long,
         @RequestBody request: CreateOrUpdateListingRequest
@@ -63,6 +66,7 @@ class ListingController(
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Authenticated
     fun deleteListing(@PathVariable id: Long) {
         listingService.deleteListing(id)
     }

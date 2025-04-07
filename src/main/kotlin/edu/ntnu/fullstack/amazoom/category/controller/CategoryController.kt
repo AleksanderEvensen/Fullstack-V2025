@@ -1,5 +1,6 @@
 package edu.ntnu.fullstack.amazoom.category.controller
 
+import edu.ntnu.fullstack.amazoom.auth.annotation.Authenticated
 import edu.ntnu.fullstack.amazoom.category.dto.CreateOrUpdateCategoryRequest
 import edu.ntnu.fullstack.amazoom.category.dto.CategoryResponse
 import edu.ntnu.fullstack.amazoom.category.service.CategoryService
@@ -24,6 +25,7 @@ class CategoryController(
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @Authenticated
     fun createCategory(@RequestBody request: CreateOrUpdateCategoryRequest): ResponseEntity<CategoryResponse> {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(categoryService.createCategory(request))
@@ -48,6 +50,7 @@ class CategoryController(
      * @return the updated category
      */
     @PutMapping("/{id}")
+    @Authenticated
     fun updateCategory(
         @PathVariable id: Long,
         @RequestBody request: CreateOrUpdateCategoryRequest
@@ -61,6 +64,7 @@ class CategoryController(
      * @param id the ID of the category to delete
      */
     @DeleteMapping("/{id}")
+    @Authenticated
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun deleteCategory(@PathVariable id: Long): ResponseEntity<Void> {
         categoryService.deleteCategory(id)
