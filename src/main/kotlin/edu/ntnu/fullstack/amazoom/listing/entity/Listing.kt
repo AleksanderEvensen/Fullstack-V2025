@@ -2,6 +2,7 @@ package edu.ntnu.fullstack.amazoom.listing.entity
 
 import edu.ntnu.fullstack.amazoom.common.entity.User
 import edu.ntnu.fullstack.amazoom.category.entity.Category
+import edu.ntnu.fullstack.amazoom.listing.dto.ListingDto
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
@@ -73,5 +74,29 @@ data class Listing(
     @PreUpdate
     fun preUpdate() {
         updatedAt = LocalDateTime.now()
+    }
+
+    fun toDto(): ListingDto {
+        return ListingDto(
+            id = id,
+            title = title,
+            categoryId = category.id,
+            condition = condition,
+            seller = seller.toDto(),
+            price = price,
+            originalPrice = originalPrice,
+            description = description,
+            modelYear = modelYear,
+            manufacturer = manufacturer,
+            model = model,
+            serialNumber = serialNumber,
+            purchaseDate = purchaseDate,
+            usageDuration = usageDuration,
+            defects = defects,
+            modifications = modifications,
+            reasonForSelling = reasonForSelling,
+            images = images,
+            createdAt = createdAt,
+        )
     }
 }

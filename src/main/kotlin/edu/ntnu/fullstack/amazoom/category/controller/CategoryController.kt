@@ -1,7 +1,7 @@
 package edu.ntnu.fullstack.amazoom.category.controller
 
 import edu.ntnu.fullstack.amazoom.category.dto.CreateOrUpdateCategoryRequest
-import edu.ntnu.fullstack.amazoom.category.dto.CategoryResponse
+import edu.ntnu.fullstack.amazoom.category.dto.CategoryDto
 import edu.ntnu.fullstack.amazoom.category.service.CategoryService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -24,7 +24,7 @@ class CategoryController(
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    fun createCategory(@RequestBody request: CreateOrUpdateCategoryRequest): ResponseEntity<CategoryResponse> {
+    fun createCategory(@RequestBody request: CreateOrUpdateCategoryRequest): ResponseEntity<CategoryDto> {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(categoryService.createCategory(request))
     }
@@ -36,7 +36,7 @@ class CategoryController(
      * @return the retrieved category
      */
     @GetMapping("/{id}")
-    fun getCategory(@PathVariable id: Long): ResponseEntity<CategoryResponse> {
+    fun getCategory(@PathVariable id: Long): ResponseEntity<CategoryDto> {
         return ResponseEntity.ok(categoryService.getCategory(id))
     }
 
@@ -51,7 +51,7 @@ class CategoryController(
     fun updateCategory(
         @PathVariable id: Long,
         @RequestBody request: CreateOrUpdateCategoryRequest
-    ): ResponseEntity<CategoryResponse> {
+    ): ResponseEntity<CategoryDto> {
         return ResponseEntity.ok(categoryService.updateCategory(id, request))
     }
 
@@ -73,7 +73,7 @@ class CategoryController(
      * @return a list of all categories
      */
     @GetMapping
-    fun listAllCategories(): ResponseEntity<List<CategoryResponse>> {
+    fun listAllCategories(): ResponseEntity<List<CategoryDto>> {
         return ResponseEntity.ok(categoryService.listAllCategories())
     }
 }

@@ -1,7 +1,7 @@
 package edu.ntnu.fullstack.amazoom.listing.controller
 
 import edu.ntnu.fullstack.amazoom.listing.dto.CreateOrUpdateListingRequest
-import edu.ntnu.fullstack.amazoom.listing.dto.ListingResponse
+import edu.ntnu.fullstack.amazoom.listing.dto.ListingDto
 import edu.ntnu.fullstack.amazoom.listing.service.ListingService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Sort
@@ -26,7 +26,7 @@ class ListingController(
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    fun createListing(@RequestBody request: CreateOrUpdateListingRequest): ListingResponse {
+    fun createListing(@RequestBody request: CreateOrUpdateListingRequest): ListingDto {
         return listingService.createListing(request)
     }
 
@@ -37,8 +37,8 @@ class ListingController(
      * @return the listing response
      */
     @GetMapping("/{id}")
-    fun getListing(@PathVariable id: Long): ListingResponse {
-        return listingService.getListing(id)
+    fun getListing(@PathVariable id: Long): ListingDto {
+        return listingService.getListing(id).toDto()
     }
 
     /**
@@ -52,7 +52,7 @@ class ListingController(
     fun updateListing(
         @PathVariable id: Long,
         @RequestBody request: CreateOrUpdateListingRequest
-    ): ListingResponse {
+    ): ListingDto {
         return listingService.updateListing(id, request)
     }
 
@@ -78,7 +78,7 @@ class ListingController(
         @RequestParam(defaultValue = "10") size: Int,
         @RequestParam(defaultValue = "price") sortBy: String,
         @RequestParam(defaultValue = "ASC") direction: Sort.Direction
-    ): ResponseEntity<Page<ListingResponse>> {
+    ): ResponseEntity<Page<ListingDto>> {
         val paginatedListings = listingService.getPaginatedAndSortedListings(page, size, sortBy, direction)
         return ResponseEntity.ok(paginatedListings)
     }

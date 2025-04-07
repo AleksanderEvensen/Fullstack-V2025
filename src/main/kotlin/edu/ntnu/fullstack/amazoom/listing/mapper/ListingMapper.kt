@@ -3,9 +3,9 @@ package edu.ntnu.fullstack.amazoom.listing.mapper
 import edu.ntnu.fullstack.amazoom.common.entity.User
 import edu.ntnu.fullstack.amazoom.auth.mapper.UserMapper
 import edu.ntnu.fullstack.amazoom.listing.dto.CreateOrUpdateListingRequest
-import edu.ntnu.fullstack.amazoom.listing.dto.ListingResponse
 import edu.ntnu.fullstack.amazoom.listing.entity.Listing
 import edu.ntnu.fullstack.amazoom.category.entity.Category
+import edu.ntnu.fullstack.amazoom.listing.dto.ListingDto
 
 object ListingMapper {
 
@@ -66,8 +66,8 @@ object ListingMapper {
     /**
      * Converts a Listing entity to a ListingResponse.
      */
-    fun toResponseDto(entity: Listing): ListingResponse {
-        return ListingResponse(
+    fun toResponseDto(entity: Listing): ListingDto {
+        return ListingDto(
             id = entity.id,
             title = entity.title,
             categoryId = entity.category.id,
@@ -84,7 +84,7 @@ object ListingMapper {
             defects = entity.defects,
             modifications = entity.modifications,
             reasonForSelling = entity.reasonForSelling,
-            seller = UserMapper.toDto(entity.seller),
+            seller =  entity.seller.toDto(),
             createdAt = entity.createdAt,
             images = entity.images
         )
