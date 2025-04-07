@@ -39,7 +39,6 @@ class ListingController(
      * @return the listing response
      */
     @GetMapping("/{id}")
-    @Authenticated
     fun getListing(@PathVariable id: Long): ListingResponse {
         return listingService.getListing(id)
     }
