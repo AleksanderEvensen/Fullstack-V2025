@@ -33,9 +33,9 @@ import { Check, Circle, Dot, Package, Info, Camera, Eye } from 'lucide-vue-next'
 import type { GenericObject } from 'vee-validate'
 import * as z from 'zod'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { useI18n } from 'vue-i18n'
+import { useTypedI18n } from '@/i18n'
 
-const { t } = useI18n()
+const { t } = useTypedI18n();
 
 const formSchema = [
   // Basic Information

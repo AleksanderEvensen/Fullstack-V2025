@@ -65,7 +65,6 @@
 </template>
 
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n'
 import { RouterLink } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import {
@@ -82,8 +81,9 @@ import { Mail, Lock } from 'lucide-vue-next'
 import { toTypedSchema } from '@vee-validate/zod'
 import type { SubmissionHandler } from 'vee-validate'
 import * as z from 'zod'
+import { useTypedI18n } from '@/i18n'
 
-const { t } = useI18n()
+const { t } = useTypedI18n();
 
 const loginZodSchema = z.object({
   email: z.string().email(t('auth.validation.emailInvalid')),
