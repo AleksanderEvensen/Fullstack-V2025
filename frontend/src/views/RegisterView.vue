@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -29,8 +28,9 @@ import Label from '@/components/ui/label/Label.vue'
 import CountryFlag from '@/components/ui/country-flag/CountryFlag.vue'
 import { watchDebounced } from '@vueuse/core'
 import { searchGeocodeAdvanced } from '@/lib/api/geocoding'
+import { useTypedI18n } from '@/i18n'
 
-const { t } = useI18n()
+const { t } = useTypedI18n()
 
 const stepIndex = ref(1)
 const steps = [

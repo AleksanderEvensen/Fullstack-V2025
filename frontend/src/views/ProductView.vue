@@ -5,14 +5,15 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useI18n } from 'vue-i18n'
 import { getListing } from '@/lib/api/queries/listings'
 import { useRoute } from 'vue-router'
 import type { components } from '@/lib/api/schema'
 import { formatAddress } from '@/lib/utils'
-const { t } = useI18n()
+import { useTypedI18n } from '@/i18n'
+
+const { t } = useTypedI18n()
 const id = useRoute().params.id as unknown as number
-const { data: product, isLoading } = getListing(id)
+const { data: product } = getListing(id)
 const currentImageIndex = ref(0)
 
 type Address = components['schemas']['Address']

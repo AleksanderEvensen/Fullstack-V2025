@@ -5,11 +5,10 @@ import { RouterLink } from 'vue-router'
 import { Icon, type IconName } from '@/components/ui/icon'
 import ProductGrid from '@/views/home/components/ProductGrid.vue'
 import { MapIcon, Search } from 'lucide-vue-next'
-import { useI18n } from 'vue-i18n'
 import { getListings } from '@/lib/api/queries/listings'
 import { getCategories } from '@/lib/api/queries/categories'
-import { useAuthStore } from '@/stores/auth'
-const { t } = useI18n()
+import { useTypedI18n } from '@/i18n'
+const { t } = useTypedI18n()
 const { data } = getListings({
   page: 0,
   size: 10,

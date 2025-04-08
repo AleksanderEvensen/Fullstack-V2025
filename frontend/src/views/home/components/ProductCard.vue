@@ -3,11 +3,11 @@ import { RouterLink } from 'vue-router'
 import { HeartIcon, MessageCircleIcon } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { useI18n } from 'vue-i18n'
 import { formatAddress } from '@/lib/utils'
 import type { components } from '@/lib/api/schema'
+import { useTypedI18n } from '@/i18n'
 
-const { t } = useI18n()
+const { t } = useTypedI18n()
 
 type Product = components['schemas']['ListingResponse']
 
