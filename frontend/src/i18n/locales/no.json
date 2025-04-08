@@ -27,7 +27,7 @@
     "errorLoading": "Beklager, det oppstod en feil ved lasting av annonsene. Vennligst prøv igjen.",
     "noResults": "Ingen annonser samsvarer med søkekriteriene dine. Prøv å justere filtrene.",
     "pagination": "Side {current} av {total}",
-    "resultsCount": "{count} {count} | {count} resultat | {count} resultater",
+    "resultsCount": "Ingen annonser her | {count} resultat | {count} resultater",
     "sort": {
       "newest": "Nyeste først",
       "oldest": "Eldste først",
