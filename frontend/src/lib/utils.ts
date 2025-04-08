@@ -16,3 +16,11 @@ export function formatAddress(address: Address) {
   ].filter(Boolean)
   return addressParts.join(', ')
 }
+
+export function formatNameInitials(name: string) {
+  const nameParts = name.toUpperCase().split(/\s+/)
+  return nameParts
+    .map((part) => part.charAt(0))
+    .filter(Boolean)
+    .join('')
+}

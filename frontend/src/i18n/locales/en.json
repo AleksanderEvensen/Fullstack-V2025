@@ -46,7 +46,8 @@
       "selectCategory": "Select category",
       "manufacturer": "Manufacturer",
       "searchManufacturer": "Search by manufacturer..."
-    }
+    },
+    "settings": "Settings"
   },
   "location": {
     "found": "Location found",
@@ -257,5 +258,9 @@
     },
     "recentListings": "Recent listings",
     "currency": "kr"
+  },
+  "profile": {
+    "listings": "My Listings",
+    "view-listign": "View Listing"
   }
 }

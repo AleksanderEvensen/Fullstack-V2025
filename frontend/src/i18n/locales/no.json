@@ -46,7 +46,8 @@
       "selectCategory": "Velg kategori",
       "manufacturer": "Produsent",
       "searchManufacturer": "Søk etter produsent..."
-    }
+    },
+    "settings": "Innstillinger"
   },
   "location": {
     "found": "Fant lokasjon",
@@ -257,5 +258,9 @@
     },
     "recentListings": "Nye annonser",
     "currency": "kr"
+  },
+  "profile": {
+    "listings": "Dine annonser",
+    "view-listign": "Se annonse"
   }
 }
