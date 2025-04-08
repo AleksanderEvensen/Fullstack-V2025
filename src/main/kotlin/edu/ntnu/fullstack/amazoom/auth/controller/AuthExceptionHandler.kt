@@ -80,7 +80,7 @@ class AuthExceptionHandler {
     fun handleGenericException(ex: Exception): ResponseEntity<ErrorResponse> {
         val errorResponse =
             ErrorResponse(
-                ex.message ?: "An unexpected error occurred",
+                "An unexpected error occurred",
                 HttpStatus.INTERNAL_SERVER_ERROR.value()
             )
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse)
