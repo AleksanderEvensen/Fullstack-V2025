@@ -196,6 +196,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/auth/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["me"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/bookmarks/{id}": {
         parameters: {
             query?: never;
@@ -239,7 +255,7 @@ export interface components {
             reasonForSelling?: string;
             images?: string[];
         };
-        Address: {
+        AddressDto: {
             streetName: string;
             streetNumber: string;
             postalCode: string;
@@ -280,7 +296,7 @@ export interface components {
             firstName: string;
             lastName: string;
             profileImageUrl?: string;
-            address?: components["schemas"]["Address"];
+            address?: components["schemas"]["AddressDto"];
         };
         CreateOrUpdateCategoryRequest: {
             name: string;
@@ -325,21 +341,21 @@ export interface components {
             sortDirection: string;
         };
         PageListingDto: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["ListingDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PageableObject: {
@@ -398,21 +414,21 @@ export interface components {
             isFromCurrentUser: boolean;
         };
         PageConversationSummaryDto: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["ConversationSummaryDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         ChatMessageDto: {
@@ -424,22 +440,32 @@ export interface components {
             read: boolean;
         };
         PageChatMessageDto: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["ChatMessageDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
+        };
+        FullUserDto: {
+            /** Format: int64 */
+            id: number;
+            firstName: string;
+            lastName: string;
+            email: string;
+            phoneNumber: string;
+            profileImageUrl?: string;
+            address?: components["schemas"]["AddressDto"];
         };
     };
     responses: never;
@@ -921,6 +947,26 @@ export interface operations {
                 };
                 content: {
                     "*/*": string;
+                };
+            };
+        };
+    };
+    me: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["FullUserDto"];
                 };
             };
         };

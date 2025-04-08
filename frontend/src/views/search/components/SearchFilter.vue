@@ -77,11 +77,11 @@ function getUrlParamValue(key: keyof NonNullable<ListingSearchParams>, defaultVa
 }
 
 const updateUrlParams = useDebounceFn(() => {
-    if (!filterByPrice) {
+    if (!filterByPrice.value) {
         localFilters.minPrice = undefined;
         localFilters.maxPrice = undefined;
     }
-    if (!filterByYear) {
+    if (!filterByYear.value) {
         localFilters.minModelYear = undefined;
         localFilters.maxModelYear = undefined;
     }
