@@ -28,34 +28,26 @@ class ListingBookmarkService(
         val listing: Listing = listingRepository.findById(request.listingId)
             .orElseThrow { ListingNotFoundException("No listing found with id=${request.listingId}") }
 
-        val authenticatedUser = userService.getCurrentAuthenticatedUser().getOrNull()
-            ?: throw IllegalStateException("No authenticated user found")
+        val currentUser = userService.getCurrentUser()
 
-        val user: User = userRepository.findById(authenticatedUser.getSub())
-            .orElseThrow { NoSuchElementException("No user found with id=${authenticatedUser.getSub()}") }
-
-        if (listingBookmarkRepository.existsByUserIdAndListingId(user.id, listing.id)) {
+        if (listingBookmarkRepository.existsByUserIdAndListingId(currentUser.id, listing.id)) {
             throw BookmarkAlreadyExists()
         }
 
-        if (listing.seller.id == user.id) {
+        if (listing.seller.id == currentUser.id) {
             throw BookmarkOwnListingException()
         }
 
-        val bookmark: ListingBookmark = ListingBookmarkMapper.toEntity(listing, user)
+        val bookmark: ListingBookmark = ListingBookmarkMapper.toEntity(listing, currentUser)
         val saved = listingBookmarkRepository.save(bookmark)
         return ListingBookmarkMapper.toResponse(saved)
     }
 
 
     fun deleteBookmark(id: Long) {
-        val authenticatedUser = userService.getCurrentAuthenticatedUser().getOrNull()
-            ?: throw IllegalStateException("No authenticated user found")
+        val currentUser = userService.getCurrentUser()
 
-        val user: User = userRepository.findById(authenticatedUser.getSub())
-            .orElseThrow { NoSuchElementException("No user found with id=${authenticatedUser.getSub()}") }
-
-        if (!listingBookmarkRepository.existsByUserIdAndListingId(user.id, id)) {
+        if (!listingBookmarkRepository.existsByUserIdAndListingId(currentUser.id, id)) {
             throw IllegalStateException("User is not authorized to delete this bookmark")
         }
         if (!listingBookmarkRepository.existsById(id)) {
@@ -65,10 +57,9 @@ class ListingBookmarkService(
     }
 
     fun listAllBookmarksForUser(): List<ListingBookmarkResponse> {
-        val authenticatedUser = userService.getCurrentAuthenticatedUser().getOrNull()
-            ?: throw IllegalStateException("No authenticated user found")
+        val currentUser = userService.getCurrentUser()
 
-        val allBookmarks = listingBookmarkRepository.findAllForUser(authenticatedUser.getSub())
+        val allBookmarks = listingBookmarkRepository.findAllForUser(currentUser.id)
 
         return allBookmarks.map { ListingBookmarkMapper.toResponse(it) }
     }

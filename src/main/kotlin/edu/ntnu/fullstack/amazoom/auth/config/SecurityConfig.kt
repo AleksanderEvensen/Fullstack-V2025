@@ -1,10 +1,9 @@
 package edu.ntnu.fullstack.amazoom.auth.config
 
 import JwtAuthFilter
-import edu.ntnu.fullstack.amazoom.auth.repository.RefreshTokenRepository
 import edu.ntnu.fullstack.amazoom.auth.service.JwtService
-import edu.ntnu.fullstack.amazoom.auth.service.UserDetailsService
-import edu.ntnu.fullstack.amazoom.auth.util.CookieUtils
+import edu.ntnu.fullstack.amazoom.auth.service.UserDetailsServiceImpl
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
@@ -17,8 +16,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository
-import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
@@ -26,10 +23,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@EnableConfigurationProperties(AuthProperties::class)
 class SecurityConfig(
     private val jwtService: JwtService,
-    private val userDetailsService: UserDetailsService,
-    private val cookieUtils: CookieUtils,
+    private val userDetailsService: UserDetailsServiceImpl,
 ) {
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
@@ -37,14 +34,6 @@ class SecurityConfig(
             .cors { cors ->
                 cors.configurationSource(corsConfigurationSource())
             }
-//            .csrf { csrf ->
-//                csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-//                csrf.ignoringRequestMatchers(
-//                    "/auth/register",
-//                    "/auth/login",
-//                    "/auth/refresh",
-//                )
-//            }
             .csrf {
                 it.disable()
             }
@@ -57,15 +46,13 @@ class SecurityConfig(
                         "/swagger-ui.html",
                         "/openapi-schema.json/**",
                         "/swagger-ui/**",
-                        "/auth/register",
-                        "/auth/login",
-                        "/auth/refresh",
-                        "/api/**",
+                        "/api/auth/register",
+                        "/api/auth/login",
                     ).permitAll()
                     .anyRequest().authenticated()
             }
             .addFilterBefore(
-                JwtAuthFilter(jwtService, userDetailsService, cookieUtils),
+                JwtAuthFilter(jwtService, userDetailsService),
                 UsernamePasswordAuthenticationFilter::class.java
             )
 
@@ -76,7 +63,7 @@ class SecurityConfig(
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration().apply {
-            allowedOrigins = listOf("http://localhost:3000")
+            allowedOrigins = listOf("http://localhost:8081")
             allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
             allowedHeaders = listOf("*")
             allowCredentials = true

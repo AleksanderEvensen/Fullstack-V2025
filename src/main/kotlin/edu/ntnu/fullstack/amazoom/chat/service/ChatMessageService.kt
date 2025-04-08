@@ -13,7 +13,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Service
 import org.springframework.web.util.HtmlUtils
 import java.time.Instant
-import java.util.UUID
 
 @Service
 class ChatMessageService(
@@ -61,7 +60,7 @@ class ChatMessageService(
 
     @Transactional
     fun getMessagesForConversation(
-        otherUserId: UUID,
+        otherUserId: Long,
         listingId: Long,
         pageable: Pageable,
     ): Page<ChatMessageDto> {
@@ -81,7 +80,7 @@ class ChatMessageService(
 
     @Transactional
     fun markMessagesAsRead(
-        otherUserId: UUID,
+        otherUserId: Long,
         listingId: Long
     ) {
         val userId = userService.getCurrentUser().id
@@ -136,7 +135,7 @@ class ChatMessageService(
         return messageDto
     }
 
-    private fun verifyConversationAccess(senderId: UUID, recipientId: UUID, listingId: Long) {
+    private fun verifyConversationAccess(senderId: Long, recipientId: Long, listingId: Long) {
         val listing = listingService.getListing(listingId)
 
         if (listing.seller.id != senderId && listing.seller.id != recipientId) {

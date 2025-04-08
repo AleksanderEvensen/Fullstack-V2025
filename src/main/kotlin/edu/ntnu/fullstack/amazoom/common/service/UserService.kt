@@ -1,19 +1,18 @@
 package edu.ntnu.fullstack.amazoom.common.service
 
-import edu.ntnu.fullstack.amazoom.common.entity.RoleName
-import edu.ntnu.fullstack.amazoom.common.exception.MissingRoleException
+import edu.ntnu.fullstack.amazoom.auth.service.CustomUserDetails
 import edu.ntnu.fullstack.amazoom.common.repository.RoleRepository
-import edu.ntnu.fullstack.amazoom.auth.service.UserDetailsImpl
 import edu.ntnu.fullstack.amazoom.common.dto.CreateUserDto
+import edu.ntnu.fullstack.amazoom.common.dto.FullUserDto
+import edu.ntnu.fullstack.amazoom.common.dto.UserDto
+import edu.ntnu.fullstack.amazoom.common.entity.RoleName
 import edu.ntnu.fullstack.amazoom.common.entity.User
 import edu.ntnu.fullstack.amazoom.common.exception.UserAlreadyExistsException
 import edu.ntnu.fullstack.amazoom.common.exception.UserNotFoundException
 import edu.ntnu.fullstack.amazoom.common.repository.UserRepository
-import jakarta.transaction.Transactional
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import java.util.Optional
-import java.util.UUID
 
 @Service
 class UserService(
@@ -21,7 +20,6 @@ class UserService(
     private val roleRepository: RoleRepository,
 ) {
 
-    @Transactional
     fun createUser(data: CreateUserDto): User {
         if(userRepository.existsByEmail(data.email)) {
             throw UserAlreadyExistsException("User with email ${data.email} already exists")
@@ -31,7 +29,9 @@ class UserService(
             throw UserAlreadyExistsException("User with phone number ${data.phoneNumber} already exists")
         }
 
-        val userRole = roleRepository.findByName(RoleName.ROLE_USER) ?: throw MissingRoleException()
+        val userRole = roleRepository.findByName(RoleName.ROLE_USER) ?:
+            throw UserNotFoundException("Role not found")
+
 
         val user = User(
             firstName = data.firstName,
@@ -39,24 +39,28 @@ class UserService(
             email = data.email,
             phoneNumber = data.phoneNumber,
             password = data.password,
-            roles = mutableSetOf(userRole),
             address = null,
+            roles = mutableSetOf(userRole)
         )
 
         return userRepository.save(user)
     }
 
+    fun getProfile(): FullUserDto {
+        val currentUser = getCurrentUser()
+
+        return currentUser.toFullDto()
+    }
+
     fun getCurrentUser(): User {
         val authentication = SecurityContextHolder.getContext().authentication
-        val principal = authentication?.principal
-        return if (principal is UserDetailsImpl) {
-            principal.getDomainUser()
-        } else {
-            throw UserNotFoundException()
+        val email = authentication.name
+        return userRepository.findByEmail(email).orElseThrow{
+            UserNotFoundException("User with email $email not found")
         }
     }
 
-    fun getUserById(id: UUID): User {
+    fun getUserById(id: Long): User {
         val user = userRepository.findById(id).orElseThrow {
             UserNotFoundException("User with id $id not found")
         }
@@ -64,14 +68,11 @@ class UserService(
         return user
     }
 
-    fun getCurrentAuthenticatedUser(): Optional<UserDetailsImpl> {
-        val authentication = SecurityContextHolder.getContext().authentication
-        val principal = authentication?.principal
-        return if (principal is UserDetailsImpl) {
-            Optional.of(principal)
-        } else {
-            Optional.empty()
+    fun getUserByEmail(email: String): User {
+        val user = userRepository.findByEmail(email).orElseThrow {
+            UserNotFoundException("User with email $email not found")
         }
 
+        return user
     }
 }

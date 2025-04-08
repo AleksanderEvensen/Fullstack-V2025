@@ -27,7 +27,7 @@ class ChatMessageController(
     @GetMapping("/conversation/{listingId}/{otherUserId}")
     fun getConversation(
         @PathVariable listingId: Long,
-        @PathVariable otherUserId: UUID,
+        @PathVariable otherUserId: Long,
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "20") size: Int
     ): ResponseEntity<Page<ChatMessageDto>> {
@@ -44,7 +44,7 @@ class ChatMessageController(
     @PostMapping("/read/{listingId}/{otherUserId}")
     fun markMessagesAsRead(
         @PathVariable listingId: Long,
-        @PathVariable otherUserId: UUID,
+        @PathVariable otherUserId: Long,
     ): ResponseEntity<Unit> {
         chatMessageService.markMessagesAsRead(otherUserId, listingId)
         return ResponseEntity.noContent().build()

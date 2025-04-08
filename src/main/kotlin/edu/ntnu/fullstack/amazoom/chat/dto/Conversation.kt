@@ -4,7 +4,7 @@ import edu.ntnu.fullstack.amazoom.common.dto.UserDto
 import java.util.UUID
 
 data class ConversationIdPairDto(
-    val otherUserId: UUID,
+    val otherUserId: Long,
     val listingId: Long
 )
 
