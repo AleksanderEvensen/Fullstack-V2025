@@ -65,7 +65,7 @@ watchDebounced(queryParams, (newQueryParams) => {
   immediate: true,
 })
 
-const { data, isLoading, isError, refetch } = searchListings(debouncedQueryParams.value)
+const { data, isLoading, isError } = searchListings(debouncedQueryParams.value)
 
 
 

@@ -17,7 +17,7 @@ const { data } = getListings({
   direction: 'DESC',
   sortBy: 'createdAt',
 })
-const { data: categoriesData, isLoading: categoriesLoading } = getCategories()
+const { data: categoriesData } = getCategories()
 function icon(iconName: string): IconName {
   return iconName as IconName
 }
