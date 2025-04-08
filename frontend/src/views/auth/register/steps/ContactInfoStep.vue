@@ -50,7 +50,7 @@ const locationValidText = computed(() => {
   }
 });
 
-const locaitonQuery = computed(() => {
+const locationQuery = computed(() => {
   return {
     street: streetAddress.value,
     postalcode: postalCode.value,
@@ -59,7 +59,7 @@ const locaitonQuery = computed(() => {
 })
 
 watchDebounced(
-  locaitonQuery,
+  locationQuery,
   async (newValue) => {
     if (
       newValue.street.length == 0 ||
@@ -161,10 +161,10 @@ watchDebounced(
           </FormItem>
         </FormField>
         <div variant="secondary" class="rounded-md location-status-badge">
-          <InfoIcon v-if="locationValid === 'empty'" class="locaiton-icon" style="color: black" />
-          <CircleCheckIcon v-if="locationValid === 'found'" class="locaiton-icon"
+          <InfoIcon v-if="locationValid === 'empty'" style="color: black" />
+          <CircleCheckIcon v-if="locationValid === 'found'"
             style="color: var(--success)" />
-          <CircleAlertIcon v-if="locationValid === 'not-found'" class="locaiton-icon"
+          <CircleAlertIcon v-if="locationValid === 'not-found'"
             style="color: var(--failure)" />
           <span>{{ locationValidText }}</span>
         </div>
