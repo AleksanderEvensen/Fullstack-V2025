@@ -59,7 +59,6 @@ watchDebounced(localQuery, (newQuery) => {
 
 const debouncedQueryParams = ref(queryParams)
 watchDebounced(queryParams, (newQueryParams) => {
-  console.log(newQueryParams)
   debouncedQueryParams.value = newQueryParams
 }, {
   debounce: 500,
@@ -68,9 +67,7 @@ watchDebounced(queryParams, (newQueryParams) => {
 
 const { data, isLoading, isError, refetch } = searchListings(debouncedQueryParams.value)
 
-watch(debouncedQueryParams, () => {
-  refetch()
-})
+
 
 const totalCountMessage = computed(() => {
   return t('search.resultsCount', {
@@ -79,7 +76,6 @@ const totalCountMessage = computed(() => {
 })
 
 const goToPage = (page: number) => {
-  console.log(page)
   queryParams.page = page
 }
 
@@ -101,7 +97,7 @@ const goToNextPage = computed(() => {
 
 const handleFilterChange = (filters: NonNullable<ListingSearchParams>) => {
   Object.entries(filters).forEach(([key, value]) => {
-    queryParams[key as keyof typeof queryParams] = value as any
+    (queryParams as Record<string, unknown>)[key] = value;
   })
 }
 
@@ -111,6 +107,7 @@ const handleFilterChange = (filters: NonNullable<ListingSearchParams>) => {
   <div class="container">
     <header class="search-header">
       <h1 class="search-title">{{ t('search.title') }}</h1>
+      <span class="search-count">{{ totalCountMessage }}</span>
     </header>
 
     <div class="search-query">
@@ -202,6 +199,10 @@ const handleFilterChange = (filters: NonNullable<ListingSearchParams>) => {
   margin: 0;
 }
 
+.search-count {
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+}
 
 .search-query {
   display: flex;

@@ -85,6 +85,7 @@ const updateUrlParams = useDebounceFn(() => {
         localFilters.minModelYear = undefined;
         localFilters.maxModelYear = undefined;
     }
+    localFilters.page = 0;
     emit('filter-change', { ...localFilters });
 }, 500);
 
