@@ -28,12 +28,7 @@ class ListingService(
         val category = categoryRepository.findById(request.categoryId)
             .orElseThrow { CategoryNotFoundException("No category found with ID=${request.categoryId}") }
 
-        val sellerId = userService.getCurrentAuthenticatedUser()
-            .orElseThrow { IllegalStateException("No authenticated user found") }
-            .getSub()
-
-        val seller = userRepository.findById(sellerId)
-            .orElseThrow { NoSuchElementException("No user found with ID=$sellerId") }
+        val seller = userService.getCurrentUser()
 
         val entity = ListingMapper.toEntity(request, category, seller)
         val savedEntity = listingRepository.save(entity)
@@ -75,7 +70,7 @@ class ListingService(
         return listingsPage.map { ListingMapper.toResponseDto(it) }
     }
 
-    fun isListingOwner(listingId: Long, userId: UUID): Boolean {
+    fun isListingOwner(listingId: Long, userId: Long): Boolean {
         val listing = listingRepository.findById(listingId)
         return if (listing.isPresent) {
             val listingEntity = listing.get()

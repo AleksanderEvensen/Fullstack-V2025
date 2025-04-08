@@ -19,14 +19,14 @@ data class LastMessageDto (
 )
 
 data class ReadReceiptDto(
-    val senderId: UUID,
-    val recipientId: UUID,
+    val senderId: Long,
+    val recipientId: Long,
     val timestamp: Instant,
     val listingId: Long
 )
 
 data class ChatMessageRequestDto(
     val listingId: Long,
-    val recipientId: UUID,
+    val recipientId: Long,
     val content: String
 )

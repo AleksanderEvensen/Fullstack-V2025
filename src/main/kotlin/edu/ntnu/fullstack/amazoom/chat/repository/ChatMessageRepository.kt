@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
-import java.util.UUID
 
 interface ChatMessageRepository : JpaRepository<ChatMessage, Long> {
     @Query("""
@@ -19,8 +18,8 @@ interface ChatMessageRepository : JpaRepository<ChatMessage, Long> {
         ORDER BY m.timestamp DESC
     """)
     fun findMessagesBetweenUsersForListing(
-        @Param("userIdA") userIdA: UUID,
-        @Param("userIdB") userIdB: UUID,
+        @Param("userIdA") userIdA: Long,
+        @Param("userIdB") userIdB: Long,
         @Param("listingId") listingId: Long,
         pageable: Pageable
     ): Page<ChatMessage>
@@ -28,8 +27,8 @@ interface ChatMessageRepository : JpaRepository<ChatMessage, Long> {
     @Modifying
     @Query("UPDATE ChatMessage m SET m.read = true WHERE m.recipient.id = :id AND m.sender.id = :otherId AND m.listing.id = :listingId AND m.read = false")
     fun markMessagesAsRead(
-        @Param("id") id: UUID,
-        @Param("otherId") otherId: UUID,
+        @Param("id") id: Long,
+        @Param("otherId") otherId: Long,
         @Param("listingId") listingId: Long
     ): Int
 
@@ -45,14 +44,14 @@ interface ChatMessageRepository : JpaRepository<ChatMessage, Long> {
         ORDER BY MAX(m.timestamp) DESC
     """)
     fun findUniqueConversationIds(
-        @Param("userId") userId: UUID,
+        @Param("userId") userId: Long,
         pageable: Pageable
     ): Page<ConversationIdPairDto>
 
     @Query("SELECT COUNT(m) FROM ChatMessage m WHERE m.recipient.id = :userId AND m.sender.id = :otherUserId AND m.listing.id = :listingId AND m.read = false")
     fun countUnreadMessagesForConversation(
-        @Param("userId") userId: UUID,
-        @Param("otherUserId") otherUserId: UUID,
+        @Param("userId") userId: Long,
+        @Param("otherUserId") otherUserId: Long,
         @Param("listingId") listingId: Long
     ): Long
 

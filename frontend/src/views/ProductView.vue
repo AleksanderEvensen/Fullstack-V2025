@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import { computed, ref } from 'vue'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -16,7 +15,7 @@ const id = useRoute().params.id as unknown as number
 const { data: product } = getListing(id)
 const currentImageIndex = ref(0)
 
-type Address = components['schemas']['Address']
+type Address = components['schemas']['AddressDto']
 
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat('NO', {
@@ -28,8 +27,6 @@ const formatPrice = (price: number) => {
 const calculateDiscount = (original: number, current: number) => {
   return Math.round(((original - current) / original) * 100)
 }
-
-
 
 const getTranslatedCondition = (condition: string) => {
   switch (condition) {
@@ -61,8 +58,13 @@ const shouldDisplayOriginalPrice = computed(() => {
           <img :src="product.images[currentImageIndex]" :alt="product.title" />
         </div>
         <div class="image-thumbnails">
-          <button v-for="(image, index) in product.images" :key="index" @click="currentImageIndex = index"
-            class="thumbnail-button" :class="{ active: currentImageIndex === index }">
+          <button
+            v-for="(image, index) in product.images"
+            :key="index"
+            @click="currentImageIndex = index"
+            class="thumbnail-button"
+            :class="{ active: currentImageIndex === index }"
+          >
             <img :src="image" :alt="`${t('product.imageAlt')} ${index + 1}`" />
           </button>
         </div>
@@ -89,7 +91,6 @@ const shouldDisplayOriginalPrice = computed(() => {
                   {{ formatPrice(product.originalPrice - product.price) }}
                   {{ t('product.pricing.save') }}
                   {{ calculateDiscount(product.originalPrice, product.price) }}%
-
                 </span>
               </div>
             </div>
@@ -112,7 +113,10 @@ const shouldDisplayOriginalPrice = computed(() => {
           <CardContent>
             <div class="seller-info">
               <Avatar class="seller-avatar">
-                <AvatarImage :src="product.seller.profileImageUrl ?? ''" :alt="product.seller.firstName" />
+                <AvatarImage
+                  :src="product.seller.profileImageUrl ?? ''"
+                  :alt="product.seller.firstName"
+                />
                 <AvatarFallback>{{ product.seller.firstName[0] }}</AvatarFallback>
               </Avatar>
               <div class="seller-details">
@@ -205,7 +209,11 @@ const shouldDisplayOriginalPrice = computed(() => {
           </CardHeader>
           <CardContent>
             <ul class="details-list">
-              <li v-for="(mod, index) in product.modifications" :key="index" class="detail-list-item">
+              <li
+                v-for="(mod, index) in product.modifications"
+                :key="index"
+                class="detail-list-item"
+              >
                 {{ mod }}
               </li>
             </ul>
@@ -501,7 +509,7 @@ const shouldDisplayOriginalPrice = computed(() => {
 }
 
 /* Make certain sections span full width */
-.details-grid> :nth-child(n + 3) {
+.details-grid > :nth-child(n + 3) {
   grid-column: 1 / -1;
 }
 

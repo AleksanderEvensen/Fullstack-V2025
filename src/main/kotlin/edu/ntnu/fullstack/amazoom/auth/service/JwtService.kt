@@ -3,27 +3,35 @@ package edu.ntnu.fullstack.amazoom.auth.service
 import edu.ntnu.fullstack.amazoom.auth.config.AuthProperties
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.ExpiredJwtException
-import io.jsonwebtoken.Jwt
+import io.jsonwebtoken.JwtException
 import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.MissingClaimException
+import io.jsonwebtoken.MalformedJwtException
+import io.jsonwebtoken.UnsupportedJwtException
 import io.jsonwebtoken.security.Keys
-import org.springframework.security.core.userdetails.UserDetails
+import io.jsonwebtoken.security.SecurityException
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.util.Date
 import javax.crypto.SecretKey
 
+/**
+ * Service for JWT token management - generation, validation, and claim extraction
+ */
 @Service
 class JwtService(
     private val authProperties: AuthProperties
 ) {
-    private fun getSignedKey(): SecretKey {
-        val keyBytes = authProperties.jwtSecret.toByteArray()
-        return Keys.hmacShaKeyFor(keyBytes)
-    }
+    private val logger = LoggerFactory.getLogger(JwtService::class.java)
 
-    fun generateAccessToken(userDetails: UserDetails): String {
+    /**
+     * Generates a JWT token for the given user details
+     * @param userDetails The authenticated user details
+     * @return A signed JWT token
+     */
+    fun generateToken(userDetails: CustomUserDetails): String {
         val now = Date()
-        val expiration = Date(now.time + authProperties.accessTokenExpiration)
+        val expiration = Date(now.time + authProperties.tokenExpiration * 1000)
+
         val roles = userDetails.authorities.map {
             it.authority.removePrefix("ROLE_")
         }.toSet()
@@ -34,73 +42,114 @@ class JwtService(
             .issuedAt(now)
             .claim("roles", roles)
             .expiration(expiration)
-            .signWith(getSignedKey())
+            .signWith(getSigningKey())
             .compact()
     }
 
-    fun generateRefreshToken(userDetails: UserDetails): String {
-        val now = Date()
-        val expiration = Date(now.time + authProperties.refreshTokenExpiration)
-
-        return Jwts.builder()
-            .subject(userDetails.username)
-            .issuer(authProperties.jwtIssuer)
-            .issuedAt(now)
-            .expiration(expiration)
-            .signWith(getSignedKey())
-            .compact()
-    }
-
-    fun getEmailFromToken(token: String): String {
-        val claims = getAllClaimsFromToken(token)
-        return claims.subject
-    }
-
-    fun getExpirationDateFromToken(token: String): Date {
-        val claims = getAllClaimsFromToken(token)
-        return claims.expiration
-    }
-
-    fun validateToken(token: String): Boolean {
-        return try {
-            val parser = Jwts.parser()
-                .verifyWith(getSignedKey())
-                .requireIssuer(authProperties.jwtIssuer)
-                .build()
-
-            val jwt = parser.parseSignedClaims(token)
-
-            validateTokenStructure(jwt)
-
-            true
+    /**
+     * Extracts the username from a JWT token
+     * @param token The JWT token
+     * @return The username or null if extraction fails
+     */
+    fun extractUsername(token: String): String? {
+        try {
+            return extractClaim(token) { it.subject }
         } catch (e: Exception) {
-            false
+            logger.warn("Failed to extract username from token", e)
+            return null
         }
     }
 
-    private fun validateTokenStructure(claims: Jwt<*, Claims>) {
-        val payload = claims.payload
-        val header = claims.header
+    /**
+     * Validates a JWT token
+     * @param token The JWT token to validate
+     * @return True if the token is valid, false otherwise
+     */
+    fun isTokenValid(token: String): Boolean {
+        try {
+            val claims = Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .payload
 
-        // Validate claims
-        if (payload.subject.isNullOrEmpty()) {
-            throw MissingClaimException(header, payload, "sub", payload.subject, "Missing subject")
-        }
-        if (payload.issuer != authProperties.jwtIssuer) {
-            throw MissingClaimException(header, payload, "iss", payload.issuer, "Invalid issuer")
-        }
+            // Check if token has expired
+            if (claims.expiration.before(Date())) {
+                logger.warn("Token has expired")
+                return false
+            }
 
-        // Validate expiration
-        if (payload.expiration.before(Date())) {
-            throw ExpiredJwtException(header, payload, "Token expired")
+            return true
+        } catch (e: ExpiredJwtException) {
+            logger.warn("Token has expired: {}", e.message)
+            return false
+        } catch (e: SecurityException) {
+            logger.error("Invalid signature: {}", e.message)
+            return false
+        } catch (e: MalformedJwtException) {
+            logger.error("Malformed JWT: {}", e.message)
+            return false
+        } catch (e: UnsupportedJwtException) {
+            logger.error("Unsupported JWT: {}", e.message)
+            return false
+        } catch (e: IllegalArgumentException) {
+            logger.error("JWT claims string is empty: {}", e.message)
+            return false
+        } catch (e: JwtException) {
+            logger.error("JWT validation error: {}", e.message)
+            return false
+        } catch (e: Exception) {
+            logger.error("Unexpected error validating token", e)
+            return false
         }
     }
 
-    private fun getAllClaimsFromToken(token: String): Claims {
-        return Jwts.parser()
-            .verifyWith(getSignedKey())
-            .build()
-            .parseSignedClaims(token)
-            .payload
+    /**
+     * Extracts a specific claim from the token
+     * @param token The JWT token
+     * @param claimsResolver Function to extract specific claim from Claims
+     * @return The extracted claim value or null
+     */
+    fun <T> extractClaim(token: String, claimsResolver: (Claims) -> T): T? {
+        val claims = extractAllClaims(token)
+        return claims?.let { claimsResolver(it) }
+    }
+
+    /**
+     * Extracts all claims from the token
+     * @param token The JWT token
+     * @return The Claims object or null if extraction fails
+     * @throws JwtException if token processing fails
+     */
+    private fun extractAllClaims(token: String): Claims? {
+        try {
+            return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .payload
+        } catch (e: ExpiredJwtException) {
+            // Extract claims from expired token (may still be useful for some operations)
+            logger.warn("Token expired but extracting claims anyway")
+            return e.claims
+        } catch (e: Exception) {
+            when (e) {
+                is SecurityException -> logger.error("Invalid JWT signature", e)
+                is MalformedJwtException -> logger.error("Malformed JWT token", e)
+                is UnsupportedJwtException -> logger.error("Unsupported JWT token", e)
+                is IllegalArgumentException -> logger.error("JWT token compact of handler are invalid", e)
+                else -> logger.error("Unexpected error extracting claims", e)
+            }
+            return null
+        }
+    }
+
+    /**
+     * Gets signing key for JWT signature verification
+     * @return The secret key used for signing
+     */
+    private fun getSigningKey(): SecretKey {
+        val keyBytes: ByteArray = authProperties.jwtSecret.toByteArray()
+        return Keys.hmacShaKeyFor(keyBytes)
     }
 }

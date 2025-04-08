@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return clsx(inputs)
 }
 
-type Address = components['schemas']['Address']
+type Address = components['schemas']['AddressDto']
 export function formatAddress(address: Address) {
   const addressParts = [
     address.streetName,
