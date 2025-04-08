@@ -1,158 +1,235 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { reactive, ref, watch } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
     Select,
     SelectContent,
-    SelectGroup,
     SelectItem,
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
 import { ChevronRight } from 'lucide-vue-next';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
-import type { ListingSearchParams } from '@/models/listing';
+import { SliderReusable } from '@/components/ui/slider';
+import type { paths } from '@/lib/api/schema';
+import { useDebounceFn, useUrlSearchParams } from '@vueuse/core';
+import { getCategories } from '@/lib/api/queries/categories';
+import { useI18n } from 'vue-i18n';
 
-// Define props and emits
-const emit = defineEmits<{
-    filter: [params: Partial<ListingSearchParams>];
-}>();
+const { t } = useI18n();
 
-// Local state for filter values
-const searchQuery = ref('');
-const minPrice = ref<string>('');
-const maxPrice = ref<string>('');
-const selectedCondition = ref<string | null>(null);
-const selectedCategory = ref<number | null>(null);
-const manufacturer = ref('');
-const modelYear = ref('');
+type ListingSearchParams = paths['/api/listings/search']['get']['parameters']['query']
 
-// Predefined filter options
+const emit = defineEmits(['filter-change']);
+
+const urlParams = useUrlSearchParams<NonNullable<ListingSearchParams>>('history', {
+    removeFalsyValues: true,
+    removeNullishValues: true,
+    writeMode: 'replace',
+})
+
+const filterByPrice = ref(false);
+const filterByYear = ref(false);
+
+const localFilters = reactive<NonNullable<ListingSearchParams>>({
+    q: getUrlParamValue('q', undefined),
+    minPrice: getUrlParamValue('minPrice', undefined),
+    maxPrice: getUrlParamValue('maxPrice', undefined),
+    condition: getUrlParamValue('condition', undefined),
+    manufacturer: getUrlParamValue('manufacturer', undefined),
+    minModelYear: getUrlParamValue('minModelYear', undefined),
+    maxModelYear: getUrlParamValue('maxModelYear', undefined),
+    categoryName: getUrlParamValue('categoryName', undefined)
+})
+
+const priceValue = ref([
+    localFilters.minPrice ? Number(localFilters.minPrice) : 0,
+    localFilters.maxPrice ? Number(localFilters.maxPrice) : 10000
+]);
+
+const yearValue = ref([
+    localFilters.minModelYear ? Number(localFilters.minModelYear) : (new Date().getFullYear() - 10),
+    localFilters.maxModelYear ? Number(localFilters.maxModelYear) : new Date().getFullYear()
+]);
+
+const currentYear = new Date().getFullYear();
+
+watch(priceValue, (newValue) => {
+    if (newValue && newValue.length === 2) {
+        localFilters.minPrice = newValue[0];
+        localFilters.maxPrice = newValue[1];
+    }
+}, { deep: true });
+
+watch(yearValue, (newValue) => {
+    if (newValue && newValue.length === 2) {
+        localFilters.minModelYear = newValue[0];
+        localFilters.maxModelYear = newValue[1];
+    }
+}, { deep: true });
+
+const { data: categories } = getCategories();
+
+function getUrlParamValue(key: keyof NonNullable<ListingSearchParams>, defaultValue: any): any {
+    return urlParams[key];
+}
+
+const updateUrlParams = useDebounceFn(() => {
+    if (!filterByPrice) {
+        localFilters.minPrice = undefined;
+        localFilters.maxPrice = undefined;
+    }
+    if (!filterByYear) {
+        localFilters.minModelYear = undefined;
+        localFilters.maxModelYear = undefined;
+    }
+    emit('filter-change', { ...localFilters });
+}, 500);
+
+watch(localFilters, updateUrlParams, { deep: true });
+
+watch(filterByPrice, (newValue) => {
+    if (!newValue) {
+        localFilters.minPrice = undefined;
+        localFilters.maxPrice = undefined;
+    } else {
+        localFilters.minPrice = priceValue.value[0];
+        localFilters.maxPrice = priceValue.value[1];
+    }
+
+    updateUrlParams();
+}, { deep: true });
+
+watch(filterByYear, (newValue) => {
+    if (!newValue) {
+        localFilters.minModelYear = undefined;
+        localFilters.maxModelYear = undefined;
+    } else {
+        localFilters.minModelYear = yearValue.value[0];
+        localFilters.maxModelYear = yearValue.value[1];
+    }
+    updateUrlParams();
+}, { deep: true });
+
+
+
+const clearAllFilters = () => {
+    localFilters.q = '';
+    localFilters.minPrice = undefined;
+    localFilters.maxPrice = undefined;
+    localFilters.condition = undefined;
+    localFilters.manufacturer = undefined;
+    localFilters.minModelYear = undefined;
+    localFilters.maxModelYear = undefined;
+    localFilters.categoryName = undefined;
+    updateUrlParams();
+}
+
 const conditionOptions = [
-    { label: 'New', value: 'NEW' },
-    { label: 'Like New', value: 'LIKE_NEW' },
-    { label: 'Very Good', value: 'VERY_GOOD' },
-    { label: 'Good', value: 'GOOD' },
-    { label: 'Acceptable', value: 'ACCEPTABLE' },
+    { label: t('product.conditionLabels.new'), value: 'NEW' },
+    { label: t('product.conditionLabels.likeNew'), value: 'LIKE_NEW' },
+    { label: t('product.conditionLabels.veryGood'), value: 'VERY_GOOD' },
+    { label: t('product.conditionLabels.good'), value: 'GOOD' },
+    { label: t('product.conditionLabels.acceptable'), value: 'ACCEPTABLE' },
 ];
-
-const manufacturerOptions = [
-    'Honda', 'Toyota', 'BMW', 'Tesla', 'Audi', 'Yamaha',
-    'Samsung', 'Apple', 'Sony', 'Canon', 'Dell'
-];
-
-// Apply filters
-const applyFilters = () => {
-    emit('filter', {
-        q: searchQuery.value || undefined,
-        condition: selectedCondition.value || undefined,
-        minPrice: minPrice.value ? parseFloat(minPrice.value) : undefined,
-        maxPrice: maxPrice.value ? parseFloat(maxPrice.value) : undefined,
-        categoryId: selectedCategory.value || undefined,
-        manufacturer: manufacturer.value || undefined,
-        modelYear: modelYear.value || undefined,
-    });
-};
-
-// Reset filters
-const resetFilters = () => {
-    searchQuery.value = '';
-    minPrice.value = '';
-    maxPrice.value = '';
-    selectedCondition.value = null;
-    selectedCategory.value = null;
-    manufacturer.value = '';
-    modelYear.value = '';
-
-    applyFilters();
-};
 </script>
 
 <template>
     <div class="filters-sidebar">
         <div class="filters-header">
-            <h3>Filters</h3>
-            <Button variant="ghost" size="sm" @click="resetFilters">Clear all</Button>
+            <h3>{{ t('search.filters.title') }}</h3>
+            <Button variant="ghost" size="sm" @click="clearAllFilters">{{ t('search.filters.clearAll') }}</Button>
         </div>
 
-        <div class="filter-section">
-            <label class="filter-label">Search</label>
-            <Input v-model="searchQuery" placeholder="Search in title and description..." @keyup.enter="applyFilters" />
-        </div>
-
-        <Collapsible :default-open="true">
-            <CollapsibleTrigger as-child>
-                <Button variant="ghost" class="category-collapse">
-                    <span>Price Range</span>
-                    <ChevronRight class="category-collapse-icon" />
-                </Button>
-            </CollapsibleTrigger>
-            <CollapsibleContent class="filter-container">
-                <div class="price-range">
-                    <Input v-model="minPrice" type="number" placeholder="Min price" min="0" />
-                    <span class="to-separator">to</span>
-                    <Input v-model="maxPrice" type="number" placeholder="Max price" min="0" />
-                    <Button variant="outline" size="sm" class="apply-price" @click="applyFilters">Apply</Button>
+        <div class="filter-option">
+            <div class="filter-checkbox">
+                <Checkbox id="price-filter" v-model="filterByPrice" />
+                <label for="price-filter">{{ t('search.filters.priceRange') }}</label>
+            </div>
+            <div v-if="filterByPrice" class="filter-content">
+                <div class="slider-container">
+                    <div class="price-values">
+                        <span>{{ t('search.filters.currency') }} {{ priceValue[0] }}</span>
+                        <span>{{ t('search.filters.currency') }} {{ priceValue[1] }}</span>
+                    </div>
+                    <SliderReusable v-model="priceValue" :min="0" :max="100000" :step="100" class="price-slider" />
                 </div>
-            </CollapsibleContent>
-        </Collapsible>
+            </div>
+        </div>
 
         <Collapsible :default-open="true">
             <CollapsibleTrigger as-child>
                 <Button variant="ghost" class="category-collapse">
-                    <span>Condition</span>
+                    <span>{{ t('search.filters.condition') }}</span>
                     <ChevronRight class="category-collapse-icon" />
                 </Button>
             </CollapsibleTrigger>
             <CollapsibleContent class="filter-container">
-                <Label class="filter-check" v-for="option in conditionOptions" :key="option.value">
-                    <Checkbox :value="option.value" :checked="selectedCondition === option.value"
-                        @click="selectedCondition = selectedCondition === option.value ? null : option.value; applyFilters()" />
-                    {{ option.label }}
-                </Label>
+                <Select v-model="localFilters.condition" :placeholder="t('search.filters.selectCondition')">
+                    <SelectTrigger>
+                        <SelectValue :placeholder="localFilters.condition" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem v-for="option in conditionOptions" :key="option.value" :value="option.value">
+                            {{ option.label }}
+                        </SelectItem>
+                    </SelectContent>
+                </Select>
             </CollapsibleContent>
         </Collapsible>
 
         <Collapsible :default-open="true">
             <CollapsibleTrigger as-child>
                 <Button variant="ghost" class="category-collapse">
-                    <span>Manufacturer</span>
+                    <span>{{ t('search.filters.category') }}</span>
+                    <ChevronRight class="category-collapse-icon" />
+                </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent class="filter-container">
+                <Select v-model="localFilters.categoryName" :placeholder="t('search.filters.selectCategory')">
+                    <SelectTrigger>
+                        <SelectValue :placeholder="localFilters.categoryName" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem v-for="option in categories" :key="option.name" :value="option.name">
+                            {{ option.name }}
+                        </SelectItem>
+                    </SelectContent>
+                </Select>
+            </CollapsibleContent>
+        </Collapsible>
+
+
+        <Collapsible :default-open="true">
+            <CollapsibleTrigger as-child>
+                <Button variant="ghost" class="category-collapse">
+                    <span>{{ t('search.filters.manufacturer') }}</span>
                     <ChevronRight class="category-collapse-icon" />
                 </Button>
             </CollapsibleTrigger>
             <CollapsibleContent class="filter-container">
                 <div class="manufacturer-filter">
-                    <Input v-model="manufacturer" placeholder="Search manufacturer..." @keyup.enter="applyFilters" />
-
-                    <div class="manufacturer-options">
-                        <Label class="filter-check" v-for="option in manufacturerOptions" :key="option">
-                            <Checkbox :value="option" :checked="manufacturer === option"
-                                @click="manufacturer = manufacturer === option ? '' : option; applyFilters()" />
-                            {{ option }}
-                        </Label>
-                    </div>
+                    <Input v-model="localFilters.manufacturer" :placeholder="t('search.filters.searchManufacturer')" />
                 </div>
             </CollapsibleContent>
         </Collapsible>
 
-        <Collapsible :default-open="true">
-            <CollapsibleTrigger as-child>
-                <Button variant="ghost" class="category-collapse">
-                    <span>Year</span>
-                    <ChevronRight class="category-collapse-icon" />
-                </Button>
-            </CollapsibleTrigger>
-            <CollapsibleContent class="filter-container">
-                <Input v-model="modelYear" placeholder="Model year (e.g. 2023)" @keyup.enter="applyFilters" />
-                <Button variant="outline" size="sm" @click="applyFilters" class="year-apply">Apply</Button>
-            </CollapsibleContent>
-        </Collapsible>
-
-        <div class="filter-actions">
-            <Button @click="applyFilters">Apply Filters</Button>
+        <div class="filter-option">
+            <div class="filter-checkbox">
+                <Checkbox id="year-filter" v-model="filterByYear" />
+                <label for="year-filter">{{ t('search.filters.yearRange') }}</label>
+            </div>
+            <div v-if="filterByYear" class="filter-content">
+                <div class="slider-container">
+                    <div class="year-values">
+                        <span>{{ yearValue[0] }}</span>
+                        <span>{{ yearValue[1] }}</span>
+                    </div>
+                    <SliderReusable v-model="yearValue" :min="1950" :max="currentYear" :step="1" class="year-slider" />
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -181,15 +258,30 @@ const resetFilters = () => {
     margin: 0;
 }
 
-.filter-section {
-    margin-bottom: 1rem;
+.filter-option {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-muted, #f1f1f1);
+    padding-bottom: 0.5rem;
 }
 
-.filter-label {
-    display: block;
+.filter-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+}
+
+.filter-checkbox label {
     font-size: 0.875rem;
     font-weight: 500;
-    margin-bottom: 0.5rem;
+    cursor: pointer;
+}
+
+.filter-content {
+    padding: 0 0.5rem 0.5rem;
 }
 
 .category-collapse {
@@ -218,34 +310,23 @@ const resetFilters = () => {
     font-size: var(--font-size-sm);
 }
 
-.filter-check {
+.slider-container {
     display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-weight: 400;
-    cursor: pointer;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
 }
 
-.price-range {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    gap: 0.5rem;
-    align-items: center;
-}
-
-.to-separator {
-    text-align: center;
+.price-values,
+.year-values {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
     color: var(--muted-foreground);
 }
 
-.apply-price {
-    grid-column: span 3;
-    margin-top: 0.5rem;
-}
 
-.year-apply {
-    margin-top: 0.5rem;
-}
+
 
 .manufacturer-filter {
     display: flex;
@@ -253,21 +334,8 @@ const resetFilters = () => {
     gap: 0.75rem;
 }
 
-.manufacturer-options {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    max-height: 200px;
-    overflow-y: auto;
-    padding-right: 0.5rem;
-}
 
-.filter-actions {
-    margin-top: auto;
-    padding-top: 1rem;
-}
-
-@media (max-width: 768px) {
+@media (max-width: 850px) {
     .filters-sidebar {
         width: 100%;
         border-right: none;

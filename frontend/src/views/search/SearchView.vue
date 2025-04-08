@@ -10,209 +10,174 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { MapPin, FunnelIcon } from 'lucide-vue-next'
-import { ref, computed } from 'vue'
-import { useUrlSearchParams } from '@vueuse/core'
+import { ref, computed, watch } from 'vue'
+import { useUrlSearchParams, watchDebounced } from '@vueuse/core'
 import SearchFilter from './components/SearchFilter.vue'
 import type { paths } from '@/lib/api/schema'
 import ProductCard from '../home/components/ProductCard.vue'
-import { useListingSearch } from './composables/useListingSearch'
+import { searchListings } from '@/lib/api/queries/listings'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 type ListingSearchParams = paths['/api/listings/search']['get']['parameters']['query']
-const queryParams = useUrlSearchParams('history', {
+const queryParams = useUrlSearchParams<NonNullable<ListingSearchParams>>('history', {
   removeFalsyValues: true,
   removeNullishValues: true,
+  initialValue: {
+    sortBy: 'createdAt',
+    sortDirection: 'DESC',
+    size: 10,
+  }
 })
-
-const {
-  searchParams,
-  listings,
-  pagination,
-  isLoading,
-  isError,
-  updateSearch
-} = useListingSearch()
 
 const filtersPanelOpen = ref(true)
-const sortOptions = [
-  { value: 'createdAt,DESC', label: 'Newest first' },
-  { value: 'createdAt,ASC', label: 'Oldest first' },
-  { value: 'price,ASC', label: 'Price: Low to High' },
-  { value: 'price,DESC', label: 'Price: High to Low' },
-]
 const sortBy = ref('createdAt,DESC')
 
-const toggleFiltersPanel = () => {
-  filtersPanelOpen.value = !filtersPanelOpen.value
-}
+const localQuery = ref(queryParams.q)
 
-const handleFilter = (params: Partial<ListingSearchParams>) => {
-  if (params) {
-    if (params.condition && !['NEW', 'LIKE_NEW', 'VERY_GOOD', 'GOOD', 'ACCEPTABLE'].includes(params.condition)) {
-      delete params.condition
-    }
-    updateSearch(params)
-  }
+const sortOptions = [
+  { value: 'createdAt,DESC', label: t('search.sort.newest') },
+  { value: 'createdAt,ASC', label: t('search.sort.oldest') },
+  { value: 'price,ASC', label: t('search.sort.priceLowHigh') },
+  { value: 'price,DESC', label: t('search.sort.priceHighLow') },
+]
 
-  Object.entries(params ?? {}).forEach(([key, value]) => {
-    if (value !== undefined && value !== null && value !== '') {
-      queryParams[key] = String(value)
-    } else {
-      delete queryParams[key]
-    }
-  })
-}
-
-const handleSortChange = (value: unknown) => {
-  if (typeof value === 'string') {
-    sortBy.value = value
-    if (value && value.includes(',')) {
-      const [sort, direction] = value.split(',')
-      updateSearch({ sortBy: sort, sortDirection: direction })
-      queryParams.sortBy = sort
-      queryParams.sortDirection = direction
-    }
-  }
-}
-
-const initFromUrlParams = () => {
-  const params: Record<string, any> = {}
-
-  Object.entries(queryParams).forEach(([key, value]) => {
-    const stringValue = typeof value === 'string' ? value : Array.isArray(value) ? value[0] : String(value)
-
-    switch (key) {
-      case 'title':
-      case 'description':
-      case 'condition':
-      case 'manufacturer':
-      case 'model':
-      case 'modelYear':
-      case 'sortBy':
-      case 'sortDirection':
-        params[key] = stringValue
-        break
-      case 'minPrice':
-      case 'maxPrice':
-        params[key] = parseFloat(stringValue)
-        break
-      case 'categoryId':
-        params.categoryId = parseInt(stringValue, 10)
-        break
-      case 'page':
-      case 'size':
-        params[key] = parseInt(stringValue, 10)
-        break
-      default:
-        break
-    }
-  })
-
-  if (params.sortBy && params.sortDirection) {
-    sortBy.value = `${params.sortBy},${params.sortDirection}`
-  }
-
-  if (Object.keys(params).length > 0) {
-    updateSearch(params as Partial<ListingSearchParams>)
-  }
-}
-
-initFromUrlParams()
-
-const totalCountMessage = computed(() => {
-  return `${pagination.value.totalElements} ${pagination.value.totalElements === 1 ? 'result' : 'results'}`
+watch(sortBy, (newSortBy) => {
+  const [field, direction] = newSortBy.split(',')
+  queryParams['sortBy'] = field
+  queryParams['sortDirection'] = direction
+  queryParams.page = 0
 })
 
-const handleSearchQueryChange = () => {
-  const query = queryParams.q
-  if (query !== undefined) {
-    const stringQuery = typeof query === 'string' ? query : Array.isArray(query) ? query[0] : String(query)
-    handleFilter({ q: stringQuery })
-  }
+watchDebounced(localQuery, (newQuery) => {
+  queryParams.q = newQuery
+}, {
+  debounce: 500,
+  immediate: true,
+})
+
+const debouncedQueryParams = ref(queryParams)
+watchDebounced(queryParams, (newQueryParams) => {
+  console.log(newQueryParams)
+  debouncedQueryParams.value = newQueryParams
+}, {
+  debounce: 500,
+  immediate: true,
+})
+
+const { data, isLoading, isError, refetch } = searchListings(debouncedQueryParams.value)
+
+watch(debouncedQueryParams, () => {
+  refetch()
+})
+
+const totalCountMessage = computed(() => {
+  return t('search.resultsCount', {
+    count: data.value?.totalElements || 0
+  });
+})
+
+const goToPage = (page: number) => {
+  console.log(page)
+  queryParams.page = page
 }
+
+const goToPreviousPage = computed(() => {
+  return () => {
+    if (!data.value?.first) {
+      goToPage((data.value?.pageable?.pageNumber || 0) - 1)
+    }
+  }
+})
+
+const goToNextPage = computed(() => {
+  return () => {
+    if (!data.value?.last) {
+      goToPage((data.value?.pageable?.pageNumber || 0) + 1)
+    }
+  }
+})
+
+const handleFilterChange = (filters: NonNullable<ListingSearchParams>) => {
+  Object.entries(filters).forEach(([key, value]) => {
+    queryParams[key as keyof typeof queryParams] = value as any
+  })
+}
+
 </script>
 
 <template>
   <div class="container">
     <header class="search-header">
-      <h1 class="search-title">Find what your heart desires</h1>
-      <span class="search-count">{{ totalCountMessage }}</span>
+      <h1 class="search-title">{{ t('search.title') }}</h1>
     </header>
 
     <div class="search-query">
-      <Input
-        :model-value="typeof queryParams.q === 'string' ? queryParams.q : Array.isArray(queryParams.q) ? queryParams.q[0] : ''"
-        @input="(event: Event) => queryParams.q = (event.target as HTMLInputElement).value"
-        placeholder="Search for items..." class="search-input" @keyup.enter="handleSearchQueryChange" />
-      <Button @click="handleSearchQueryChange">Search</Button>
+      <Input :placeholder="t('search.searchPlaceholder')" class="search-input" v-model="localQuery" />
     </div>
 
     <div class="search-container">
-      <!-- Left sidebar with filters -->
-      <SearchFilter v-if="filtersPanelOpen"
-        @filter="(params) => handleFilter(params as Partial<ListingSearchParams>)" />
+      <SearchFilter v-if="filtersPanelOpen" @filter-change="handleFilterChange" />
 
-      <!-- Right side with search results -->
       <div class="search-results">
         <div class="search-controls">
-          <Button variant="outline" @click="toggleFiltersPanel">
-            <FunnelIcon :size="20" />
-            <span class="control-text">{{ filtersPanelOpen ? 'Hide Filters' : 'Show Filters' }}</span>
-          </Button>
+          <div class="search-controls-left">
+            <Button variant="outline" @click="filtersPanelOpen = !filtersPanelOpen">
+              <FunnelIcon :size="20" />
+              <span class="control-text">{{ filtersPanelOpen ? t('search.hideFilters') : t('search.showFilters')
+              }}</span>
+            </Button>
 
-          <Button variant="outline" class="map-button">
-            <MapPin :size="20" />
-            <span class="control-text">View on Map</span>
-          </Button>
+            <Button variant="outline" class="map-button">
+              <MapPin :size="20" />
+              <span class="control-text">{{ t('search.viewOnMap') }}</span>
+            </Button>
+          </div>
 
-          <Select v-model="sortBy as any" class="sort-select">
-            <SelectTrigger>
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem v-for="option in sortOptions" :key="option.value" :value="option.value">
-                  {{ option.label }}
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+          <div class="sort-select">
+            <Select v-model="sortBy">
+              <SelectTrigger>
+                <SelectValue :placeholder="sortBy" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem v-for="option in sortOptions" :key="option.value" :value="option.value">
+                    {{ option.label }}
+                  </SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
-        <!-- Loading state -->
         <div v-if="isLoading" class="loading-state">
-          <p>Loading results...</p>
+          <p>{{ t('common.loading') }}</p>
         </div>
 
-        <!-- Error state -->
         <div v-else-if="isError" class="error-state">
-          <p>Sorry, there was an error loading the listings. Please try again.</p>
-          <Button @click="initFromUrlParams">Retry</Button>
+          <p>{{ t('search.errorLoading') }}</p>
         </div>
 
-        <!-- Empty state -->
-        <div v-else-if="listings.length === 0" class="empty-state">
-          <p>No listings match your search criteria. Try adjusting your filters.</p>
+        <div v-else-if="data?.content?.length === 0" class="empty-state">
+          <p>{{ t('search.noResults') }}</p>
         </div>
 
-        <!-- Results list -->
         <div v-else class="search-results-list">
-          <ProductCard v-for="(item, index) in listings" :key="index" :product="item" />
+          <ProductCard v-for="(item, index) in data?.content" :key="index" :product="item" />
         </div>
 
-        <!-- Pagination -->
-        <div v-if="pagination.totalPages > 1" class="pagination">
-          <Button variant="outline" size="sm" :disabled="pagination.isFirstPage"
-            @click="updateSearch({ page: pagination.pageNumber - 1 })">
-            Previous
+        <div v-if="data?.totalPages && data?.totalPages > 1" class="pagination">
+          <Button variant="outline" size="sm" :disabled="data?.first" @click="goToPreviousPage">
+            {{ t('common.previous') }}
           </Button>
 
           <span class="page-info">
-            Page {{ pagination.pageNumber + 1 }} of {{ pagination.totalPages }}
+            {{ t('search.pagination', { current: (data?.pageable?.pageNumber || 0) + 1, total: data?.totalPages }) }}
           </span>
 
-          <Button variant="outline" size="sm" :disabled="pagination.isLastPage"
-            @click="updateSearch({ page: pagination.pageNumber + 1 })">
-            Next
+          <Button variant="outline" size="sm" :disabled="data?.last" @click="goToNextPage">
+            {{ t('common.next') }}
           </Button>
         </div>
       </div>
@@ -222,8 +187,8 @@ const handleSearchQueryChange = () => {
 
 <style scoped>
 .container {
-  padding: 2rem 0;
-  max-width: 1200px;
+  padding: 2rem 2rem;
+  max-width: 1500px;
   margin: 0 auto;
 }
 
@@ -237,10 +202,6 @@ const handleSearchQueryChange = () => {
   margin: 0;
 }
 
-.search-count {
-  font-size: 0.875rem;
-  color: var(--muted-foreground);
-}
 
 .search-query {
   display: flex;
@@ -268,7 +229,7 @@ const handleSearchQueryChange = () => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  flex-wrap: wrap;
+  justify-content: space-between;
 }
 
 .map-button {
@@ -279,10 +240,6 @@ const handleSearchQueryChange = () => {
 
 .control-text {
   display: none;
-}
-
-.sort-select {
-  margin-left: auto;
 }
 
 .loading-state,
@@ -297,6 +254,13 @@ const handleSearchQueryChange = () => {
 
 .error-state button {
   margin-top: 1rem;
+}
+
+.search-controls-left {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
 }
 
 .search-results-list {
@@ -334,7 +298,7 @@ const handleSearchQueryChange = () => {
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 850px) {
   .search-container {
     flex-direction: column;
   }

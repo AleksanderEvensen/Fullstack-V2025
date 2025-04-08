@@ -36,70 +36,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/auth/register": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["register"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/auth/refresh": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["refresh"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/auth/logout": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["logout"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/auth/login": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["login"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/listings": {
         parameters: {
             query?: never;
@@ -180,6 +116,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/auth/register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["register"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["login"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/chat/conversations": {
         parameters: {
             query?: never;
@@ -204,6 +172,22 @@ export interface paths {
             cookie?: never;
         };
         get: operations["getConversation"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/ping": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ping"];
         put?: never;
         post?: never;
         delete?: never;
@@ -243,7 +227,8 @@ export interface components {
             /** Format: double */
             originalPrice?: number;
             description: string;
-            modelYear?: string;
+            /** Format: int32 */
+            modelYear?: number;
             manufacturer?: string;
             model?: string;
             serialNumber?: string;
@@ -275,7 +260,8 @@ export interface components {
             originalPrice?: number;
             description: string;
             seller: components["schemas"]["UserDto"];
-            modelYear?: string;
+            /** Format: int32 */
+            modelYear?: number;
             manufacturer?: string;
             model?: string;
             serialNumber?: string;
@@ -289,8 +275,8 @@ export interface components {
             images: string[];
         };
         UserDto: {
-            /** Format: uuid */
-            id: string;
+            /** Format: int64 */
+            id: number;
             firstName: string;
             lastName: string;
             profileImageUrl?: string;
@@ -308,33 +294,21 @@ export interface components {
             translationString: string;
             icon: string;
         };
-        RegisterRequest: {
-            firstName: string;
-            lastName: string;
-            email: string;
-            password: string;
-            phoneNumber: string;
-        };
-        AuthResponse: {
-            accessToken: string;
-            refreshToken: string;
-            message: string;
-        };
-        LoginRequest: {
-            email: string;
-            password: string;
-        };
         ListingSearchRequest: {
             q?: string;
             /** Format: int64 */
             categoryId?: number;
+            categoryName?: string;
             /** @enum {string} */
             condition?: "NEW" | "LIKE_NEW" | "VERY_GOOD" | "GOOD" | "ACCEPTABLE";
             /** Format: double */
             minPrice?: number;
             /** Format: double */
             maxPrice?: number;
-            modelYear?: string;
+            /** Format: int32 */
+            minModelYear?: number;
+            /** Format: int32 */
+            maxModelYear?: number;
             manufacturer?: string;
             model?: string;
             /** Format: int64 */
@@ -361,11 +335,11 @@ export interface components {
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
+            first?: boolean;
+            last?: boolean;
             empty?: boolean;
         };
         PageableObject: {
@@ -381,8 +355,8 @@ export interface components {
         };
         SortObject: {
             empty?: boolean;
-            unsorted?: boolean;
             sorted?: boolean;
+            unsorted?: boolean;
         };
         CreateOrUpdateListingBookmarkRequest: {
             /** Format: int64 */
@@ -392,6 +366,21 @@ export interface components {
             /** Format: int64 */
             id: number;
             listing: components["schemas"]["ListingDto"];
+        };
+        RegisterRequest: {
+            firstName: string;
+            lastName: string;
+            email: string;
+            password: string;
+            phoneNumber: string;
+        };
+        AuthResponse: {
+            accessToken: string;
+            message: string;
+        };
+        LoginRequest: {
+            email: string;
+            password: string;
         };
         ConversationSummaryDto: {
             user: components["schemas"]["UserDto"];
@@ -419,11 +408,11 @@ export interface components {
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
+            first?: boolean;
+            last?: boolean;
             empty?: boolean;
         };
         ChatMessageDto: {
@@ -445,11 +434,11 @@ export interface components {
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
+            first?: boolean;
+            last?: boolean;
             empty?: boolean;
         };
     };
@@ -597,92 +586,6 @@ export interface operations {
             };
         };
     };
-    register: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["RegisterRequest"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["AuthResponse"];
-                };
-            };
-        };
-    };
-    refresh: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["AuthResponse"];
-                };
-            };
-        };
-    };
-    logout: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    login: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["LoginRequest"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["AuthResponse"];
-                };
-            };
-        };
-    };
     getPaginatedAndSortedListings: {
         parameters: {
             query?: {
@@ -742,12 +645,14 @@ export interface operations {
                 condition?: "NEW" | "LIKE_NEW" | "VERY_GOOD" | "GOOD" | "ACCEPTABLE";
                 minPrice?: number;
                 maxPrice?: number;
-                modelYear?: string;
+                minModelYear?: number;
+                maxModelYear?: number;
                 manufacturer?: string;
                 model?: string;
                 sellerId?: number;
                 defectsCount?: number;
                 modificationsCount?: number;
+                categoryName?: string;
                 page?: number;
                 size?: number;
                 sortBy?: string;
@@ -800,7 +705,7 @@ export interface operations {
             header?: never;
             path: {
                 listingId: number;
-                otherUserId: string;
+                otherUserId: number;
             };
             cookie?: never;
         };
@@ -903,6 +808,54 @@ export interface operations {
             };
         };
     };
+    register: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["AuthResponse"];
+                };
+            };
+        };
+    };
+    login: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["AuthResponse"];
+                };
+            };
+        };
+    };
     getConversations: {
         parameters: {
             query?: {
@@ -935,7 +888,7 @@ export interface operations {
             header?: never;
             path: {
                 listingId: number;
-                otherUserId: string;
+                otherUserId: number;
             };
             cookie?: never;
         };
@@ -948,6 +901,26 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["PageChatMessageDto"];
+                };
+            };
+        };
+    };
+    ping: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": string;
                 };
             };
         };

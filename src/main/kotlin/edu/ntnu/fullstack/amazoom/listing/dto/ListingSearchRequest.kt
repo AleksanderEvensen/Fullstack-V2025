@@ -5,10 +5,12 @@ import edu.ntnu.fullstack.amazoom.listing.entity.ListingCondition
 data class ListingSearchRequest(
     val q: String? = null,
     val categoryId: Long? = null,
+    val categoryName: String? = null,
     val condition: ListingCondition? = null,
     val minPrice: Double? = null,
     val maxPrice: Double? = null,
-    val modelYear: String? = null,
+    val minModelYear: Int? = null,
+    val maxModelYear: Int? = null,
     val manufacturer: String? = null,
     val model: String? = null,
     val sellerId: Long? = null,

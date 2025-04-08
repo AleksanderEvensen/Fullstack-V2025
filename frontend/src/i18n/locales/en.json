@@ -15,7 +15,38 @@
     "edit": "Edit",
     "search": "Search",
     "back": "Back",
-    "next": "Next"
+    "next": "Next",
+    "previous": "Previous"
+  },
+  "search": {
+    "title": "Find what your heart desires",
+    "searchPlaceholder": "Search for items...",
+    "showFilters": "Show Filters",
+    "hideFilters": "Hide Filters",
+    "viewOnMap": "View on Map",
+    "errorLoading": "Sorry, there was an error loading the listings. Please try again.",
+    "noResults": "No listings match your search criteria. Try adjusting your filters.",
+    "pagination": "Page {current} of {total}",
+    "resultsCount": "{count} {count} | {count} result | {count} results",
+    "sort": {
+      "newest": "Newest first",
+      "oldest": "Oldest first",
+      "priceLowHigh": "Price: Low to High",
+      "priceHighLow": "Price: High to Low"
+    },
+    "filters": {
+      "title": "Filters",
+      "clearAll": "Clear all",
+      "priceRange": "Price Range",
+      "yearRange": "Year Range",
+      "currency": "NOK",
+      "condition": "Condition",
+      "selectCondition": "Select condition",
+      "category": "Category",
+      "selectCategory": "Select category",
+      "manufacturer": "Manufacturer",
+      "searchManufacturer": "Search by manufacturer..."
+    }
   },
   "location": {
     "found": "Location found",

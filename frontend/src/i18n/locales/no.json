@@ -15,7 +15,38 @@
     "edit": "Rediger",
     "search": "Søk",
     "back": "Tilbake",
-    "next": "Neste"
+    "next": "Neste",
+    "previous": "Forrige"
+  },
+  "search": {
+    "title": "Finn det hjertet ditt begjærer",
+    "searchPlaceholder": "Søk etter varer...",
+    "showFilters": "Vis filtre",
+    "hideFilters": "Skjul filtre",
+    "viewOnMap": "Se på kart",
+    "errorLoading": "Beklager, det oppstod en feil ved lasting av annonsene. Vennligst prøv igjen.",
+    "noResults": "Ingen annonser samsvarer med søkekriteriene dine. Prøv å justere filtrene.",
+    "pagination": "Side {current} av {total}",
+    "resultsCount": "{count} {count} | {count} resultat | {count} resultater",
+    "sort": {
+      "newest": "Nyeste først",
+      "oldest": "Eldste først",
+      "priceLowHigh": "Pris: Lav til høy",
+      "priceHighLow": "Pris: Høy til lav"
+    },
+    "filters": {
+      "title": "Filtre",
+      "clearAll": "Fjern alle",
+      "priceRange": "Prisintervall",
+      "yearRange": "Årsintervall",
+      "currency": "NOK",
+      "condition": "Tilstand",
+      "selectCondition": "Velg tilstand",
+      "category": "Kategori",
+      "selectCategory": "Velg kategori",
+      "manufacturer": "Produsent",
+      "searchManufacturer": "Søk etter produsent..."
+    }
   },
   "location": {
     "found": "Fant lokasjon",

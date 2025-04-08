@@ -14,7 +14,7 @@ data class ListingDto(
     val originalPrice: Double?,
     val description: String,
     var seller: UserDto,
-    val modelYear: String?,
+    val modelYear: Int?,
     val manufacturer: String?,
     val model: String?,
     val serialNumber: String?,

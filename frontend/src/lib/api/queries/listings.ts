@@ -38,11 +38,13 @@ export function getListing(id: number) {
 type ListingSearchInput = paths['/api/listings/search']['get']['parameters']['query']
 export function searchListings(input: ListingSearchInput) {
   return useQuery({
-    queryKey: [LISTING_QUERY_KEY, 'search'],
+    queryKey: [LISTING_QUERY_KEY, 'search', input],
     queryFn: async () => {
       const response = await fetchClient.GET('/api/listings/search', {
         params: {
-          query: input,
+          query: {
+            ...input,
+          },
         },
       })
       return response.data

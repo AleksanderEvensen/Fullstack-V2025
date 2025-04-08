@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
 import { Icon, type IconName } from '@/components/ui/icon'
 import ProductGrid from '@/views/home/components/ProductGrid.vue'
 import { MapIcon, Search } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
 import { getListings } from '@/lib/api/queries/listings'
 import { getCategories } from '@/lib/api/queries/categories'
+import { ref } from 'vue'
 const { t } = useI18n()
+const router = useRouter()
 const { data } = getListings({
   page: 0,
   size: 10,
@@ -19,14 +21,20 @@ const { data: categoriesData, isLoading: categoriesLoading } = getCategories()
 function icon(iconName: string): IconName {
   return iconName as IconName
 }
+const searchQuery = ref('')
+
+const handleSearch = () => {
+  router.push(`/search?q=${searchQuery.value}`)
+}
 </script>
 
 <template>
   <div class="container home-page">
     <div class="search-header">
       <div class="search-container">
-        <Input class="search-input" :placeholder="t('home.search.placeholder')" />
-        <Button size="icon" class="search-button">
+        <Input class="search-input" :placeholder="t('home.search.placeholder')" v-model="searchQuery"
+          @keyup.enter="handleSearch" />
+        <Button size="icon" class="search-button" @click="handleSearch">
           <Search :size="24" />
         </Button>
       </div>
@@ -43,7 +51,7 @@ function icon(iconName: string): IconName {
 
     <!-- Categories -->
     <div class="categories-container">
-      <RouterLink v-for="category in categoriesData" :to="`/categories/${category.name}`" class="category-item"
+      <RouterLink v-for="category in categoriesData" :to="`/search?categoryName=${category.name}`" class="category-item"
         :key="category.name">
         <Icon :name="icon(category.icon)" />
         <div class="category-name">{{ category.name }}</div>

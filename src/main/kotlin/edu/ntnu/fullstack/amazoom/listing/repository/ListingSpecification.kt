@@ -56,6 +56,14 @@ object ListingSpecification {
         }
     }
     
+    private fun withCategoryName(categoryName: String?): Specification<Listing>? {
+        return categoryName?.let {
+            Specification { root, _, criteriaBuilder ->
+                criteriaBuilder.equal(root.get<Any>("category").get<String>("name"), it)
+            }
+        }
+    }
+    
     private fun withCondition(condition: ListingCondition?): Specification<Listing>? {
         return condition?.let {
             Specification { root, _, criteriaBuilder ->
@@ -84,12 +92,31 @@ object ListingSpecification {
             else -> null
         }
     }
-    
-    private fun withModelYear(modelYear: String?): Specification<Listing>? {
-        return modelYear?.let {
-            Specification { root, _, criteriaBuilder ->
-                criteriaBuilder.equal(root.get<String>("modelYear"), it)
+
+    /**
+     * Filter by model year
+     */
+    private fun withModelYearBetween(
+        minModelYear: Int?,
+        maxModelYear: Int?
+    ): Specification<Listing>? {
+        return when {
+            minModelYear != null && maxModelYear != null -> {
+                Specification { root, _, criteriaBuilder ->
+                    criteriaBuilder.between(root.get("modelYear"), minModelYear, maxModelYear)
+                }
             }
+            minModelYear != null -> {
+                Specification { root, _, criteriaBuilder ->
+                    criteriaBuilder.greaterThanOrEqualTo(root.get("modelYear"), minModelYear)
+                }
+            }
+            maxModelYear != null -> {
+                Specification { root, _, criteriaBuilder ->
+                    criteriaBuilder.lessThanOrEqualTo(root.get("modelYear"), maxModelYear)
+                }
+            }
+            else -> null
         }
     }
     
@@ -149,10 +176,12 @@ object ListingSpecification {
         description: String? = null,
         q: String? = null,
         categoryId: Long? = null,
+        categoryName: String? = null,
         condition: ListingCondition? = null,
         minPrice: Double? = null,
         maxPrice: Double? = null,
-        modelYear: String? = null,
+        minModelYear: Int? = null,
+        maxModelYear: Int? = null,
         manufacturer: String? = null,
         model: String? = null,
         sellerId: Long? = null,
@@ -167,9 +196,10 @@ object ListingSpecification {
         
         return Specification.where(searchSpec)
             .and(withCategoryId(categoryId))
+            .and(withCategoryName(categoryName))
             .and(withCondition(condition))
             .and(withPriceBetween(minPrice, maxPrice))
-            .and(withModelYear(modelYear))
+            .and(withModelYearBetween(minModelYear, maxModelYear))
             .and(withManufacturer(manufacturer))
             .and(withModel(model))
             .and(withSellerId(sellerId))
