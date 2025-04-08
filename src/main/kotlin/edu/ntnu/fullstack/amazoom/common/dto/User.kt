@@ -7,6 +7,7 @@ data class UserDto (
     val firstName: String,
     val lastName: String,
     val profileImageUrl: String?,
+    val address: AddressDto?,
 )
 
 data class FullUserDto (

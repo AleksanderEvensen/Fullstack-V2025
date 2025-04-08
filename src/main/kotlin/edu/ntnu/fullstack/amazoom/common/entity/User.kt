@@ -53,7 +53,8 @@ class User(
             id,
             firstName,
             lastName,
-            profileImageUrl
+            profileImageUrl,
+            address = address?.toDto(),
         )
     }
 
