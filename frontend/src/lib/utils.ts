@@ -24,3 +24,5 @@ export function formatNameInitials(name: string) {
     .filter(Boolean)
     .join('')
 }
+
+export const MAPBOX_API_TOKEN = import.meta.env.MAPBOX_GL_TOKEN as string
