@@ -8,6 +8,7 @@ import { MapIcon, Search } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
 import { getListings } from '@/lib/api/queries/listings'
 import { getCategories } from '@/lib/api/queries/categories'
+import { useAuthStore } from '@/stores/auth'
 const { t } = useI18n()
 const { data } = getListings({
   page: 0,
@@ -43,8 +44,12 @@ function icon(iconName: string): IconName {
 
     <!-- Categories -->
     <div class="categories-container">
-      <RouterLink v-for="category in categoriesData" :to="`/categories/${category.name}`" class="category-item"
-        :key="category.name">
+      <RouterLink
+        v-for="category in categoriesData"
+        :to="`/categories/${category.name}`"
+        class="category-item"
+        :key="category.name"
+      >
         <Icon :name="icon(category.icon)" />
         <div class="category-name">{{ category.name }}</div>
       </RouterLink>
@@ -130,7 +135,6 @@ function icon(iconName: string): IconName {
   padding: 0 1rem;
 }
 
-
 .category-item {
   display: flex;
   flex-direction: column;
@@ -169,7 +173,6 @@ function icon(iconName: string): IconName {
 
 /* Responsive adjustments */
 @media (max-width: 64rem) {
-
   .category-item {
     width: calc(25% - 10px);
   }
