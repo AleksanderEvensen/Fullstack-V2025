@@ -20,9 +20,6 @@ data class Category(
 
     @Column(nullable = false)
     val icon: String,
-
-    @Version
-    val version: Long? = null
 ) {
     fun toDto(): CategoryDto {
         return CategoryDto(

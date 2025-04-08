@@ -11,7 +11,7 @@ data class CreateOrUpdateListingRequest(
     val description: String,
 
     // Product Details
-    val modelYear: String? = null,
+    val modelYear: Int? = null,
     val manufacturer: String? = null,
     val model: String? = null,
     val serialNumber: String? = null,
