@@ -1,17 +1,17 @@
 package edu.ntnu.fullstack.amazoom.common.entity
 
-import edu.ntnu.fullstack.amazoom.auth.entity.RefreshToken
+import edu.ntnu.fullstack.amazoom.common.dto.AddressDto
+import edu.ntnu.fullstack.amazoom.common.dto.FullUserDto
 import edu.ntnu.fullstack.amazoom.common.dto.UserDto
 import jakarta.persistence.*
 import java.time.Instant
-import java.util.UUID
 
 @Entity
 @Table(name = "users")
-data class User(
+class User(
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    val id: UUID = UUID.randomUUID(),
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long = 0,
 
     @Column(nullable = false)
     val firstName: String,
@@ -43,8 +43,8 @@ data class User(
     )
     val roles: MutableSet<Role> = mutableSetOf(),
 
-    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val refreshTokens: MutableList<RefreshToken> = mutableListOf()
+    @Version
+    val version: Long = 0,
 ) {
     fun getFullName() = "$firstName $lastName"
 
@@ -54,6 +54,18 @@ data class User(
             firstName,
             lastName,
             profileImageUrl
+        )
+    }
+
+    fun toFullDto(): FullUserDto {
+        return FullUserDto(
+            id = id,
+            firstName = firstName,
+            lastName = lastName,
+            email = email,
+            phoneNumber = phoneNumber,
+            profileImageUrl = profileImageUrl,
+            address = address?.toDto()
         )
     }
 }
@@ -69,4 +81,14 @@ data class Address(
     val city: String,
 
     val country: String
-)
+) {
+    fun toDto(): AddressDto {
+        return AddressDto(
+            streetName = streetName,
+            streetNumber = streetNumber,
+            postalCode = postalCode,
+            city = city,
+            country = country
+        )
+    }
+}
