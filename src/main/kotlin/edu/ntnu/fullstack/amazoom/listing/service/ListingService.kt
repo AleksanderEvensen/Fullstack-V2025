@@ -6,9 +6,11 @@ import edu.ntnu.fullstack.amazoom.category.repository.CategoryRepository
 import edu.ntnu.fullstack.amazoom.common.service.UserService
 import edu.ntnu.fullstack.amazoom.listing.dto.CreateOrUpdateListingRequest
 import edu.ntnu.fullstack.amazoom.listing.dto.ListingDto
+import edu.ntnu.fullstack.amazoom.listing.dto.ListingSearchRequest
 import edu.ntnu.fullstack.amazoom.listing.entity.Listing
 import edu.ntnu.fullstack.amazoom.listing.mapper.ListingMapper
 import edu.ntnu.fullstack.amazoom.listing.repository.ListingRepository
+import edu.ntnu.fullstack.amazoom.listing.repository.ListingSpecification
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -72,6 +74,31 @@ class ListingService(
     ): Page<ListingDto> {
         val pageable = PageRequest.of(page, size, Sort.by(direction, sortBy))
         val listingsPage = listingRepository.findAll(pageable)
+        return listingsPage.map { ListingMapper.toResponseDto(it) }
+    }
+
+    /**
+     * Search for listings based on various criteria
+     */
+    fun searchListings(searchRequest: ListingSearchRequest): Page<ListingDto> {
+        val direction = Sort.Direction.valueOf(searchRequest.sortDirection)
+        val pageable = PageRequest.of(searchRequest.page, searchRequest.size, Sort.by(direction, searchRequest.sortBy))
+
+        val specification = ListingSpecification.buildSpecification(
+            q = searchRequest.q,
+            categoryId = searchRequest.categoryId,
+            condition = searchRequest.condition,
+            minPrice = searchRequest.minPrice,
+            maxPrice = searchRequest.maxPrice,
+            modelYear = searchRequest.modelYear,
+            manufacturer = searchRequest.manufacturer,
+            model = searchRequest.model,
+            sellerId = searchRequest.sellerId,
+            defectsCount = searchRequest.defectsCount,
+            modificationsCount = searchRequest.modificationsCount
+        )
+
+        val listingsPage = listingRepository.findAll(specification, pageable)
         return listingsPage.map { ListingMapper.toResponseDto(it) }
     }
 

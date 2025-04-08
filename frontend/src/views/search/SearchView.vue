@@ -9,430 +9,348 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { MapPin, FunnelIcon, ChevronRight } from 'lucide-vue-next'
-import { useUrlSearchParams, watchDebounced } from '@vueuse/core'
-import { computed, ref, watch } from 'vue'
-import { MockSearchEntries } from './mock_data'
-import ItemCard from './components/ItemCard.vue'
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
-import { Label } from '@/components/ui/label'
-import { Checkbox } from '@/components/ui/checkbox'
+import { MapPin, FunnelIcon } from 'lucide-vue-next'
+import { ref, computed } from 'vue'
+import { useUrlSearchParams } from '@vueuse/core'
+import SearchFilter from './components/SearchFilter.vue'
+import type { paths } from '@/lib/api/schema'
+import ProductCard from '../home/components/ProductCard.vue'
+import { useListingSearch } from './composables/useListingSearch'
 
+type ListingSearchParams = paths['/api/listings/search']['get']['parameters']['query']
 const queryParams = useUrlSearchParams('history', {
   removeFalsyValues: true,
   removeNullishValues: true,
 })
 
-const searchInput = ref('')
-watchDebounced(
-  searchInput,
-  (value) => {
-    queryParams.q = value
-  },
-  { debounce: 500 },
-)
-
-watch(queryParams, (query) => {
-  console.log('Search query updated:', query)
-})
+const {
+  searchParams,
+  listings,
+  pagination,
+  isLoading,
+  isError,
+  updateSearch
+} = useListingSearch()
 
 const filtersPanelOpen = ref(true)
+const sortOptions = [
+  { value: 'createdAt,DESC', label: 'Newest first' },
+  { value: 'createdAt,ASC', label: 'Oldest first' },
+  { value: 'price,ASC', label: 'Price: Low to High' },
+  { value: 'price,DESC', label: 'Price: High to Low' },
+]
+const sortBy = ref('createdAt,DESC')
 
-const data = computed(() => MockSearchEntries)
+const toggleFiltersPanel = () => {
+  filtersPanelOpen.value = !filtersPanelOpen.value
+}
+
+const handleFilter = (params: Partial<ListingSearchParams>) => {
+  if (params) {
+    if (params.condition && !['NEW', 'LIKE_NEW', 'VERY_GOOD', 'GOOD', 'ACCEPTABLE'].includes(params.condition)) {
+      delete params.condition
+    }
+    updateSearch(params)
+  }
+
+  Object.entries(params ?? {}).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      queryParams[key] = String(value)
+    } else {
+      delete queryParams[key]
+    }
+  })
+}
+
+const handleSortChange = (value: unknown) => {
+  if (typeof value === 'string') {
+    sortBy.value = value
+    if (value && value.includes(',')) {
+      const [sort, direction] = value.split(',')
+      updateSearch({ sortBy: sort, sortDirection: direction })
+      queryParams.sortBy = sort
+      queryParams.sortDirection = direction
+    }
+  }
+}
+
+const initFromUrlParams = () => {
+  const params: Record<string, any> = {}
+
+  Object.entries(queryParams).forEach(([key, value]) => {
+    const stringValue = typeof value === 'string' ? value : Array.isArray(value) ? value[0] : String(value)
+
+    switch (key) {
+      case 'title':
+      case 'description':
+      case 'condition':
+      case 'manufacturer':
+      case 'model':
+      case 'modelYear':
+      case 'sortBy':
+      case 'sortDirection':
+        params[key] = stringValue
+        break
+      case 'minPrice':
+      case 'maxPrice':
+        params[key] = parseFloat(stringValue)
+        break
+      case 'categoryId':
+        params.categoryId = parseInt(stringValue, 10)
+        break
+      case 'page':
+      case 'size':
+        params[key] = parseInt(stringValue, 10)
+        break
+      default:
+        break
+    }
+  })
+
+  if (params.sortBy && params.sortDirection) {
+    sortBy.value = `${params.sortBy},${params.sortDirection}`
+  }
+
+  if (Object.keys(params).length > 0) {
+    updateSearch(params as Partial<ListingSearchParams>)
+  }
+}
+
+initFromUrlParams()
+
+const totalCountMessage = computed(() => {
+  return `${pagination.value.totalElements} ${pagination.value.totalElements === 1 ? 'result' : 'results'}`
+})
+
+const handleSearchQueryChange = () => {
+  const query = queryParams.q
+  if (query !== undefined) {
+    const stringQuery = typeof query === 'string' ? query : Array.isArray(query) ? query[0] : String(query)
+    handleFilter({ q: stringQuery })
+  }
+}
 </script>
 
 <template>
   <div class="container">
-    <header>
-      <h1 class="text-2xl">Find what your heart desires</h1>
-      <span class="text-sm">{{ data.length }} treff</span>
+    <header class="search-header">
+      <h1 class="search-title">Find what your heart desires</h1>
+      <span class="search-count">{{ totalCountMessage }}</span>
     </header>
-    <p>Søk:</p>
-    <div class="search-header">
-      <Input v-model="searchInput" placeholder="Søkeord..." />
+
+    <div class="search-query">
+      <Input
+        :model-value="typeof queryParams.q === 'string' ? queryParams.q : Array.isArray(queryParams.q) ? queryParams.q[0] : ''"
+        @input="(event: Event) => queryParams.q = (event.target as HTMLInputElement).value"
+        placeholder="Search for items..." class="search-input" @keyup.enter="handleSearchQueryChange" />
+      <Button @click="handleSearchQueryChange">Search</Button>
     </div>
 
     <div class="search-container">
       <!-- Left sidebar with filters -->
-      <div v-if="filtersPanelOpen" class="filters-sidebar">
-        <Collapsible :default-open="true">
-          <CollapsibleTrigger as-child>
-            <Button variant="ghost" class="category-collapse">
-              <span>Merke</span>
-              <ChevronRight class="category-collapse-icon" />
-            </Button>
-          </CollapsibleTrigger>
-          <CollapsibleContent class="filter-container">
-            <Label class="filter-check">
-              <Checkbox />
-              4Speed (0)
-            </Label>
-            <Label class="filter-check">
-              <Checkbox />
-              4W-Moto (0)
-            </Label>
-            <Label class="filter-check">
-              <Checkbox />
-              Aixam (0)
-            </Label>
-            <Label class="filter-check">
-              <Checkbox />
-              AJP (0)
-            </Label>
-            <Label class="filter-check">
-              <Checkbox />
-              American Iron Horse (0)
-            </Label>
-            <Label class="filter-check">
-              <Checkbox />
-              Aprilia (0)
-            </Label>
-            <Label class="filter-check">
-              <Checkbox />
-              Arctic-cat (0)
-            </Label>
-            <Label class="filter-check">
-              <Checkbox />
-              Ariel (0)
-            </Label>
-            <Label class="filter-check">
-              <Checkbox />
-              Beta (0)
-            </Label>
-            <Label class="filter-check">
-              <Checkbox />
-              Honda (72)
-            </Label>
-          </CollapsibleContent>
-        </Collapsible>
-
-        <Collapsible :default-open="true">
-          <CollapsibleTrigger as-child>
-            <Button variant="ghost" class="category-collapse">
-              <span>Type</span>
-              <ChevronRight class="category-collapse-icon" />
-            </Button>
-          </CollapsibleTrigger>
-          <CollapsibleContent class="filter-container">
-            <Label class="filter-check">
-              <Checkbox />
-              Adventure (6)
-            </Label>
-            <Label class="filter-check">
-              <Checkbox />
-              ATV (0)
-            </Label>
-            <Label class="filter-check">
-              <Checkbox />
-              Chopper (1)
-            </Label>
-            <Label class="filter-check">
-              <Checkbox />
-              Classic/Nakne (32)
-            </Label>
-          </CollapsibleContent>
-        </Collapsible>
-      </div>
+      <SearchFilter v-if="filtersPanelOpen"
+        @filter="(params) => handleFilter(params as Partial<ListingSearchParams>)" />
 
       <!-- Right side with search results -->
       <div class="search-results">
-        <div class="search-filters">
-          <Button variant="outline" @click="filtersPanelOpen = !filtersPanelOpen">
+        <div class="search-controls">
+          <Button variant="outline" @click="toggleFiltersPanel">
             <FunnelIcon :size="20" />
-          </Button>
-          <Button variant="outline" class="map-view">
-            <MapPin :size="20" />
-            Vis på kart
+            <span class="control-text">{{ filtersPanelOpen ? 'Hide Filters' : 'Show Filters' }}</span>
           </Button>
 
-          <Select default-value="published">
-            <SelectTrigger class="sort-by">
-              <SelectValue placeholder="Sortering" />
+          <Button variant="outline" class="map-button">
+            <MapPin :size="20" />
+            <span class="control-text">View on Map</span>
+          </Button>
+
+          <Select v-model="sortBy as any" class="sort-select">
+            <SelectTrigger>
+              <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectItem value="published">Publisert</SelectItem>
-                <SelectItem value="price-low">Pris lav-høy</SelectItem>
-                <SelectItem value="price-high">Pris høy-lav</SelectItem>
+                <SelectItem v-for="option in sortOptions" :key="option.value" :value="option.value">
+                  {{ option.label }}
+                </SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
         </div>
 
-        <div class="search-results-list">
-          <ItemCard v-for="(item, index) in data" :item="item" :key="index" />
+        <!-- Loading state -->
+        <div v-if="isLoading" class="loading-state">
+          <p>Loading results...</p>
+        </div>
+
+        <!-- Error state -->
+        <div v-else-if="isError" class="error-state">
+          <p>Sorry, there was an error loading the listings. Please try again.</p>
+          <Button @click="initFromUrlParams">Retry</Button>
+        </div>
+
+        <!-- Empty state -->
+        <div v-else-if="listings.length === 0" class="empty-state">
+          <p>No listings match your search criteria. Try adjusting your filters.</p>
+        </div>
+
+        <!-- Results list -->
+        <div v-else class="search-results-list">
+          <ProductCard v-for="(item, index) in listings" :key="index" :product="item" />
+        </div>
+
+        <!-- Pagination -->
+        <div v-if="pagination.totalPages > 1" class="pagination">
+          <Button variant="outline" size="sm" :disabled="pagination.isFirstPage"
+            @click="updateSearch({ page: pagination.pageNumber - 1 })">
+            Previous
+          </Button>
+
+          <span class="page-info">
+            Page {{ pagination.pageNumber + 1 }} of {{ pagination.totalPages }}
+          </span>
+
+          <Button variant="outline" size="sm" :disabled="pagination.isLastPage"
+            @click="updateSearch({ page: pagination.pageNumber + 1 })">
+            Next
+          </Button>
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<style scoped lang="css">
-header {
-  margin-top: 2rem;
-  margin-bottom: 1.5rem;
-  font-weight: var(--font-weight-semibold);
-
-  span {
-    font-weight: var(--font-weight-thin);
-    color: var(--muted-foreground);
-  }
+<style scoped>
+.container {
+  padding: 2rem 0;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .search-header {
+  margin-bottom: 1.5rem;
+}
+
+.search-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.search-count {
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+}
+
+.search-query {
   display: flex;
-  flex-direction: row;
-  gap: calc(var(--spacing) * 2);
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
 
-  align-items: center;
-
-  margin-bottom: calc(var(--spacing) * 4);
+.search-input {
+  flex: 1;
 }
 
 .search-container {
   display: flex;
-  gap: 2rem;
-  width: 100%;
-}
-
-.search-filters {
-  display: flex;
-  gap: calc(var(--spacing) * 2);
-}
-
-.map-view {
-  display: flex;
-  gap: var(--spacing);
-}
-
-.sort-by {
-  margin-left: auto;
-  width: fit-content;
-}
-
-.category-collapse {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-
-  & > .category-collapse-icon {
-    transition: 0.1s ease;
-  }
-
-  &[data-state='open'] > .category-collapse-icon {
-    rotate: 90deg;
-  }
-}
-.filter-container {
-  display: flex;
-  flex-direction: column;
-  gap: calc(var(--spacing) * 2);
-  padding: calc(var(--spacing) * 5);
-  font-size: var(--font-size-sm);
-  & > label {
-    font-weight: 400 !important;
-  }
+  gap: 1.5rem;
 }
 
 .search-results {
   flex: 1;
-  container-type: inline-size;
-  container-name: search-results;
-}
-
-.filters-sidebar {
-  width: 300px;
-  flex-shrink: 0;
-}
-
-.search-results-list {
-  display: grid;
-  gap: var(--spacing);
-  grid-template-rows: auto;
-  grid-template-columns: repeat(1, minmax(0, 1fr));
-}
-
-
-@container search-results (min-width: 700px) {
-  .search-results-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-/*
-
-.search-title h1 {
-  font-size: 1.5rem;
-  font-weight: 500;
-  margin: 0;
-}
-
-.search-results-count {
-  font-size: 0.9rem;
-  color: var(--muted-foreground);
-}
-
-.search-container {
-  display: flex;
-  gap: 2rem;
-}
-  */
-
-/* Filters sidebar */
-
-/*.filters-sidebar {
-  width: 300px;
-  flex-shrink: 0;
-}
-
-.search-box {
-  margin-bottom: 1.5rem;
-}
-
-.search-box p {
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
-}
-
-.search-input-container {
-  position: relative;
-}
-
-.search-input {
-  width: 100%;
-}
-
-.clear-search-button {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--muted-foreground);
-}
-
-.filter-section {
-  border-top: 1px solid var(--border);
-  padding: 1rem 0;
-}
-
-.filter-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  cursor: pointer;
-}
-
-.filter-header h3 {
-  font-size: 1rem;
-  font-weight: 500;
-  margin: 0;
-}
-
-.filter-expand-icon {
-  color: var(--muted-foreground);
-}
-
-.filter-options {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-}
-
-.filter-option {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.filter-checkbox {
-  width: 18px;
-  height: 18px;
-}
-
-.filter-option label {
-  font-size: 0.9rem;
-}
-
-.show-more-button {
-  background: none;
-  border: none;
-  color: #0068e1;
-  font-size: 0.9rem;
-  padding: 0.5rem 0;
-  cursor: pointer;
-  text-align: left;
-}*/
-
-/* Search results */
-/*.search-results {
-  flex: 1;
+  gap: 1rem;
 }
 
 .search-controls {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 1rem;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
-.view-options {
+.map-button {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.view-option {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: none;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 0.5rem;
-  cursor: pointer;
-  font-size: 0.9rem;
-}
-
-.view-option.active {
-  background-color: var(--muted);
+.control-text {
+  display: none;
 }
 
 .sort-select {
-  padding: 0.5rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  font-size: 0.9rem;
+  margin-left: auto;
 }
 
-.info-banner {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background-color: #f0f6ff;
-  color: #0068e1;
-  padding: 0.75rem;
+.loading-state,
+.error-state,
+.empty-state {
+  padding: 3rem;
+  text-align: center;
+  background-color: var(--background);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
+}
+
+.error-state button {
+  margin-top: 1rem;
 }
 
 .search-results-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
   gap: 1rem;
-}*/
+  grid-template-columns: 1fr;
+}
 
-/* Responsive */
-@media (max-width: 900px) {
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.page-info {
+  font-size: 0.875rem;
+}
+
+/* Media queries for responsive design */
+@media (min-width: 640px) {
+  .control-text {
+    display: inline;
+  }
+
+  .search-results-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .search-results-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
   .search-container {
     flex-direction: column;
   }
 
-  .filters-sidebar {
+  .sort-select {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .search-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .map-button,
+  .sort-select {
     width: 100%;
   }
 }

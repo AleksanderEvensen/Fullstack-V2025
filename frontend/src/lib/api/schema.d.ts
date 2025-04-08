@@ -116,6 +116,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/listings/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["searchListings"];
+        put?: never;
+        post: operations["advancedSearchListings"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/chat/read/{listingId}/{otherUserId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["markMessagesAsRead"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/categories": {
         parameters: {
             query?: never;
@@ -142,6 +174,38 @@ export interface paths {
         get: operations["listAllBookmarksForUser"];
         put?: never;
         post: operations["createBookmark"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/chat/conversations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getConversations"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/chat/conversation/{listingId}/{otherUserId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getConversation"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -191,13 +255,13 @@ export interface components {
             images?: string[];
         };
         Address: {
-            streetName?: string;
-            streetNumber?: string;
-            postalCode?: string;
-            city?: string;
-            country?: string;
+            streetName: string;
+            streetNumber: string;
+            postalCode: string;
+            city: string;
+            country: string;
         };
-        ListingResponse: {
+        ListingDto: {
             /** Format: int64 */
             id: number;
             title: string;
@@ -225,13 +289,12 @@ export interface components {
             images: string[];
         };
         UserDto: {
-            /** Format: int64 */
-            id: number;
+            /** Format: uuid */
+            id: string;
             firstName: string;
             lastName: string;
-            email: string;
-            address?: components["schemas"]["Address"];
             profileImageUrl?: string;
+            address?: components["schemas"]["Address"];
         };
         CreateOrUpdateCategoryRequest: {
             name: string;
@@ -239,9 +302,7 @@ export interface components {
             translationString: string;
             icon: string;
         };
-        CategoryResponse: {
-            /** Format: int64 */
-            id: number;
+        CategoryDto: {
             name: string;
             description: string;
             translationString: string;
@@ -263,23 +324,40 @@ export interface components {
             email: string;
             password: string;
         };
-        CreateOrUpdateListingBookmarkRequest: {
+        ListingSearchRequest: {
+            q?: string;
             /** Format: int64 */
-            listingId: number;
-        };
-        ListingBookmarkResponse: {
+            categoryId?: number;
+            /** @enum {string} */
+            condition?: "NEW" | "LIKE_NEW" | "VERY_GOOD" | "GOOD" | "ACCEPTABLE";
+            /** Format: double */
+            minPrice?: number;
+            /** Format: double */
+            maxPrice?: number;
+            modelYear?: string;
+            manufacturer?: string;
+            model?: string;
             /** Format: int64 */
-            id: number;
-            listing: components["schemas"]["ListingResponse"];
+            sellerId?: number;
+            /** Format: int32 */
+            defectsCount?: number;
+            /** Format: int32 */
+            modificationsCount?: number;
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            size: number;
+            sortBy: string;
+            sortDirection: string;
         };
-        PageListingResponse: {
+        PageListingDto: {
             /** Format: int32 */
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
             /** Format: int32 */
             size?: number;
-            content?: components["schemas"]["ListingResponse"][];
+            content?: components["schemas"]["ListingDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
@@ -294,17 +372,85 @@ export interface components {
             /** Format: int64 */
             offset?: number;
             sort?: components["schemas"]["SortObject"];
+            paged?: boolean;
             /** Format: int32 */
             pageNumber?: number;
             /** Format: int32 */
             pageSize?: number;
-            paged?: boolean;
             unpaged?: boolean;
         };
         SortObject: {
             empty?: boolean;
-            sorted?: boolean;
             unsorted?: boolean;
+            sorted?: boolean;
+        };
+        CreateOrUpdateListingBookmarkRequest: {
+            /** Format: int64 */
+            listingId: number;
+        };
+        ListingBookmarkResponse: {
+            /** Format: int64 */
+            id: number;
+            listing: components["schemas"]["ListingDto"];
+        };
+        ConversationSummaryDto: {
+            user: components["schemas"]["UserDto"];
+            /** Format: int64 */
+            listingId: number;
+            listingTitle: string;
+            /** Format: int64 */
+            unreadCount: number;
+            lastMessage?: components["schemas"]["LastMessageDto"];
+        };
+        LastMessageDto: {
+            content: string;
+            /** Format: date-time */
+            timestamp: string;
+            isFromCurrentUser: boolean;
+        };
+        PageConversationSummaryDto: {
+            /** Format: int32 */
+            totalPages?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            size?: number;
+            content?: components["schemas"]["ConversationSummaryDto"][];
+            /** Format: int32 */
+            number?: number;
+            sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            numberOfElements?: number;
+            pageable?: components["schemas"]["PageableObject"];
+            empty?: boolean;
+        };
+        ChatMessageDto: {
+            sender: components["schemas"]["UserDto"];
+            recipient: components["schemas"]["UserDto"];
+            content: string;
+            /** Format: date-time */
+            timestamp: string;
+            read: boolean;
+        };
+        PageChatMessageDto: {
+            /** Format: int32 */
+            totalPages?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            size?: number;
+            content?: components["schemas"]["ChatMessageDto"][];
+            /** Format: int32 */
+            number?: number;
+            sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            numberOfElements?: number;
+            pageable?: components["schemas"]["PageableObject"];
+            empty?: boolean;
         };
     };
     responses: never;
@@ -332,7 +478,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ListingResponse"];
+                    "*/*": components["schemas"]["ListingDto"];
                 };
             };
         };
@@ -358,7 +504,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ListingResponse"];
+                    "*/*": components["schemas"]["ListingDto"];
                 };
             };
         };
@@ -400,7 +546,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["CategoryResponse"];
+                    "*/*": components["schemas"]["CategoryDto"];
                 };
             };
         };
@@ -426,7 +572,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["CategoryResponse"];
+                    "*/*": components["schemas"]["CategoryDto"];
                 };
             };
         };
@@ -557,7 +703,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PageListingResponse"];
+                    "*/*": components["schemas"]["PageListingDto"];
                 };
             };
         };
@@ -581,8 +727,91 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ListingResponse"];
+                    "*/*": components["schemas"]["ListingDto"];
                 };
+            };
+        };
+    };
+    searchListings: {
+        parameters: {
+            query?: {
+                q?: string;
+                title?: string;
+                description?: string;
+                categoryId?: number;
+                condition?: "NEW" | "LIKE_NEW" | "VERY_GOOD" | "GOOD" | "ACCEPTABLE";
+                minPrice?: number;
+                maxPrice?: number;
+                modelYear?: string;
+                manufacturer?: string;
+                model?: string;
+                sellerId?: number;
+                defectsCount?: number;
+                modificationsCount?: number;
+                page?: number;
+                size?: number;
+                sortBy?: string;
+                sortDirection?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageListingDto"];
+                };
+            };
+        };
+    };
+    advancedSearchListings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ListingSearchRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageListingDto"];
+                };
+            };
+        };
+    };
+    markMessagesAsRead: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                listingId: number;
+                otherUserId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -601,7 +830,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["CategoryResponse"][];
+                    "*/*": components["schemas"]["CategoryDto"][];
                 };
             };
         };
@@ -625,7 +854,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["CategoryResponse"];
+                    "*/*": components["schemas"]["CategoryDto"];
                 };
             };
         };
@@ -670,6 +899,55 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ListingBookmarkResponse"];
+                };
+            };
+        };
+    };
+    getConversations: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageConversationSummaryDto"];
+                };
+            };
+        };
+    };
+    getConversation: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path: {
+                listingId: number;
+                otherUserId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageChatMessageDto"];
                 };
             };
         };
