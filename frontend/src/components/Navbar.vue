@@ -10,7 +10,7 @@ import { ref } from 'vue'
 import { type Locales, AvailableLocales, useTypedI18n } from '@/i18n'
 
 const isOpen = ref(false)
-const { t, locale } = useTypedI18n();
+const { t, locale } = useTypedI18n()
 const locales: Record<Locales, { flag: string; name: string }> = {
   en: {
     flag: 'US',
@@ -35,15 +35,17 @@ const locales: Record<Locales, { flag: string; name: string }> = {
       <div class="nav-item">
         <Select v-model="locale">
           <SelectTrigger>
-            <SelectValue placeholder="Language">
+            <SelectValue placeholder="Language" class="flag-item">
               <FlagComponent :code="locales[locale as Locales].flag" />
               {{ locales[locale as Locales].name }}
             </SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem v-for="locale in AvailableLocales" :key="locale" :value="locale">
-              <FlagComponent :code="locales[locale].flag" />
-              {{ locales[locale].name }}
+              <span class="flag-item">
+                  <FlagComponent :code="locales[locale].flag" />
+                  {{ locales[locale].name }}
+              </span>
             </SelectItem>
           </SelectContent>
         </Select>
@@ -60,14 +62,12 @@ const locales: Record<Locales, { flag: string; name: string }> = {
       </RouterLink>
 
       <!-- Profile Avatar -->
-      <div class="nav-item">
-        <RouterLink to="/profile">
-          <Avatar class="cursor-pointer">
-            <AvatarImage src="https://github.com/shadcn.png" alt="User" />
-            <AvatarFallback>U</AvatarFallback>
-          </Avatar>
-        </RouterLink>
-      </div>
+      <RouterLink to="/profile" class="nav-item">
+        <Avatar class="cursor-pointer">
+          <AvatarImage src="https://github.com/shadcn.png" alt="User" />
+          <AvatarFallback>U</AvatarFallback>
+        </Avatar>
+      </RouterLink>
     </div>
 
     <!-- Mobile Navigation -->
@@ -88,15 +88,17 @@ const locales: Record<Locales, { flag: string; name: string }> = {
               <div>
                 <Select v-model="locale">
                   <SelectTrigger>
-                    <SelectValue placeholder="Language">
+                    <SelectValue placeholder="Language" class="flag-item">
                       <FlagComponent :code="locales[locale as Locales].flag" />
                       {{ locales[locale as Locales].name }}
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem v-for="locale in AvailableLocales" :key="locale" :value="locale">
-                      <FlagComponent :code="locales[locale].flag" />
-                      {{ locales[locale].name }}
+                      <span class="flag-item">
+                        <FlagComponent :code="locales[locale].flag" />
+                        {{ locales[locale].name }}
+                      </span>
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -144,9 +146,6 @@ const locales: Record<Locales, { flag: string; name: string }> = {
   border-bottom: 1px solid #333;
 }
 
-
-
-
 .navbar .logo img {
   height: 100%;
 }
@@ -169,7 +168,12 @@ const locales: Record<Locales, { flag: string; name: string }> = {
   align-items: center;
   background: transparent;
   border: none;
-  padding: 8px 12px;
+}
+
+.flag-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing);
 }
 
 .icon {
