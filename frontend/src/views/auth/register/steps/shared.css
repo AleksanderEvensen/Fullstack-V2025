@@ -1,0 +1,37 @@
+.hidden {
+  display: none;
+}
+
+.form-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-label {
+  font-weight: 500;
+}
+
+.input-container {
+  position: relative;
+  width: 100%;
+}
+
+.input-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: hsl(var(--muted-foreground));
+  height: 1.25rem;
+  width: 1.25rem;
+}
+
+.input-with-icon {
+  padding-left: 2.5rem;
+}
+
+.form-message {
+  font-size: 0.875rem;
+  font-weight: 400;
+}
