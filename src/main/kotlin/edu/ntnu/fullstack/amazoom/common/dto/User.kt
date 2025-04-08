@@ -1,6 +1,5 @@
 package edu.ntnu.fullstack.amazoom.common.dto
 
-import edu.ntnu.fullstack.amazoom.common.entity.Address
 import java.util.UUID
 
 data class UserDto (
@@ -8,7 +7,7 @@ data class UserDto (
     val firstName: String,
     val lastName: String,
     val profileImageUrl: String?,
-    val address: Address?,
+    val address: AddressDto?,
 )
 
 data class FullUserDto (

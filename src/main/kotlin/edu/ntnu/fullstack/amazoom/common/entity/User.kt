@@ -54,7 +54,7 @@ class User(
             firstName,
             lastName,
             profileImageUrl,
-            address
+            address = address?.toDto(),
         )
     }
 
