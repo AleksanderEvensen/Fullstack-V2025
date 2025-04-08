@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="amazoom@localhost" uuid="ce96d2eb-f547-4774-9df1-e979d1c8465d">
+    <data-source source="LOCAL" name="amazoom@localhost" uuid="c098cda3-65f1-4b48-9a20-68434cef0c16">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
