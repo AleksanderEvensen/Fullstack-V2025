@@ -20,41 +20,46 @@ import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 
-type ListingSearchParams = paths['/api/listings/search']['get']['parameters']['query']
+type ListingSearchParams = paths['/api/listings/search']['get']['parameters']['query'];
+type Condition = "NEW" | "LIKE_NEW" | "VERY_GOOD" | "GOOD" | "ACCEPTABLE";
 
-const emit = defineEmits(['filter-change']);
+
+
+const emit = defineEmits<{
+    'filter-change': [filters: NonNullable<ListingSearchParams>]
+}>();
 
 const urlParams = useUrlSearchParams<NonNullable<ListingSearchParams>>('history', {
     removeFalsyValues: true,
     removeNullishValues: true,
     writeMode: 'replace',
-})
+});
 
-const filterByPrice = ref(false);
-const filterByYear = ref(false);
+const filterByPrice = ref<boolean>(false);
+const filterByYear = ref<boolean>(false);
 
 const localFilters = reactive<NonNullable<ListingSearchParams>>({
-    q: getUrlParamValue('q', undefined),
-    minPrice: getUrlParamValue('minPrice', undefined),
-    maxPrice: getUrlParamValue('maxPrice', undefined),
-    condition: getUrlParamValue('condition', undefined),
-    manufacturer: getUrlParamValue('manufacturer', undefined),
-    minModelYear: getUrlParamValue('minModelYear', undefined),
-    maxModelYear: getUrlParamValue('maxModelYear', undefined),
-    categoryName: getUrlParamValue('categoryName', undefined)
-})
+    q: getUrlParamValue('q') as string | undefined,
+    minPrice: getUrlParamValue('minPrice') as number | undefined,
+    maxPrice: getUrlParamValue('maxPrice') as number | undefined,
+    condition: getUrlParamValue('condition') as Condition | undefined,
+    manufacturer: getUrlParamValue('manufacturer') as string | undefined,
+    minModelYear: getUrlParamValue('minModelYear') as number | undefined,
+    maxModelYear: getUrlParamValue('maxModelYear') as number | undefined,
+    categoryName: getUrlParamValue('categoryName') as string | undefined
+});
 
-const priceValue = ref([
+const priceValue = ref<[number, number]>([
     localFilters.minPrice ? Number(localFilters.minPrice) : 0,
     localFilters.maxPrice ? Number(localFilters.maxPrice) : 10000
 ]);
 
-const yearValue = ref([
+const yearValue = ref<[number, number]>([
     localFilters.minModelYear ? Number(localFilters.minModelYear) : (new Date().getFullYear() - 10),
     localFilters.maxModelYear ? Number(localFilters.maxModelYear) : new Date().getFullYear()
 ]);
 
-const currentYear = new Date().getFullYear();
+const currentYear: number = new Date().getFullYear();
 
 watch(priceValue, (newValue) => {
     if (newValue && newValue.length === 2) {
@@ -72,8 +77,8 @@ watch(yearValue, (newValue) => {
 
 const { data: categories } = getCategories();
 
-function getUrlParamValue(key: keyof NonNullable<ListingSearchParams>, defaultValue: any): any {
-    return urlParams[key];
+function getUrlParamValue<K extends keyof NonNullable<ListingSearchParams>>(key: K): NonNullable<ListingSearchParams>[K] | undefined {
+    return urlParams[key] as NonNullable<ListingSearchParams>[K] | undefined;
 }
 
 const updateUrlParams = useDebounceFn(() => {
@@ -85,13 +90,17 @@ const updateUrlParams = useDebounceFn(() => {
         localFilters.minModelYear = undefined;
         localFilters.maxModelYear = undefined;
     }
-    localFilters.page = 0;
-    emit('filter-change', { ...localFilters });
+    const payload: NonNullable<ListingSearchParams> = {
+        ...localFilters,
+        page: 0
+    };
+
+    emit('filter-change', payload);
 }, 500);
 
 watch(localFilters, updateUrlParams, { deep: true });
 
-watch(filterByPrice, (newValue) => {
+watch(filterByPrice, (newValue: boolean) => {
     if (!newValue) {
         localFilters.minPrice = undefined;
         localFilters.maxPrice = undefined;
@@ -103,7 +112,7 @@ watch(filterByPrice, (newValue) => {
     updateUrlParams();
 }, { deep: true });
 
-watch(filterByYear, (newValue) => {
+watch(filterByYear, (newValue: boolean) => {
     if (!newValue) {
         localFilters.minModelYear = undefined;
         localFilters.maxModelYear = undefined;
@@ -114,9 +123,7 @@ watch(filterByYear, (newValue) => {
     updateUrlParams();
 }, { deep: true });
 
-
-
-const clearAllFilters = () => {
+const clearAllFilters = (): void => {
     localFilters.q = '';
     localFilters.minPrice = undefined;
     localFilters.maxPrice = undefined;
@@ -128,7 +135,12 @@ const clearAllFilters = () => {
     updateUrlParams();
 }
 
-const conditionOptions = [
+interface ConditionOption {
+    label: string;
+    value: Condition;
+}
+
+const conditionOptions: ConditionOption[] = [
     { label: t('product.conditionLabels.new'), value: 'NEW' },
     { label: t('product.conditionLabels.likeNew'), value: 'LIKE_NEW' },
     { label: t('product.conditionLabels.veryGood'), value: 'VERY_GOOD' },
@@ -201,7 +213,6 @@ const conditionOptions = [
                 </Select>
             </CollapsibleContent>
         </Collapsible>
-
 
         <Collapsible :default-open="true">
             <CollapsibleTrigger as-child>
@@ -326,15 +337,11 @@ const conditionOptions = [
     color: var(--muted-foreground);
 }
 
-
-
-
 .manufacturer-filter {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
 }
-
 
 @media (max-width: 850px) {
     .filters-sidebar {
