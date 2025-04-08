@@ -6,7 +6,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 data class AuthProperties (
     val jwtSecret: String,
     val jwtIssuer: String,
-    val accessTokenExpiration: Long,
-    val refreshTokenExpiration: Long,
-    val secureCookie: Boolean
+    val tokenExpiration: Long,
 )
