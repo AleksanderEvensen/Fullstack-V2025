@@ -1,10 +1,17 @@
 package edu.ntnu.fullstack.amazoom.common.controller
 
 import edu.ntnu.fullstack.amazoom.common.dto.AddressDto
+import edu.ntnu.fullstack.amazoom.common.dto.ErrorResponseDto
 import edu.ntnu.fullstack.amazoom.common.dto.UpdateAddressRequestDto
 import edu.ntnu.fullstack.amazoom.common.dto.UpdateProfileResponseDto
 import edu.ntnu.fullstack.amazoom.common.service.MinioService
 import edu.ntnu.fullstack.amazoom.common.service.UserService
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
@@ -22,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile
  */
 @RestController
 @RequestMapping("/api/user")
+@Tag(name = "User", description = "Operations for managing user profiles")
 class UserController(private val userService: UserService, private val minIoService: MinioService) {
     private val logger = LoggerFactory.getLogger(UserController::class.java)
 
@@ -31,6 +39,27 @@ class UserController(private val userService: UserService, private val minIoServ
      * @param file The image file to upload
      * @return Response with the URL of the uploaded image
      */
+    @Operation(
+        summary = "Update profile image",
+        description = "Updates the profile image for the currently authenticated user"
+    )
+    @ApiResponses(
+        ApiResponse(
+            responseCode = "200",
+            description = "Profile image updated successfully",
+            content = [Content(schema = Schema(implementation = UpdateProfileResponseDto::class))]
+        ),
+        ApiResponse(
+            responseCode = "400",
+            description = "Invalid file",
+            content = [Content(schema = Schema(implementation = ErrorResponseDto::class))]
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "User not authenticated",
+            content = [Content(schema = Schema(implementation = ErrorResponseDto::class))]
+        )
+    )
     @PostMapping("/profile-image", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun updateProfileImage(@RequestParam("file") file: MultipartFile): ResponseEntity<UpdateProfileResponseDto> {
         logger.info("Updating profile image for user")
@@ -50,6 +79,27 @@ class UserController(private val userService: UserService, private val minIoServ
      * @param request The address update request
      * @return Response indicating successful update
      */
+    @Operation(
+        summary = "Update address",
+        description = "Updates the address information for the currently authenticated user"
+    )
+    @ApiResponses(
+        ApiResponse(
+            responseCode = "200",
+            description = "Address updated successfully",
+            content = [Content(schema = Schema(implementation = UpdateProfileResponseDto::class))]
+        ),
+        ApiResponse(
+            responseCode = "400",
+            description = "Invalid input",
+            content = [Content(schema = Schema(implementation = ErrorResponseDto::class))]
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "User not authenticated",
+            content = [Content(schema = Schema(implementation = ErrorResponseDto::class))]
+        )
+    )
     @PutMapping("/address")
     fun updateAddress(@Valid @RequestBody request: UpdateAddressRequestDto): ResponseEntity<UpdateProfileResponseDto> {
         logger.info("Updating address for user")
