@@ -52,7 +52,7 @@ const router = createRouter({
           path: '/marketplace/product/create',
           name: 'product-create',
           meta: {
-            requiresAuth: true,
+            requiresAuth: false,
           },
           component: () => import('../views/CreateListingView.vue'),
         },

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -34,6 +34,7 @@ import type { GenericObject } from 'vee-validate'
 import * as z from 'zod'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useTypedI18n } from '@/i18n'
+import ImageDrop from '@/components/ui/image-drop/ImageDrop.vue'
 
 const { t } = useTypedI18n();
 
@@ -109,6 +110,12 @@ const categories: Category[] = [
 function onSubmit(values: GenericObject) {
   console.log('Form submitted:', values)
 }
+
+const pictures = ref<File[]>([])
+
+const previewUrls = computed(() => {
+  return pictures.value.map(picture => URL.createObjectURL(picture))
+})
 </script>
 
 <template>
@@ -339,19 +346,15 @@ function onSubmit(values: GenericObject) {
                 <!-- Step 3: Images -->
                 <template v-if="stepIndex === 3">
                   <div class="image-upload-section">
-                    <FormField name="images">
+                    <FormField name="images" v-slot="{ componentField }">
                       <FormItem>
                         <FormLabel>{{ t('createListing.form.productImages') }}</FormLabel>
                         <FormControl>
-                          <div class="image-upload-container">
-                            <div class="image-upload-placeholder">
-                              <Camera class="upload-icon" />
-                              <p>{{ t('createListing.form.imageUploadText') }}</p>
-                            </div>
-                          </div>
+                          <ImageDrop v-model="pictures" :max-files="5" :max-size="5" @error="" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
+                      {{ previewUrls }}
                     </FormField>
                   </div>
                 </template>
