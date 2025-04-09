@@ -52,15 +52,10 @@ class SecurityConfig(
             }
             .authorizeHttpRequests { auth ->
                 auth
-                    .requestMatchers(
-                        "/swagger-ui.html",
-                        "/openapi-schema.json/**",
-                        "/swagger-ui/**",
-                        "/api/auth/register",
-                        "/api/auth/login",
-                    ).permitAll()
+                    .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/images/**").permitAll()
-                    .anyRequest().authenticated()
+                    .requestMatchers("/api/**").authenticated()
+                    .anyRequest().permitAll()
             }
             .addFilterBefore(
                 JwtAuthFilter(jwtService, userDetailsService),

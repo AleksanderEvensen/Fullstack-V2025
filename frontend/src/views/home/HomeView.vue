@@ -32,8 +32,12 @@ const handleSearch = () => {
   <div class="container home-page">
     <div class="search-header">
       <div class="search-container">
-        <Input class="search-input" :placeholder="t('home.search.placeholder')" v-model="searchQuery"
-          @keyup.enter="handleSearch" />
+        <Input
+          class="search-input"
+          :placeholder="t('home.search.placeholder')"
+          v-model="searchQuery"
+          @keyup.enter="handleSearch"
+        />
         <Button size="icon" class="search-button" @click="handleSearch">
           <Search :size="24" />
         </Button>
@@ -51,8 +55,12 @@ const handleSearch = () => {
 
     <!-- Categories -->
     <div class="categories-container">
-      <RouterLink v-for="category in categoriesData" :to="`/search?categoryName=${category.name}`" class="category-item"
-        :key="category.name">
+      <RouterLink
+        v-for="category in categoriesData"
+        :to="`/search?categoryName=${category.name}`"
+        class="category-item"
+        :key="category.name"
+      >
         <Icon :name="icon(category.icon)" />
         <div class="category-name">{{ category.name }}</div>
       </RouterLink>
@@ -138,7 +146,6 @@ const handleSearch = () => {
   padding: 0 1rem;
 }
 
-
 .category-item {
   display: flex;
   flex-direction: column;
@@ -177,7 +184,6 @@ const handleSearch = () => {
 
 /* Responsive adjustments */
 @media (max-width: 64rem) {
-
   .category-item {
     width: calc(25% - 10px);
   }

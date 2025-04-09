@@ -16,7 +16,12 @@ class OpenApiConfig {
             .info(
                 Info()
                     .title("Amazoom API")
-                    .description("API documentation for the Amazoom application")
+                    .description("""
+                        API documentation for the Amazoom marketplace application.
+                        
+                        This API provides endpoints for user authentication, product listings, 
+                        messaging, bookmarks, and more.
+                    """.trimIndent())
                     .version("1.0.0")
                     .contact(
                         Contact()
