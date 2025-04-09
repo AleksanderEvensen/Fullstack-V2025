@@ -27,15 +27,15 @@ class User(
     val email: String,
 
     @Column(nullable = false)
-    val password: String,
+    var password: String,
 
     @Column(nullable = false, unique = true)
     val phoneNumber: String,
 
     @Embedded
-    val address: Address? = null,
+    var address: Address? = null,
 
-    val profileImageUrl: String? = null,
+    var profileImageUrl: String? = null,
 
     val createdAt: Instant = Instant.now(),
 

@@ -3,6 +3,7 @@ package edu.ntnu.fullstack.amazoom.listing.entity
 import edu.ntnu.fullstack.amazoom.common.entity.User
 import edu.ntnu.fullstack.amazoom.category.entity.Category
 import edu.ntnu.fullstack.amazoom.listing.dto.ListingDto
+import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
@@ -87,6 +88,20 @@ data class Listing(
 /**
  * Enumeration of possible conditions for a listed item.
  */
+@Schema(description = "Condition of a listed item")
 enum class ListingCondition {
-    NEW, LIKE_NEW, VERY_GOOD, GOOD, ACCEPTABLE
+    @Schema(description = "Brand new, unused item")
+    NEW,
+
+    @Schema(description = "Almost new with no visible wear")
+    LIKE_NEW,
+
+    @Schema(description = "Used but in excellent condition with minimal wear")
+    VERY_GOOD,
+
+    @Schema(description = "Used with some noticeable wear but fully functional")
+    GOOD,
+
+    @Schema(description = "Used with significant wear but still functional")
+    ACCEPTABLE
 }
