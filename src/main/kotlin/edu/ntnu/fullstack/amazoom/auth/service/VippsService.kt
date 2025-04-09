@@ -27,7 +27,7 @@ class VippsService(
     @OptIn(ExperimentalEncodingApi::class)
     private val client_credentials =
         Base64.Default.encode("${vippsProperties.clientId}:${vippsProperties.clientSecret}".encodeToByteArray());
-    private val logger = LoggerFactory.getLogger(AuthService::class.java)
+    private val logger = LoggerFactory.getLogger(VippsService::class.java)
 
     fun getToken(code: String): Result<VippsTokenResponse> {
         val requestBody = Utils.SearchParams(

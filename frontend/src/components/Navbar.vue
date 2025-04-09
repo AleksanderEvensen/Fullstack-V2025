@@ -61,8 +61,6 @@ const locales: Record<Locales, { flag: string; name: string }> = {
         <PlusIcon class="icon" /> {{ t('nav.createListing') }}
       </RouterLink>
 
-      <a to="/api/auth/vipps/login" class="nav-item">Vipps</a>
-
       <!-- Profile Avatar -->
       <RouterLink to="/profile" class="nav-item">
         <Avatar class="cursor-pointer">

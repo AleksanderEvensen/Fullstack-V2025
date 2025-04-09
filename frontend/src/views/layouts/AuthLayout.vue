@@ -21,15 +21,11 @@ import Cookies from 'universal-cookie';
 const cookie = useCookies(["toast"]);
 
 onMounted(() => {
-  (window as any).__toast = showToast;
-  console.log(document.cookie);
   const cookieStr = new Cookies(document.cookie).get("toast");
   const toastData = cookieStr ? new URLSearchParams(cookieStr) : undefined;
-  console.log(toastData);
   if (toastData) {
     const type = toastData.get("type") as "success" | "error" | "info" | "warning";
     const message = toastData.get("message") as string;
-    console.log({type, message});
     
     showToast.error(message);
 
