@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button'
 import { useTypedI18n } from '@/i18n'
 
-const props = defineProps<{
+defineProps<{
   isNextDisabled: boolean
   isPrevDisabled: boolean
   meta: {
@@ -27,13 +27,8 @@ const { t } = useTypedI18n()
       {{ t('common.back') }}
     </Button>
     <div class="button-group">
-      <Button
-        v-if="currentStep !== totalSteps"
-        :type="meta.valid ? 'button' : 'submit'"
-        :disabled="isNextDisabled"
-        size="sm"
-        @click="meta.valid && emit('next')"
-      >
+      <Button v-if="currentStep !== totalSteps" :type="meta.valid ? 'button' : 'submit'" :disabled="isNextDisabled"
+        size="sm" @click="meta.valid && emit('next')">
         {{ t('common.next') }}
       </Button>
       <Button v-if="currentStep === totalSteps" size="sm" type="submit" @click="emit('submit')">
@@ -56,4 +51,4 @@ const { t } = useTypedI18n()
   align-items: center;
   gap: 0.75rem;
 }
-</style> 
+</style>

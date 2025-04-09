@@ -2,7 +2,7 @@
 import { ref, watch } from 'vue'
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { X, Camera } from 'lucide-vue-next'
+import { X } from 'lucide-vue-next'
 import { useTypedI18n } from '@/i18n'
 import ImageDrop from '@/components/ui/image-drop/ImageDrop.vue'
 import { useUploadImage } from '@/lib/api/queries/images'

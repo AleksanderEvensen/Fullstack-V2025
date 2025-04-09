@@ -9,7 +9,6 @@ import * as z from 'zod'
 import { useTypedI18n } from '@/i18n'
 import { getCategories } from '@/lib/api/queries/categories'
 import { useCreateListing } from '@/lib/api/queries/listings'
-import type { components } from '@/lib/api/schema'
 import { toast } from 'vue-sonner'
 import BasicInfoForm from './components/BasicInfoForm.vue'
 import ProductDetailsForm from './components/ProductDetailsForm.vue'
@@ -31,34 +30,36 @@ watch(uploadedImageNames, (newImages) => {
   formRef.value?.setFieldValue('images', newImages)
 }, { deep: true })
 
+const basicInfoSchema = z.object({
+  title: z.string().min(3, t('createListing.form.titleValidation')),
+  categoryId: z.number().min(1, t('createListing.form.categoryValidation')),
+  condition: z.enum(['NEW', 'LIKE_NEW', 'VERY_GOOD', 'GOOD', 'ACCEPTABLE']),
+  price: z.number().min(1, t('createListing.form.priceValidation')),
+  originalPrice: z.number().optional(),
+  description: z.string().min(50, t('createListing.form.descriptionValidation')),
+});
 
-const formSchema = [
-  // Basic Information
-  z.object({
-    title: z.string().min(3, t('createListing.form.titleValidation')),
-    categoryId: z.number().min(1, t('createListing.form.categoryValidation')),
-    condition: z.enum(['NEW', 'LIKE_NEW', 'VERY_GOOD', 'GOOD', 'ACCEPTABLE']),
-    price: z.number().min(1, t('createListing.form.priceValidation')),
-    originalPrice: z.number().optional(),
-    description: z.string().min(50, t('createListing.form.descriptionValidation')),
-  }),
-  // Product Details
-  z.object({
-    modelYear: z.string().optional(),
-    manufacturer: z.string().optional(),
-    model: z.string().optional(),
-    serialNumber: z.string().optional(),
-    purchaseDate: z.string().optional(),
-    usageDuration: z.string().optional(),
-    defects: z.array(z.string()).optional(),
-    modifications: z.array(z.string()).optional(),
-    reasonForSelling: z.string().optional(),
-  }),
-  // Images
-  z.object({
-    images: z.array(z.string()).optional(),
-  }),
-]
+const productDetailsSchema = z.object({
+  modelYear: z.string().optional(),
+  manufacturer: z.string().optional(),
+  model: z.string().optional(),
+  serialNumber: z.string().optional(),
+  purchaseDate: z.string().optional(),
+  usageDuration: z.string().optional(),
+  defects: z.array(z.string()).optional(),
+  modifications: z.array(z.string()).optional(),
+  reasonForSelling: z.string().optional(),
+});
+
+const imagesSchema = z.object({
+  images: z.array(z.string()).optional(),
+});
+
+const formSchemaStepper = [basicInfoSchema, productDetailsSchema, imagesSchema]
+
+const _formSchema = basicInfoSchema.merge(productDetailsSchema).merge(imagesSchema);
+
+export type ListingFormValues = z.infer<typeof _formSchema>;
 
 const stepIndex = ref(1)
 const steps = [
@@ -146,14 +147,14 @@ const handleSubmit = () => {
       </CardHeader>
       <CardContent>
         <Form v-slot="{ meta, values, validate }" as="" keep-values
-          :validation-schema="toTypedSchema(formSchema[stepIndex - 1])" ref="formRef">
+          :validation-schema="toTypedSchema(formSchemaStepper[stepIndex - 1])" ref="formRef">
           <form @submit="
             (e) => {
               e.preventDefault()
               validate()
 
               if (stepIndex === steps.length && meta.valid) {
-                onSubmit(values)
+                onSubmit(values as ListingFormValues)
               }
             }
           ">
@@ -178,7 +179,8 @@ const handleSubmit = () => {
 
               <!-- Step 4: Preview -->
               <template v-if="stepIndex === 4">
-                <PreviewForm :values="values" :categories="categories || []" :uploaded-images="uploadedImageNames" />
+                <PreviewForm :values="values as ListingFormValues" :categories="categoriesList"
+                  :uploaded-images="uploadedImageNames" />
               </template>
             </div>
 

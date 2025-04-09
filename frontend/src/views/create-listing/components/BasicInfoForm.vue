@@ -5,7 +5,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useTypedI18n } from '@/i18n'
 
-const props = defineProps<{
+defineProps<{
   categories: {
     id: number
     name: string
@@ -102,4 +102,4 @@ const { t } = useTypedI18n()
       <FormMessage />
     </FormItem>
   </FormField>
-</template> 
+</template>

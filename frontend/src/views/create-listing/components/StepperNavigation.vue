@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button'
-import { Check, Circle, Dot } from 'lucide-vue-next'
-import { useTypedI18n } from '@/i18n'
+import { Check, Circle, Dot, type LucideProps } from 'lucide-vue-next'
+import type { FunctionalComponent } from 'vue';
 
-const props = defineProps<{
+defineProps<{
   steps: {
     step: number
     title: string
     description: string
-    icon: any
+    icon: FunctionalComponent<LucideProps>
   }[]
   currentStep: number
   isNextDisabled: boolean
@@ -22,8 +22,6 @@ const emit = defineEmits<{
   (e: 'next'): void
   (e: 'prev'): void
 }>()
-
-const { t } = useTypedI18n()
 </script>
 
 <template>
@@ -31,13 +29,8 @@ const { t } = useTypedI18n()
     <div v-for="step in steps" :key="step.step" class="stepper-item">
       <div class="stepper-separator" v-if="step.step !== steps[steps.length - 1].step"></div>
 
-      <Button
-        :variant="currentStep >= step.step ? 'default' : 'outline'"
-        size="icon"
-        class="stepper-button"
-        :class="[currentStep === step.step && 'active-button']"
-        :disabled="currentStep < step.step && !meta.valid"
-      >
+      <Button :variant="currentStep >= step.step ? 'default' : 'outline'" size="icon" class="stepper-button"
+        :class="[currentStep === step.step && 'active-button']" :disabled="currentStep < step.step && !meta.valid">
         <Check v-if="currentStep > step.step" class="stepper-icon-small" />
         <Circle v-if="currentStep === step.step" />
         <Dot v-if="currentStep < step.step" />
@@ -146,4 +139,4 @@ const { t } = useTypedI18n()
     display: none;
   }
 }
-</style> 
+</style>

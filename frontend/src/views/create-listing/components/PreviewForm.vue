@@ -2,10 +2,14 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Camera } from 'lucide-vue-next'
 import { useTypedI18n } from '@/i18n'
+import type { components } from '@/lib/api/schema';
+import type { ListingFormValues } from '../CreateListingView.vue';
 
-const props = defineProps<{
-  values: any
-  categories: any[]
+type Category = components['schemas']['CategoryDto']
+
+defineProps<{
+  values: ListingFormValues
+  categories: Category[]
   uploadedImages: string[]
 }>()
 

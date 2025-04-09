@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { Camera } from 'lucide-vue-next'
 
 const props = defineProps<{
@@ -66,12 +66,6 @@ const validateAndAddFiles = (newFiles: File[]) => {
 
     // Add valid files
     const updatedFiles = [...files.value, ...newFiles]
-    files.value = updatedFiles
-    emit('update:modelValue', updatedFiles)
-}
-
-const removeFile = (index: number) => {
-    const updatedFiles = files.value.filter((_, i) => i !== index)
     files.value = updatedFiles
     emit('update:modelValue', updatedFiles)
 }
