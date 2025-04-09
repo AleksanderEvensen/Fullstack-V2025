@@ -21,6 +21,17 @@ CREATE TABLE chat_messages
     CONSTRAINT pk_chat_messages PRIMARY KEY (id)
 );
 
+CREATE TABLE image_metadata
+(
+    id            BIGINT AUTO_INCREMENT NOT NULL,
+    file_name     VARCHAR(255)          NOT NULL,
+    original_name VARCHAR(255)          NOT NULL,
+    content_type  VARCHAR(255)          NOT NULL,
+    size          BIGINT                NOT NULL,
+    upload_date   datetime              NOT NULL,
+    CONSTRAINT pk_image_metadata PRIMARY KEY (id)
+);
+
 CREATE TABLE listing_bookmarks
 (
     id         BIGINT AUTO_INCREMENT NOT NULL,
@@ -57,7 +68,7 @@ CREATE TABLE listings
     price              DOUBLE                NOT NULL,
     original_price     DOUBLE                NULL,
     `description`      TEXT                  NOT NULL,
-    model_year         VARCHAR(255)          NULL,
+    model_year         INT                   NULL,
     manufacturer       VARCHAR(255)          NULL,
     model              VARCHAR(255)          NULL,
     serial_number      VARCHAR(255)          NULL,
