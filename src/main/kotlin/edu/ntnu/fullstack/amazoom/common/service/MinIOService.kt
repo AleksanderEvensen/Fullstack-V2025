@@ -31,7 +31,8 @@ class MinioService(
     fun uploadImage(file: MultipartFile, fileNameBase: String): String {
         val extension = getFileExtension(file.originalFilename)
         val uuid = UUID.randomUUID().toString()
-        val fileName = "$fileNameBase-$uuid.$extension"
+        val baseName = fileNameBase.substringBeforeLast(".", fileNameBase)
+        val fileName = "$baseName-$uuid.$extension"
 
         minioClient.putObject(
             PutObjectArgs.builder()
