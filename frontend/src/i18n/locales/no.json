@@ -16,7 +16,9 @@
     "search": "Søk",
     "back": "Tilbake",
     "next": "Neste",
-    "previous": "Forrige"
+    "previous": "Forrige",
+    "goback": "Gå tilbake",
+    "settings": "Innstillinger"
   },
   "search": {
     "title": "Finn det hjertet ditt begjærer",

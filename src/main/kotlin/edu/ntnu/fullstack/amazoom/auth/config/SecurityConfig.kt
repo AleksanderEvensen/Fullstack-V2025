@@ -52,8 +52,16 @@ class SecurityConfig(
             }
             .authorizeHttpRequests { auth ->
                 auth
-                    .requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/vipps/**").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/images/**").permitAll()
+                    .requestMatchers(
+                        "/api/auth/register",
+                        "/api/auth/login",
+                        "/api/auth/vipps/**"
+                    ).permitAll()
+                    .requestMatchers(HttpMethod.GET,
+                        "/api/images/**",
+                        "/api/listings/**",
+                        "/api/categories/**",
+                    ).permitAll()
                     .requestMatchers("/api/**").authenticated()
                     .anyRequest().permitAll()
             }

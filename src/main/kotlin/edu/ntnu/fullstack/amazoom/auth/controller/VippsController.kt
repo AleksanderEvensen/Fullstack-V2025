@@ -39,11 +39,6 @@ class VippsController(
         @RequestParam params: Map<String, String>,
         response: HttpServletResponse
     ) {
-        // TODO: Add state validation
-        // retrieve from cookies and match it with params state
-        val state = params.get("state");
-
-
         val code = params.get("code");
         val error = params.get("error");
 

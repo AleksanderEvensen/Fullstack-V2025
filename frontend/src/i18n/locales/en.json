@@ -16,7 +16,9 @@
     "search": "Search",
     "back": "Back",
     "next": "Next",
-    "previous": "Previous"
+    "previous": "Previous",
+    "goback": "Go Back",
+    "settings": "Settings"
   },
   "search": {
     "title": "Find what your heart desires",

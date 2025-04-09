@@ -14,11 +14,22 @@ object Utils {
         return java.net.URLEncoder.encode(value, "UTF-8");
     }
 
-    fun addToastToResponse(response: HttpServletResponse, type: ToastType, message: String) {
-        val toastParams = SearchParams(mapOf(
+    fun addToastToResponse(
+        response: HttpServletResponse,
+        type: ToastType,
+        message: String,
+        description: String? = null,
+        duration: Int? = null
+    ) {
+
+        val options = mutableMapOf(
             "type" to type.toString(),
             "message" to message
-        ))
+        )
+        description?.let { options["description"] = it }
+        duration?.let { options["duration"] = it.toString() }
+
+        val toastParams = SearchParams(options)
         val toastCookie = Cookie("toast", toastParams)
         toastCookie.apply {
             maxAge = 100
