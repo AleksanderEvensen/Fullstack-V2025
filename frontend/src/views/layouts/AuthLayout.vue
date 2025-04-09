@@ -11,7 +11,38 @@
 <script setup lang="ts">
 import Navbar from '@/components/Navbar.vue'
 import { RouterView } from 'vue-router'
-import { Toaster } from 'vue-sonner'
+import { Toaster, toast as showToast } from 'vue-sonner'
+import { useAuthStore } from '@/stores/auth';
+import { useCookies } from "@vueuse/integrations/useCookies";
+import { onMounted } from 'vue';
+import Cookies from 'universal-cookie';
+
+
+const cookie = useCookies(["toast"]);
+
+onMounted(() => {
+  (window as any).__toast = showToast;
+  console.log(document.cookie);
+  const cookieStr = new Cookies(document.cookie).get("toast");
+  const toastData = cookieStr ? new URLSearchParams(cookieStr) : undefined;
+  console.log(toastData);
+  if (toastData) {
+    const type = toastData.get("type") as "success" | "error" | "info" | "warning";
+    const message = toastData.get("message") as string;
+    console.log({type, message});
+    
+    showToast.error(message);
+
+    document.cookie = "toast=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    cookie.remove("toast");
+  } 
+
+})
+
+
+const authStore = useAuthStore();
+authStore.initialize();
+
 </script>
 
 <style scoped>

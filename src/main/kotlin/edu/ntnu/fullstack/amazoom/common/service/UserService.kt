@@ -57,7 +57,8 @@ class UserService(
             phoneNumber = data.phoneNumber,
             password = data.password,
             address = null,
-            roles = mutableSetOf(userRole)
+            roles = mutableSetOf(userRole),
+            nin = data.nin
         )
 
         val savedUser = userRepository.save(user)

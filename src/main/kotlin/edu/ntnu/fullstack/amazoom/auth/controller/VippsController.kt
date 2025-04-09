@@ -4,6 +4,7 @@ import edu.ntnu.fullstack.amazoom.ToastType
 import edu.ntnu.fullstack.amazoom.Utils
 import edu.ntnu.fullstack.amazoom.auth.service.AuthService
 import edu.ntnu.fullstack.amazoom.auth.service.VippsService
+import edu.ntnu.fullstack.amazoom.common.dto.CreateUserDto
 import edu.ntnu.fullstack.amazoom.common.service.UserService
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -78,22 +79,47 @@ class VippsController(
         }
 
         val userResult = vippsService.getUserInfo(tokenData.access_token);
+
         val userData = userResult.getOrNull();
         if (userData == null) {
-            Utils.addToastToResponse(response, ToastType.Error, "User not found in vipps");
+            logger.error("Error during vipps authentication: ${userResult.exceptionOrNull().toString()}");
+            Utils.addToastToResponse(response, ToastType.Error, "Failed to get user info from vipps");
             return response.sendRedirect("/register");
         }
 
         val dbUserResult = kotlin.runCatching { userService.getUserByNin(userData.nin) };
         val user = dbUserResult.fold(
             onFailure = {
-                Utils.addToastToResponse(response, ToastType.Error, "Vipps connection not found");
-                return response.sendRedirect("/register");
+                kotlin.runCatching {
+                    userService.createUser(
+                        CreateUserDto(
+                            firstName = userData.given_name,
+                            lastName = userData.family_name,
+                            email = userData.email,
+                            phoneNumber = userData.phone_number.substring(
+                                2,
+                                userData.phone_number.length
+                            ),
+                            nin = userData.nin,
+                        )
+                    )
+                }.fold(
+                    onFailure = {
+                        logger.error("Failed to create vipps user: ${it.message}");
+                        Utils.addToastToResponse(response, ToastType.Error, "Failed to register using vipps");
+                        return response.sendRedirect("/register");
+                    },
+                    onSuccess = { it }
+                )
             },
             onSuccess = { it }
         );
-        // TODO: Auth user and set the auth token
 
+        val accessToken = authService.generateAccessTokenForUser(user.email);
+        val authCookie = authService.createAuthCookie(accessToken);
+
+        logger.debug("Setting auth cookie: am_session=${accessToken}");
+        response.addCookie(authCookie);
         return response.sendRedirect("/");
     }
 

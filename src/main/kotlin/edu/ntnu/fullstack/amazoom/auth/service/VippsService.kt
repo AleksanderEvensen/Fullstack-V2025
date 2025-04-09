@@ -93,7 +93,7 @@ class VippsService(
             "client_id" to vippsProperties.clientId,
             "response_type" to "code",
             "redirect_uri" to redirect_url,
-            "scope" to "openid nnin name email address phoneNumber",
+            "scope" to "openid nin name email address phoneNumber",
             "state" to "12345"
         ));
         return "${vippsProperties.baseUrl}/access-management-1.0/access/oauth2/auth?${params}"
@@ -105,6 +105,8 @@ data class VippsUserInfoResponse(
     val other_addresses: List<UserAddress>,
     val email: String,
     val name: String,
+    val family_name: String,
+    val given_name: String,
     val phone_number: String,
     val nin: String,
 )

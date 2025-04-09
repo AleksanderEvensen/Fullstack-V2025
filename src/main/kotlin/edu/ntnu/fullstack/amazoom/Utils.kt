@@ -21,7 +21,7 @@ object Utils {
         ))
         val toastCookie = Cookie("toast", toastParams)
         toastCookie.apply {
-            maxAge = 1
+            maxAge = 100
             path = "/"
             setAttribute("SameSite", "Lax")
         }

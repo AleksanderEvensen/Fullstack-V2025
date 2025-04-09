@@ -6,8 +6,10 @@ import edu.ntnu.fullstack.amazoom.auth.exception.InvalidCredentialsException
 import edu.ntnu.fullstack.amazoom.common.dto.CreateUserDto
 import edu.ntnu.fullstack.amazoom.common.exception.UserNotFoundException
 import edu.ntnu.fullstack.amazoom.common.service.UserService
+import jakarta.servlet.http.Cookie
 import jakarta.transaction.Transactional
 import org.slf4j.LoggerFactory
+import org.springframework.boot.web.server.Cookie.SameSite
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
@@ -67,6 +69,10 @@ class AuthService(
     fun login(email: String, password: String): AuthResponseDto {
         val user = userService.getUserByEmail(email)
 
+        if (user.password == null) {
+            logger.warn("User $email doesn't have a password set");
+            throw InvalidCredentialsException()
+        }
         val passwordMatches = passwordEncoder.matches(password, user.password)
 
         if (!passwordMatches) {
@@ -74,16 +80,42 @@ class AuthService(
             throw InvalidCredentialsException()
         }
 
-        val userDetails = userDetailsService.loadUserByUsername(email)
-        val accessToken = jwtService.generateToken(userDetails)
-
-        logger.info("Successful login for user: {}", email)
-
         return AuthResponseDto(
-            accessToken = accessToken,
-        )
+            accessToken = generateAccessTokenForUser(user.email)
+        );
     }
 
+    /**
+     * Generates an access token for a user.
+     *
+     * @param email The user's email to generate the token for
+     * @return Authentication response with JWT token
+     * @throws UserNotFoundException if the user is not found in the database
+     */
+    @Transactional
+    fun generateAccessTokenForUser(email: String): String {
+        val userDetails = kotlin.runCatching { userDetailsService.loadUserByUsername(email) }.fold(
+            onSuccess = { it },
+            onFailure = { throw UserNotFoundException("User with email $email not found") }
+        )
+        val accessToken = jwtService.generateToken(userDetails);
+        logger.info("Successfully generated token for user: $email")
+
+        return accessToken;
+    }
+
+    /**
+     * Generates a authantication cookie given a access token.
+     *
+     */
+    fun createAuthCookie(accessToken: String): Cookie {
+        val cookie = Cookie("am_session", accessToken);
+        cookie.apply {
+            maxAge = 10 * 60 // 10 minutes
+            path = "/"
+        }
+        return cookie;
+    }
     /**
      * Updates a user's password.
      *
