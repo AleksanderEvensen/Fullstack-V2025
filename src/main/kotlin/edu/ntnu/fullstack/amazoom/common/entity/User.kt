@@ -32,6 +32,10 @@ class User(
     @Column(nullable = false, unique = true)
     val phoneNumber: String,
 
+    /// National Identification Number (NIN) of the user
+    @Column(nullable = true, unique = true)
+    val nin: String? = null,
+
     @Embedded
     var address: Address? = null,
 
