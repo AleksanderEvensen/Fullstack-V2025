@@ -4,6 +4,10 @@ import edu.ntnu.fullstack.amazoom.common.entity.User
 import edu.ntnu.fullstack.amazoom.listing.entity.Listing
 import jakarta.persistence.*
 
+/**
+ * Entity representing a bookmark for a listing.
+ * Associates a user with a listing they have bookmarked.
+ */
 @Entity
 @Table(name = "listing_bookmarks", uniqueConstraints = [UniqueConstraint(columnNames = ["listing_id", "user_id"])])
 data class ListingBookmark(
@@ -17,5 +21,5 @@ data class ListingBookmark(
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
-    val user: User,
+    val user: User
 )

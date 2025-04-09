@@ -1,18 +1,27 @@
 package edu.ntnu.fullstack.amazoom.listing.mapper
 
 import edu.ntnu.fullstack.amazoom.common.entity.User
-import edu.ntnu.fullstack.amazoom.auth.mapper.UserMapper
-import edu.ntnu.fullstack.amazoom.listing.dto.CreateOrUpdateListingRequest
+import edu.ntnu.fullstack.amazoom.common.mapper.UserMapper
 import edu.ntnu.fullstack.amazoom.listing.entity.Listing
 import edu.ntnu.fullstack.amazoom.category.entity.Category
+import edu.ntnu.fullstack.amazoom.listing.dto.CreateOrUpdateListingRequestDto
 import edu.ntnu.fullstack.amazoom.listing.dto.ListingDto
 
+/**
+ * Mapper class for converting between Listing entities and DTOs.
+ */
 object ListingMapper {
 
     /**
-     * Converts a CreateOrUpdateListingRequest plus a Category into a Listing entity.
+     * Converts a CreateOrUpdateListingRequestDto plus a Category and User into a Listing entity.
+     * Used when creating a new listing.
+     *
+     * @param request The request DTO with listing details
+     * @param category The category entity for the listing
+     * @param seller The user entity who is selling the item
+     * @return A new Listing entity
      */
-    fun toEntity(request: CreateOrUpdateListingRequest, category: Category, seller: User): Listing {
+    fun toEntity(request: CreateOrUpdateListingRequestDto, category: Category, seller: User): Listing {
         return Listing(
             title = request.title,
             category = category,
@@ -35,12 +44,17 @@ object ListingMapper {
     }
 
     /**
-     * Converts an existing Listing entity plus a CreateOrUpdateListingRequest and Category
-     * into an updated Listing. Typically used for partial or full updates.
+     * Updates an existing Listing entity with values from a CreateOrUpdateListingRequestDto.
+     * Used when updating a listing.
+     *
+     * @param existing The existing Listing entity to update
+     * @param request The request DTO with updated values
+     * @param category The updated category entity
+     * @return The updated Listing entity
      */
     fun updateEntity(
         existing: Listing,
-        request: CreateOrUpdateListingRequest,
+        request: CreateOrUpdateListingRequestDto,
         category: Category
     ): Listing {
         return existing.copy(
@@ -64,7 +78,10 @@ object ListingMapper {
     }
 
     /**
-     * Converts a Listing entity to a ListingResponse.
+     * Converts a Listing entity to a ListingDto.
+     *
+     * @param entity The Listing entity to convert
+     * @return The resulting ListingDto
      */
     fun toResponseDto(entity: Listing): ListingDto {
         return ListingDto(
@@ -84,7 +101,7 @@ object ListingMapper {
             defects = entity.defects,
             modifications = entity.modifications,
             reasonForSelling = entity.reasonForSelling,
-            seller =  entity.seller.toDto(),
+            seller = UserMapper.toDto(entity.seller),
             createdAt = entity.createdAt,
             images = entity.images
         )

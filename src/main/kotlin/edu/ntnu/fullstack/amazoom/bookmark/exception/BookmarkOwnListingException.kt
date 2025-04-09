@@ -1,3 +1,6 @@
 package edu.ntnu.fullstack.amazoom.bookmark.exception
 
-class BookmarkOwnListingException : RuntimeException("You cannot bookmark your own listing.")
+/**
+ * Exception thrown when attempting to bookmark one's own listing.
+ */
+class BookmarkOwnListingException(message: String = "You cannot bookmark your own listing.") : RuntimeException(message)

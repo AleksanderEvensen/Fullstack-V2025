@@ -6,6 +6,10 @@ import edu.ntnu.fullstack.amazoom.common.dto.UserDto
 import jakarta.persistence.*
 import java.time.Instant
 
+/**
+ * Entity representing a user in the system.
+ * Contains personal information, authentication details, and role assignments.
+ */
 @Entity
 @Table(name = "users")
 class User(
@@ -45,32 +49,11 @@ class User(
 
     @Version
     val version: Long = 0,
-) {
-    fun getFullName() = "$firstName $lastName"
+)
 
-    fun toDto(): UserDto {
-        return UserDto(
-            id,
-            firstName,
-            lastName,
-            profileImageUrl,
-            address = address?.toDto(),
-        )
-    }
-
-    fun toFullDto(): FullUserDto {
-        return FullUserDto(
-            id = id,
-            firstName = firstName,
-            lastName = lastName,
-            email = email,
-            phoneNumber = phoneNumber,
-            profileImageUrl = profileImageUrl,
-            address = address?.toDto()
-        )
-    }
-}
-
+/**
+ * Embedded entity representing a user's physical address.
+ */
 @Embeddable
 data class Address(
     val streetName: String,
@@ -82,14 +65,4 @@ data class Address(
     val city: String,
 
     val country: String
-) {
-    fun toDto(): AddressDto {
-        return AddressDto(
-            streetName = streetName,
-            streetNumber = streetNumber,
-            postalCode = postalCode,
-            city = city,
-            country = country
-        )
-    }
-}
+)

@@ -1,19 +1,24 @@
 package edu.ntnu.fullstack.amazoom.auth.config
 
-import JwtAuthFilter
+import edu.ntnu.fullstack.amazoom.auth.filter.JwtAuthFilter
 import edu.ntnu.fullstack.amazoom.auth.service.JwtService
 import edu.ntnu.fullstack.amazoom.auth.service.UserDetailsServiceImpl
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.MediaType
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.core.AuthenticationException
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.web.cors.CorsConfiguration
@@ -40,6 +45,9 @@ class SecurityConfig(
             .sessionManagement { session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }
+            .exceptionHandling { ex ->
+                ex.authenticationEntryPoint(unauthorizedEntryPoint())
+            }
             .authorizeHttpRequests { auth ->
                 auth
                     .requestMatchers(
@@ -58,6 +66,23 @@ class SecurityConfig(
 
 
         return http.build()
+    }
+
+    @Bean
+    fun unauthorizedEntryPoint(): AuthenticationEntryPoint {
+        return AuthenticationEntryPoint { _: HttpServletRequest, response: HttpServletResponse, _: AuthenticationException ->
+            response.status = HttpServletResponse.SC_UNAUTHORIZED
+            response.contentType = MediaType.APPLICATION_JSON_VALUE
+
+            val errorJson = """
+            {
+                "message": "Unauthorized access",
+                "status": 401
+            }
+        """.trimIndent()
+
+            response.writer.write(errorJson)
+        }
     }
 
     @Bean

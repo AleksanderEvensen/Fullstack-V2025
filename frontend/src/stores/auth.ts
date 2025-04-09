@@ -32,7 +32,7 @@ export const useAuthStore = defineStore('auth', () => {
           ],
           afterResponse: [
             async (req, _, res) => {
-              if ((res.status === 401 || res.status === 403) && token.value) {
+              if (res.status === 401 && token.value) {
                 logout()
               }
 

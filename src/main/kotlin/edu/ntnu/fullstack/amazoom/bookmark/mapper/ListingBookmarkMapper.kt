@@ -1,18 +1,23 @@
 package edu.ntnu.fullstack.amazoom.bookmark.mapper
 
 import edu.ntnu.fullstack.amazoom.common.entity.User
-import edu.ntnu.fullstack.amazoom.bookmark.controller.ListingBookmarkResponse
+import edu.ntnu.fullstack.amazoom.bookmark.dto.ListingBookmarkResponseDto
 import edu.ntnu.fullstack.amazoom.bookmark.entity.ListingBookmark
 import edu.ntnu.fullstack.amazoom.listing.entity.Listing
 import edu.ntnu.fullstack.amazoom.listing.mapper.ListingMapper
 
+/**
+ * Mapper class for converting between ListingBookmark entities and DTOs.
+ */
 object ListingBookmarkMapper {
 
     /**
-     * Convert create/update request + Listing + User -> ListingBookmark entity.
+     * Converts a Listing and User to a ListingBookmark entity.
+     * Used when creating a new bookmark.
      *
-     * Typically only used when *creating* a new bookmark,
-     * since you'd just store the user, listing, and the current Instant.
+     * @param listing The listing to bookmark
+     * @param user The user creating the bookmark
+     * @return A new ListingBookmark entity
      */
     fun toEntity(
         listing: Listing,
@@ -20,17 +25,20 @@ object ListingBookmarkMapper {
     ): ListingBookmark {
         return ListingBookmark(
             listing = listing,
-            user = user,
+            user = user
         )
     }
 
     /**
-     * Convert entity -> response DTO.
+     * Converts a ListingBookmark entity to a ListingBookmarkResponseDto.
+     *
+     * @param entity The ListingBookmark entity to convert
+     * @return The resulting ListingBookmarkResponseDto
      */
-    fun toResponse(entity: ListingBookmark): ListingBookmarkResponse {
-        return ListingBookmarkResponse(
+    fun toResponseDto(entity: ListingBookmark): ListingBookmarkResponseDto {
+        return ListingBookmarkResponseDto(
             id = entity.id,
-            listing = ListingMapper.toResponseDto(entity.listing),
+            listing = ListingMapper.toResponseDto(entity.listing)
         )
     }
 }
