@@ -38,6 +38,9 @@ const router = createRouter({
         {
           path: '/marketplace/messages',
           name: 'messages',
+          meta: {
+            requiresAuth: true,
+          },
           component: () => import('../views/MessagesView.vue'),
         },
         {
@@ -48,7 +51,10 @@ const router = createRouter({
         {
           path: '/marketplace/product/create',
           name: 'product-create',
-          component: () => import('../views/CreateListingView.vue'),
+          meta: {
+            requiresAuth: true,
+          },
+          component: () => import('../views/create-listing/CreateListingView.vue'),
         },
         {
           path: '/register',
@@ -63,12 +69,23 @@ const router = createRouter({
         {
           path: '/profile',
           name: 'profile',
+          meta: {
+            requiresAuth: true,
+          },
           component: () => import('../views/profile/ProfileView.vue'),
         },
         {
           path: '/profile/settings',
           name: 'profile-settings',
+          meta: {
+            requiresAuth: true,
+          },
           component: () => import('../views/profile/settings/SettingsView.vue'),
+        },
+        {
+          path: '/:pathMatch(.*)*',
+          name: 'not-found',
+          component: () => import('../views/not-found/NotFoundView.vue'),
         },
       ],
     },

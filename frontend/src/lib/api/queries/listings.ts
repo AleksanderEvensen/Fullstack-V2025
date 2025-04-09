@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/vue-query'
+import { useMutation, useQuery } from '@tanstack/vue-query'
 import type { paths } from '../schema'
 import { fetchClient } from '@/lib/api/client'
 
@@ -46,6 +46,18 @@ export function searchListings(input: ListingSearchInput) {
             ...input,
           },
         },
+      })
+      return response.data
+    },
+  })
+}
+
+type Listing = paths['/api/listings']['post']['requestBody']['content']['application/json']
+export function useCreateListing() {
+  return useMutation({
+    mutationFn: async (listing: Listing) => {
+      const response = await fetchClient.POST('/api/listings', {
+        body: listing,
       })
       return response.data
     },

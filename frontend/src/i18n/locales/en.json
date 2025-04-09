@@ -125,6 +125,8 @@
     "title": "Create New Listing",
     "description": "Fill out the form below to create your listing",
     "createButton": "Create Listing",
+    "success": "Listing created successfully",
+    "error": "Failed to create listing",
     "steps": {
       "basicInfo": {
         "title": "Basic Information",
@@ -287,5 +289,10 @@
         "postal": "Postal Code"
       }
     }
+  },
+  "notFound": {
+    "title": "404 - Page Not Found",
+    "message": "Sorry, the page you are looking for does not exist.",
+    "backToHome": "Back to Home"
   }
 }

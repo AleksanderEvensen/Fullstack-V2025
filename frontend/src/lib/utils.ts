@@ -26,3 +26,16 @@ export function formatNameInitials(name: string) {
 }
 
 export const MAPBOX_API_TOKEN = import.meta.env.VITE_MAPBOX_GL_TOKEN as string
+
+// TODO: This is a temporary function to format the picture url.
+// The main purpose of this is to make sure that seeder and uploaded images work
+// seeder uses image urls, while uploaded images are saved as filename.generateduuid.extension
+export function formatPictureUrl(filename: string | null) {
+  if (window === undefined || !filename) {
+    return ''
+  }
+  if (filename.startsWith('http')) {
+    return filename
+  }
+  return `${window.location.origin}/api/images/${filename}`
+}

@@ -16,9 +16,9 @@ import { SliderReusable } from '@/components/ui/slider';
 import type { paths } from '@/lib/api/schema';
 import { useDebounceFn, useUrlSearchParams } from '@vueuse/core';
 import { getCategories } from '@/lib/api/queries/categories';
-import { useI18n } from 'vue-i18n';
+import { useTypedI18n } from '@/i18n';
 
-const { t } = useI18n();
+const { t } = useTypedI18n();
 
 type ListingSearchParams = paths['/api/listings/search']['get']['parameters']['query'];
 type Condition = "NEW" | "LIKE_NEW" | "VERY_GOOD" | "GOOD" | "ACCEPTABLE";

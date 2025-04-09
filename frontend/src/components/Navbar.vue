@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { MailIcon, MenuIcon, PlusIcon } from 'lucide-vue-next'
+import { MailIcon, MenuIcon, PlusIcon, UserIcon } from 'lucide-vue-next'
 import { RouterLink } from 'vue-router'
 import Button from './ui/button/Button.vue'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import FlagComponent from '@/components/ui/country-flag/CountryFlag.vue'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { type Locales, AvailableLocales, useTypedI18n } from '@/i18n'
-
+import { useAuthStore } from '@/stores/auth'
 const isOpen = ref(false)
 const { t, locale } = useTypedI18n()
 const locales: Record<Locales, { flag: string; name: string }> = {
@@ -21,6 +21,15 @@ const locales: Record<Locales, { flag: string; name: string }> = {
     name: 'Norwegian',
   },
 }
+
+const profilePicture = computed(() => {
+  return useAuthStore().user?.profileImageUrl ?? ''
+})
+
+const user = computed(() => {
+  return useAuthStore().user
+})
+
 </script>
 
 <template>
@@ -43,8 +52,8 @@ const locales: Record<Locales, { flag: string; name: string }> = {
           <SelectContent>
             <SelectItem v-for="locale in AvailableLocales" :key="locale" :value="locale">
               <span class="flag-item">
-                  <FlagComponent :code="locales[locale].flag" />
-                  {{ locales[locale].name }}
+                <FlagComponent :code="locales[locale].flag" />
+                {{ locales[locale].name }}
               </span>
             </SelectItem>
           </SelectContent>
@@ -63,9 +72,12 @@ const locales: Record<Locales, { flag: string; name: string }> = {
 
       <!-- Profile Avatar -->
       <RouterLink to="/profile" class="nav-item">
-        <Avatar class="cursor-pointer">
-          <AvatarImage src="https://github.com/shadcn.png" alt="User" />
-          <AvatarFallback>U</AvatarFallback>
+        <Avatar>
+
+          <AvatarImage :src="profilePicture" :alt="user?.firstName ?? 'Guest'" />
+          <AvatarFallback>
+            <UserIcon v-if="!user" />
+          </AvatarFallback>
         </Avatar>
       </RouterLink>
     </div>
@@ -120,8 +132,8 @@ const locales: Record<Locales, { flag: string; name: string }> = {
             <!-- Profile -->
             <RouterLink to="/profile" class="mobile-nav-item">
               <Avatar>
-                <AvatarImage src="https://github.com/shadcn.png" alt="User" />
-                <AvatarFallback>U</AvatarFallback>
+                <AvatarImage :src="profilePicture" :alt="user?.firstName ?? 'Guest'" />
+                <AvatarFallback>{{ user?.firstName ?? 'Guest' }}</AvatarFallback>
               </Avatar>
               <span class="ml-3">{{ t('nav.profile') }}</span>
             </RouterLink>

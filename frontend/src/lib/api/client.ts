@@ -43,3 +43,31 @@ function createApiClient() {
 }
 
 export const fetchClient = createApiClient()
+
+export const uploadClient = ky.extend({
+  headers: {
+    'Content-Type': 'multipart/form-data',
+  },
+  hooks: {
+    beforeRequest: [
+      (req) => {
+        const authStore = useAuthStore()
+
+        if (authStore.token) {
+          req.headers.set('Authorization', `Bearer ${authStore.token}`)
+        }
+      },
+    ],
+    afterResponse: [
+      async (req, _, res) => {
+        const authStore = useAuthStore()
+
+        if (res.status === 401 && authStore.token) {
+          authStore.logout()
+        }
+
+        return res
+      },
+    ],
+  },
+})
