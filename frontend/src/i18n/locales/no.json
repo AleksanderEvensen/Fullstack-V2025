@@ -47,7 +47,8 @@
       "manufacturer": "Produsent",
       "searchManufacturer": "Søk etter produsent..."
     },
-    "settings": "Innstillinger"
+    "settings": "Innstillinger",
+    "goback": "Gå tilbake"
   },
   "location": {
     "found": "Fant lokasjon",

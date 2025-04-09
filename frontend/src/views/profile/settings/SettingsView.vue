@@ -4,12 +4,13 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useTypedI18n } from '@/i18n'
 import { formatNameInitials, MAPBOX_API_TOKEN } from '@/lib/utils'
-import { Building2Icon, HouseIcon, MapPinIcon } from 'lucide-vue-next'
+import { ArrowLeftIcon, Building2Icon, HouseIcon, MapPinIcon } from 'lucide-vue-next'
 import { computed, ref, watch } from 'vue'
 import { MapboxMap, MapboxMarker, MapboxNavigationControl } from '@studiometa/vue-mapbox-gl'
 import { watchDebounced } from '@vueuse/core'
 import { searchGeocodeAdvanced } from '@/lib/api/geocoding'
 import { Map } from "mapbox-gl";
+import { RouterLink } from 'vue-router'
 
 const { t } = useTypedI18n()
 
@@ -105,6 +106,12 @@ function changeProfilePicture(event: Event) {
 
 <template>
   <div class="container">
+    <RouterLink to="/profile" class="profile-goback">
+      <Button variant="outline">
+        <ArrowLeftIcon />
+        {{ t('common.goback') }}
+      </Button>
+    </RouterLink>
     <h1 class="settings-header">{{ t('profile.settings.greeting', { name: userInfo.name }) }}</h1>
     <p class="settings-description">{{ t('profile.settings.description') }}</p>
     <div class="profile-container">
@@ -220,8 +227,16 @@ function changeProfilePicture(event: Event) {
 </template>
 
 <style scoped>
-.settings-header {
+.profile-goback {
+  display: block;
   margin-top: calc(var(--spacing) * 4);
+  .button {
+    display: flex;
+    gap: calc(var(--spacing) * 2);
+  }
+}
+.settings-header {
+  margin-top: calc(var(--spacing) * 2);
   font-size: var(--text-4xl);
   font-weight: var(--font-weight-semibold);
 }

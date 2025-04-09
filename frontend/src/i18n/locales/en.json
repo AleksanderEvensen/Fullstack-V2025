@@ -47,7 +47,8 @@
       "manufacturer": "Manufacturer",
       "searchManufacturer": "Search by manufacturer..."
     },
-    "settings": "Settings"
+    "settings": "Settings",
+    "goback": "Go Back"
   },
   "location": {
     "found": "Location found",
