@@ -83,4 +83,35 @@ class AuthService(
             accessToken = accessToken,
         )
     }
+
+    /**
+     * Updates a user's password.
+     *
+     * @param currentPassword The user's current password
+     * @param newPassword The new password to set
+     * @return Authentication response with new JWT token
+     * @throws InvalidCredentialsException if the current password is incorrect
+     */
+    @Transactional
+    fun updatePassword(currentPassword: String, newPassword: String): AuthResponseDto {
+        val user = userService.getCurrentUser()
+
+        if (!passwordEncoder.matches(currentPassword, user.password)) {
+            logger.warn("Failed password update for user: {} - Current password invalid", user.email)
+            throw InvalidCredentialsException("Current password is incorrect")
+        }
+
+        val encodedPassword = passwordEncoder.encode(newPassword)
+        userService.updatePassword(encodedPassword)
+
+        val userDetails = userDetailsService.loadUserByUsername(user.email)
+        val accessToken = jwtService.generateToken(userDetails)
+
+        logger.info("Password updated successfully for user: {}", user.email)
+
+        return AuthResponseDto(
+            accessToken = accessToken,
+            message = "Password updated successfully"
+        )
+    }
 }
