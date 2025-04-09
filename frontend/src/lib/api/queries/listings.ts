@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/vue-query'
 import type { paths } from '../schema'
-import { fetchClient } from '../client'
+import { fetchClient } from '@/lib/api/client'
 
 export const LISTING_QUERY_KEY = 'listings'
 
@@ -27,6 +27,23 @@ export function getListing(id: number) {
         params: {
           path: {
             id,
+          },
+        },
+      })
+      return response.data
+    },
+  })
+}
+
+type ListingSearchInput = paths['/api/listings/search']['get']['parameters']['query']
+export function searchListings(input: ListingSearchInput) {
+  return useQuery({
+    queryKey: [LISTING_QUERY_KEY, 'search', input],
+    queryFn: async () => {
+      const response = await fetchClient.GET('/api/listings/search', {
+        params: {
+          query: {
+            ...input,
           },
         },
       })

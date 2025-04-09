@@ -6,12 +6,14 @@ import edu.ntnu.fullstack.amazoom.category.repository.CategoryRepository
 import edu.ntnu.fullstack.amazoom.common.service.UserService
 import edu.ntnu.fullstack.amazoom.listing.dto.CreateOrUpdateListingRequestDto
 import edu.ntnu.fullstack.amazoom.listing.dto.ListingDto
+import edu.ntnu.fullstack.amazoom.listing.dto.ListingSearchRequest
 import edu.ntnu.fullstack.amazoom.listing.entity.Listing
 import edu.ntnu.fullstack.amazoom.listing.exception.ListingNotFoundException
 import edu.ntnu.fullstack.amazoom.listing.mapper.ListingMapper
 import edu.ntnu.fullstack.amazoom.listing.repository.ListingRepository
 import jakarta.transaction.Transactional
 import org.slf4j.LoggerFactory
+import edu.ntnu.fullstack.amazoom.listing.repository.ListingSpecification
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -26,7 +28,6 @@ import org.springframework.stereotype.Service
 class ListingService(
     private val listingRepository: ListingRepository,
     private val categoryRepository: CategoryRepository,
-    private val userRepository: UserRepository,
     private val userService: UserService
 ) {
     private val logger = LoggerFactory.getLogger(ListingService::class.java)
@@ -139,12 +140,30 @@ class ListingService(
      * @return True if the user is the owner, false otherwise
      */
     fun isListingOwner(listingId: Long, userEmail: String): Boolean {
-        val listing = listingRepository.findById(listingId)
-        return if (listing.isPresent) {
-            val listingEntity = listing.get()
-            listingEntity.seller.email == userEmail
-        } else {
-            false
-        }
+     /**
+     * Search for listings based on various criteria
+     */
+    fun searchListings(searchRequest: ListingSearchRequest): Page<ListingDto> {
+        val direction = Sort.Direction.valueOf(searchRequest.sortDirection)
+        val pageable = PageRequest.of(searchRequest.page, searchRequest.size, Sort.by(direction, searchRequest.sortBy))
+
+        val specification = ListingSpecification.buildSpecification(
+            q = searchRequest.q,
+            categoryId = searchRequest.categoryId,
+            categoryName = searchRequest.categoryName,
+            condition = searchRequest.condition,
+            minPrice = searchRequest.minPrice,
+            maxPrice = searchRequest.maxPrice,
+            minModelYear = searchRequest.minModelYear,
+            maxModelYear = searchRequest.maxModelYear,
+            manufacturer = searchRequest.manufacturer,
+            model = searchRequest.model,
+            sellerId = searchRequest.sellerId,
+            defectsCount = searchRequest.defectsCount,
+            modificationsCount = searchRequest.modificationsCount
+        )
+
+        val listingsPage = listingRepository.findAll(specification, pageable)
+        return listingsPage.map { ListingMapper.toResponseDto(it) }
     }
 }

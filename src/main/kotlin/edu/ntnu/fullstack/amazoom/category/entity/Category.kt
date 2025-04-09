@@ -28,3 +28,4 @@ data class Category(
     @Version
     val version: Long? = null
 )
+

@@ -122,6 +122,14 @@ defineProps<{
   color: var(--text-secondary);
 }
 
+@media (max-width: 1400px) {
+    .product-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+}
+
 .seller-info {
   display: flex;
   align-items: center;

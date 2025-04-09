@@ -60,6 +60,16 @@ const router = createRouter({
           name: 'login',
           component: () => import('../views/auth/login/LoginView.vue'),
         },
+        {
+          path: '/profile',
+          name: 'profile',
+          component: () => import('../views/profile/ProfileView.vue'),
+        },
+        {
+          path: '/profile/settings',
+          name: 'profile-settings',
+          component: () => import('../views/profile/settings/SettingsView.vue'),
+        },
       ],
     },
   ],

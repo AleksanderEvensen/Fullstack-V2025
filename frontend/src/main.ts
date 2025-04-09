@@ -7,6 +7,7 @@ import App from './App.vue'
 import router from './router'
 import { VueQueryPlugin } from '@tanstack/vue-query'
 import { i18n } from './i18n'
+import 'mapbox-gl/dist/mapbox-gl.css'
 
 const app = createApp(App)
 

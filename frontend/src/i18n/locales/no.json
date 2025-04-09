@@ -15,7 +15,40 @@
     "edit": "Rediger",
     "search": "Søk",
     "back": "Tilbake",
-    "next": "Neste"
+    "next": "Neste",
+    "previous": "Forrige"
+  },
+  "search": {
+    "title": "Finn det hjertet ditt begjærer",
+    "searchPlaceholder": "Søk etter varer...",
+    "showFilters": "Vis filtre",
+    "hideFilters": "Skjul filtre",
+    "viewOnMap": "Se på kart",
+    "errorLoading": "Beklager, det oppstod en feil ved lasting av annonsene. Vennligst prøv igjen.",
+    "noResults": "Ingen annonser samsvarer med søkekriteriene dine. Prøv å justere filtrene.",
+    "pagination": "Side {current} av {total}",
+    "resultsCount": "Ingen annonser her | {count} resultat | {count} resultater",
+    "sort": {
+      "newest": "Nyeste først",
+      "oldest": "Eldste først",
+      "priceLowHigh": "Pris: Lav til høy",
+      "priceHighLow": "Pris: Høy til lav"
+    },
+    "filters": {
+      "title": "Filtre",
+      "clearAll": "Fjern alle",
+      "priceRange": "Prisintervall",
+      "yearRange": "Årsintervall",
+      "currency": "NOK",
+      "condition": "Tilstand",
+      "selectCondition": "Velg tilstand",
+      "category": "Kategori",
+      "selectCategory": "Velg kategori",
+      "manufacturer": "Produsent",
+      "searchManufacturer": "Søk etter produsent..."
+    },
+    "settings": "Innstillinger",
+    "goback": "Gå tilbake"
   },
   "location": {
     "found": "Fant lokasjon",
@@ -226,5 +259,31 @@
     },
     "recentListings": "Nye annonser",
     "currency": "kr"
+  },
+  "profile": {
+    "listings": "Dine annonser",
+    "view-listing": "Se annonse",
+    "settings": {
+      "greeting": "Hei, {name}",
+      "description": "Her kan du endre på kontoinnstillingene dine, Legge til addresser eller slette kontoen din.",
+
+      "profile-picture": "Profilbilde",
+      "changePicture": "Velg profilbilde",
+      "deletePicture": "Slett profilbilde",
+
+      "name": "Navn",
+      "email": "E-post",
+      "phone": "Telefon Nummer",
+
+      "old-password": "Gammelt password",
+      "new-password": "Nytt passord",
+      "confirm-password": "Bekreft nytt passord",
+
+      "address": {
+        "street": "Addresse",
+        "city": "By",
+        "postal": "Postnummer"
+      }
+    }
   }
 }

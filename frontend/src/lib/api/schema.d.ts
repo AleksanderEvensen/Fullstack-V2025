@@ -52,6 +52,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/listings/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["searchListings"];
+        put?: never;
+        post: operations["advancedSearchListings"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/chat/read/{listingId}/{otherUserId}": {
         parameters: {
             query?: never;
@@ -227,7 +243,8 @@ export interface components {
             /** Format: double */
             originalPrice?: number;
             description: string;
-            modelYear?: string;
+            /** Format: int32 */
+            modelYear?: number;
             manufacturer?: string;
             model?: string;
             serialNumber?: string;
@@ -259,7 +276,8 @@ export interface components {
             originalPrice?: number;
             description: string;
             seller: components["schemas"]["UserDto"];
-            modelYear?: string;
+            /** Format: int32 */
+            modelYear?: number;
             manufacturer?: string;
             model?: string;
             serialNumber?: string;
@@ -317,20 +335,49 @@ export interface components {
         LoginRequestDto: {
             email: string;
             password: string;
+        ListingSearchRequest: {
+            q?: string;
+            /** Format: int64 */
+            categoryId?: number;
+            categoryName?: string;
+            /** @enum {string} */
+            condition?: "NEW" | "LIKE_NEW" | "VERY_GOOD" | "GOOD" | "ACCEPTABLE";
+            /** Format: double */
+            minPrice?: number;
+            /** Format: double */
+            maxPrice?: number;
+            /** Format: int32 */
+            minModelYear?: number;
+            /** Format: int32 */
+            maxModelYear?: number;
+            manufacturer?: string;
+            model?: string;
+            /** Format: int64 */
+            sellerId?: number;
+            /** Format: int32 */
+            defectsCount?: number;
+            /** Format: int32 */
+            modificationsCount?: number;
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            size: number;
+            sortBy: string;
+            sortDirection: string;
         };
         PageListingDto: {
             /** Format: int64 */
             totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["ListingDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
@@ -352,6 +399,30 @@ export interface components {
             sorted?: boolean;
             unsorted?: boolean;
         };
+        CreateOrUpdateListingBookmarkRequest: {
+            /** Format: int64 */
+            listingId: number;
+        };
+        ListingBookmarkResponse: {
+            /** Format: int64 */
+            id: number;
+            listing: components["schemas"]["ListingDto"];
+        };
+        RegisterRequest: {
+            firstName: string;
+            lastName: string;
+            email: string;
+            password: string;
+            phoneNumber: string;
+        };
+        AuthResponse: {
+            accessToken: string;
+            message: string;
+        };
+        LoginRequest: {
+            email: string;
+            password: string;
+        };
         ConversationSummaryDto: {
             user: components["schemas"]["UserDto"];
             /** Format: int64 */
@@ -372,14 +443,14 @@ export interface components {
             totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["ConversationSummaryDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
@@ -400,14 +471,14 @@ export interface components {
             totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["ChatMessageDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
@@ -613,6 +684,70 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ListingDto"];
+                };
+            };
+        };
+    };
+    searchListings: {
+        parameters: {
+            query?: {
+                q?: string;
+                title?: string;
+                description?: string;
+                categoryId?: number;
+                condition?: "NEW" | "LIKE_NEW" | "VERY_GOOD" | "GOOD" | "ACCEPTABLE";
+                minPrice?: number;
+                maxPrice?: number;
+                minModelYear?: number;
+                maxModelYear?: number;
+                manufacturer?: string;
+                model?: string;
+                sellerId?: number;
+                defectsCount?: number;
+                modificationsCount?: number;
+                categoryName?: string;
+                page?: number;
+                size?: number;
+                sortBy?: string;
+                sortDirection?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageListingDto"];
+                };
+            };
+        };
+    };
+    advancedSearchListings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ListingSearchRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageListingDto"];
                 };
             };
         };
