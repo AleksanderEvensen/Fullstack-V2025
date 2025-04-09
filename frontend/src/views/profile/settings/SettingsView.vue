@@ -196,7 +196,7 @@ function changeProfilePicture(event: Event) {
             </div>
           </label>
           <label for="postal" class="setting-label">
-            {{ t('profile.settings.address.city') }}
+            {{ t('profile.settings.address.postal') }}
             <Input
               id="postal"
               class="postal-input"
