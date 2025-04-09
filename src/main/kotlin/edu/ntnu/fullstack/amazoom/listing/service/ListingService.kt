@@ -1,13 +1,11 @@
 package edu.ntnu.fullstack.amazoom.listing.service
 
-import edu.ntnu.fullstack.amazoom.common.repository.UserRepository
 import edu.ntnu.fullstack.amazoom.category.exception.CategoryNotFoundException
 import edu.ntnu.fullstack.amazoom.category.repository.CategoryRepository
 import edu.ntnu.fullstack.amazoom.common.service.UserService
 import edu.ntnu.fullstack.amazoom.listing.dto.CreateOrUpdateListingRequestDto
 import edu.ntnu.fullstack.amazoom.listing.dto.ListingDto
-import edu.ntnu.fullstack.amazoom.listing.dto.ListingSearchRequest
-import edu.ntnu.fullstack.amazoom.listing.entity.Listing
+import edu.ntnu.fullstack.amazoom.listing.dto.ListingSearchRequestDto
 import edu.ntnu.fullstack.amazoom.listing.exception.ListingNotFoundException
 import edu.ntnu.fullstack.amazoom.listing.mapper.ListingMapper
 import edu.ntnu.fullstack.amazoom.listing.repository.ListingRepository
@@ -140,12 +138,27 @@ class ListingService(
      * @return True if the user is the owner, false otherwise
      */
     fun isListingOwner(listingId: Long, userEmail: String): Boolean {
-     /**
-     * Search for listings based on various criteria
+        val listing = listingRepository.findById(listingId)
+        return if (listing.isPresent) {
+            val listingEntity = listing.get()
+            listingEntity.seller.email == userEmail
+        } else {
+            false
+        }
+    }
+
+    /**
+     * Searches for listings based on various criteria.
+     *
+     * @param searchRequest The request DTO containing search criteria
      */
-    fun searchListings(searchRequest: ListingSearchRequest): Page<ListingDto> {
+    fun searchListings(searchRequest: ListingSearchRequestDto): Page<ListingDto> {
         val direction = Sort.Direction.valueOf(searchRequest.sortDirection)
-        val pageable = PageRequest.of(searchRequest.page, searchRequest.size, Sort.by(direction, searchRequest.sortBy))
+        val pageable = PageRequest.of(
+            searchRequest.page,
+            searchRequest.size,
+            Sort.by(direction, searchRequest.sortBy)
+        )
 
         val specification = ListingSpecification.buildSpecification(
             q = searchRequest.q,

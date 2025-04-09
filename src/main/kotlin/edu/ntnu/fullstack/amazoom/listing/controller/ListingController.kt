@@ -2,7 +2,7 @@ package edu.ntnu.fullstack.amazoom.listing.controller
 
 import edu.ntnu.fullstack.amazoom.listing.dto.CreateOrUpdateListingRequestDto
 import edu.ntnu.fullstack.amazoom.listing.dto.ListingDto
-import edu.ntnu.fullstack.amazoom.listing.dto.ListingSearchRequest
+import edu.ntnu.fullstack.amazoom.listing.dto.ListingSearchRequestDto
 import edu.ntnu.fullstack.amazoom.listing.entity.ListingCondition
 import edu.ntnu.fullstack.amazoom.listing.service.ListingService
 import jakarta.validation.Valid
@@ -129,7 +129,7 @@ class ListingController(
         @RequestParam(defaultValue = "createdAt") sortBy: String,
         @RequestParam(defaultValue = "DESC") sortDirection: String
     ): ResponseEntity<Page<ListingDto>> {
-        val searchRequest = ListingSearchRequest(
+        val searchRequest = ListingSearchRequestDto(
             q = q,
             categoryId = categoryId,
             condition = condition,
@@ -157,7 +157,7 @@ class ListingController(
      * API endpoint for advanced search using a request body
      */
     @PostMapping("/search")
-    fun advancedSearchListings(@RequestBody searchRequest: ListingSearchRequest): ResponseEntity<Page<ListingDto>> {
+    fun advancedSearchListings(@RequestBody searchRequest: ListingSearchRequestDto): ResponseEntity<Page<ListingDto>> {
         val searchResults = listingService.searchListings(searchRequest)
         return ResponseEntity.ok(searchResults)
     }

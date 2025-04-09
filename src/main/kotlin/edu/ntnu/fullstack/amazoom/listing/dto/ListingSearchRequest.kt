@@ -2,7 +2,7 @@ package edu.ntnu.fullstack.amazoom.listing.dto
 
 import edu.ntnu.fullstack.amazoom.listing.entity.ListingCondition
 
-data class ListingSearchRequest(
+data class ListingSearchRequestDto(
     val q: String? = null,
     val categoryId: Long? = null,
     val categoryName: String? = null,

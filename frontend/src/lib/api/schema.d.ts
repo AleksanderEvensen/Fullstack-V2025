@@ -312,30 +312,7 @@ export interface components {
             translationString: string;
             icon: string;
         };
-        CreateListingBookmarkRequestDto: {
-            /** Format: int64 */
-            listingId: number;
-        };
-        ListingBookmarkResponseDto: {
-            /** Format: int64 */
-            id: number;
-            listing: components["schemas"]["ListingDto"];
-        };
-        RegisterRequestDto: {
-            firstName: string;
-            lastName: string;
-            email: string;
-            password: string;
-            phoneNumber: string;
-        };
-        AuthResponseDto: {
-            accessToken: string;
-            message: string;
-        };
-        LoginRequestDto: {
-            email: string;
-            password: string;
-        ListingSearchRequest: {
+        ListingSearchRequestDto: {
             q?: string;
             /** Format: int64 */
             categoryId?: number;
@@ -370,14 +347,14 @@ export interface components {
             totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["ListingDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
@@ -399,27 +376,27 @@ export interface components {
             sorted?: boolean;
             unsorted?: boolean;
         };
-        CreateOrUpdateListingBookmarkRequest: {
+        CreateListingBookmarkRequestDto: {
             /** Format: int64 */
             listingId: number;
         };
-        ListingBookmarkResponse: {
+        ListingBookmarkResponseDto: {
             /** Format: int64 */
             id: number;
             listing: components["schemas"]["ListingDto"];
         };
-        RegisterRequest: {
+        RegisterRequestDto: {
             firstName: string;
             lastName: string;
             email: string;
             password: string;
             phoneNumber: string;
         };
-        AuthResponse: {
+        AuthResponseDto: {
             accessToken: string;
             message: string;
         };
-        LoginRequest: {
+        LoginRequestDto: {
             email: string;
             password: string;
         };
@@ -443,14 +420,14 @@ export interface components {
             totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["ConversationSummaryDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
@@ -471,14 +448,14 @@ export interface components {
             totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["ChatMessageDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
@@ -737,7 +714,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["ListingSearchRequest"];
+                "application/json": components["schemas"]["ListingSearchRequestDto"];
             };
         };
         responses: {
