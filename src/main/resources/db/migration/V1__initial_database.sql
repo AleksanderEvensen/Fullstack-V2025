@@ -102,6 +102,7 @@ CREATE TABLE users
     email             VARCHAR(255)          NOT NULL,
     password          VARCHAR(255)          NOT NULL,
     phone_number      VARCHAR(255)          NOT NULL,
+    nin               VARCHAR(255)          NULL,
     profile_image_url VARCHAR(255)          NULL,
     created_at        datetime              NULL,
     version           BIGINT                NOT NULL,
@@ -124,6 +125,9 @@ ALTER TABLE roles
 
 ALTER TABLE users
     ADD CONSTRAINT uc_users_email UNIQUE (email);
+
+ALTER TABLE users
+    ADD CONSTRAINT uc_users_nin UNIQUE (nin);
 
 ALTER TABLE users
     ADD CONSTRAINT uc_users_phonenumber UNIQUE (phone_number);

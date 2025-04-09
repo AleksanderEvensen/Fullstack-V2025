@@ -30,7 +30,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-@EnableConfigurationProperties(AuthProperties::class, MinIOProperties::class)
+@EnableConfigurationProperties(AuthProperties::class, MinIOProperties::class, VippsProperties::class)
 class SecurityConfig(
     private val jwtService: JwtService,
     private val userDetailsService: UserDetailsServiceImpl,
@@ -52,7 +52,7 @@ class SecurityConfig(
             }
             .authorizeHttpRequests { auth ->
                 auth
-                    .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
+                    .requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/vipps/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/images/**").permitAll()
                     .requestMatchers("/api/**").authenticated()
                     .anyRequest().permitAll()

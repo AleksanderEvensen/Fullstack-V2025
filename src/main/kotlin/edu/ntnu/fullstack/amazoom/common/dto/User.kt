@@ -60,6 +60,7 @@ data class CreateUserDto(
     val firstName: String,
     val lastName: String,
     val email: String,
-    val password: String,
     val phoneNumber: String,
+    val password: String? = null,
+    val nin: String? = null,
 )

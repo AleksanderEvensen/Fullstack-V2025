@@ -57,7 +57,8 @@ class UserService(
             phoneNumber = data.phoneNumber,
             password = data.password,
             address = null,
-            roles = mutableSetOf(userRole)
+            roles = mutableSetOf(userRole),
+            nin = data.nin
         )
 
         val savedUser = userRepository.save(user)
@@ -174,5 +175,20 @@ class UserService(
 
         userRepository.save(user)
         logger.info("Address updated for user: {}", user.email)
+    }
+
+
+    /**
+     * Gets a user by their National ID Number (used by Vipps)
+     *
+     * @param nin The National ID Number to look up
+     * @return The user entity
+     * @throws UserNotFoundException if no user exists with the given NIN
+     */
+    fun getUserByNin(nin: String): User {
+        return userRepository.findByNin(nin).orElseThrow {
+            logger.warn("User not found with nin: $nin")
+            UserNotFoundException("User with NIN $nin not found")
+        }
     }
 }

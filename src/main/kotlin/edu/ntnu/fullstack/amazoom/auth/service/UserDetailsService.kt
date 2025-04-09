@@ -51,7 +51,7 @@ class UserDetailsServiceImpl(
  */
 class CustomUserDetails(
     private val username: String,
-    private val password: String,
+    private val password: String?,
     private val authorities: Collection<GrantedAuthority>
 ) : UserDetails {
 

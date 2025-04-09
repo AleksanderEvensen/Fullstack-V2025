@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import createFetchClient from 'openapi-fetch'
 import ky from 'ky'
+import Cookies from 'universal-cookie'
 
 type LoginRequest = paths['/api/auth/login']['post']['requestBody']['content']['application/json']
 type RegisterRequest =
@@ -111,9 +112,17 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   function initialize() {
-    if (token.value) {
+    const cookies = new Cookies(document.cookie)
+    const tokenFromCookie = cookies.get('am_session') as string | undefined
+
+    if (tokenFromCookie) {
+      token.value = tokenFromCookie
+      localStorage.setItem(TOKEN, token.value)
+    } else if (token.value) {
       fetchUser().catch(() => logout())
     }
+
+    document.cookie = 'am_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
   }
 
   return {
