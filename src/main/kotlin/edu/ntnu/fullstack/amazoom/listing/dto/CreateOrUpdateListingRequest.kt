@@ -1,6 +1,7 @@
 package edu.ntnu.fullstack.amazoom.listing.dto
 
 import edu.ntnu.fullstack.amazoom.listing.entity.ListingCondition
+import edu.ntnu.fullstack.amazoom.listing.entity.ListingStatus
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
@@ -65,5 +66,8 @@ data class CreateOrUpdateListingRequestDto(
     val reasonForSelling: String? = null,
 
     @field:Schema(description = "List of image URLs for this listing", example = "[\"macbook-12345.jpg\", \"macbook2-12345.jpg\"]", nullable = true)
-    val images: List<String>? = null
+    val images: List<String>? = null,
+
+    @field:Schema(description = "Listing status", example = "ACTIVE", nullable = true)
+    val status: ListingStatus? = ListingStatus.ACTIVE
 )

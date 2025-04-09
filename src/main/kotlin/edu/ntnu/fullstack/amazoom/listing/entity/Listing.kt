@@ -63,6 +63,9 @@ data class Listing(
 
     val reasonForSelling: String? = null,
 
+    @Column(name = "listing_status", nullable = false)
+    val status: ListingStatus = ListingStatus.ACTIVE,
+
     // Images
     @ElementCollection
     @CollectionTable(name = "listing_images", joinColumns = [JoinColumn(name = "listing_id")])
@@ -104,4 +107,17 @@ enum class ListingCondition {
 
     @Schema(description = "Used with significant wear but still functional")
     ACCEPTABLE
+}
+
+
+/**
+ * Listing status enum representing the state of a listing.
+ */
+@Schema(description = "Status of a listing")
+enum class ListingStatus {
+    @Schema(description = "Listing is active and available for sale")
+    ACTIVE,
+
+    @Schema(description = "Listing is sold and no longer available")
+    SOLD,
 }

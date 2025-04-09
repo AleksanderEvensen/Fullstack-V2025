@@ -15,11 +15,11 @@ data class ListingBookmark(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L,
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = [CascadeType.REMOVE])
     @JoinColumn(name = "listing_id", nullable = false)
     val listing: Listing,
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = [CascadeType.REMOVE])
     @JoinColumn(name = "user_id", nullable = false)
     val user: User
 )
