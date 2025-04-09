@@ -262,7 +262,7 @@
   },
   "profile": {
     "listings": "My Listings",
-    "view-listign": "View Listing",
+    "view-listing": "View Listing",
     "settings": {
       "greeting": "Hello, {name}",
       "description": "Here you can change your settings, manage your addresses and delete your account information.",

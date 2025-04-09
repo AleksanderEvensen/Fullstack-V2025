@@ -262,7 +262,7 @@
   },
   "profile": {
     "listings": "Dine annonser",
-    "view-listign": "Se annonse",
+    "view-listing": "Se annonse",
     "settings": {
       "greeting": "Hei, {name}",
       "description": "Her kan du endre på kontoinnstillingene dine, Legge til addresser eller slette kontoen din.",

@@ -24,7 +24,7 @@ defineProps<{
       <div class="listing-info">
         <span class="stat-item"><HeartIcon :size="16" /> {{ likes }}</span>
         <h4>{{ title }}</h4>
-        <Button variant="outline" size="sm">{{ t('profile.view-listign') }}</Button>
+        <Button variant="outline" size="sm">{{ t('profile.view-listing') }}</Button>
       </div>
       <div class="listing-actions">
         <span class="listing-date">{{ formatDate(published, 'DD. MMM YYYY') }}</span>
