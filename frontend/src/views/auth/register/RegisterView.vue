@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { Button } from '@/components/ui/button'
-import {
-  Form,
-} from '@/components/ui/form'
+import { Form } from '@/components/ui/form'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import {
   Stepper,
@@ -13,7 +11,7 @@ import {
   StepperDescription,
   StepperSeparator,
 } from '@/components/ui/stepper'
-import {  User, Mail, Lock, Check } from 'lucide-vue-next'
+import { User, Mail, Lock, Check } from 'lucide-vue-next'
 import { toTypedSchema } from '@vee-validate/zod'
 import type { GenericObject } from 'vee-validate'
 import * as z from 'zod'
@@ -76,11 +74,9 @@ const formSchema = [
     }),
 ]
 
-
 function onSubmit(values: GenericObject) {
   console.log('Form submitted:', values)
 }
-
 </script>
 
 <template>
@@ -91,48 +87,76 @@ function onSubmit(values: GenericObject) {
         <CardDescription>{{ t('auth.fillOutForm') }}</CardDescription>
       </CardHeader>
       <CardContent>
-        <Form v-slot="{ meta, values, validate }" as="" keep-values
-          :validation-schema="toTypedSchema(formSchema[stepIndex - 1])">
-          <Stepper v-slot="{ isNextDisabled, isPrevDisabled, nextStep, prevStep }" v-model="stepIndex"
-            class="stepper-block">
-            <form @submit="
-              (e) => {
-                e.preventDefault()
-                validate()
+        <Form
+          v-slot="{ meta, values, validate }"
+          as=""
+          keep-values
+          :validation-schema="toTypedSchema(formSchema[stepIndex - 1])"
+        >
+          <Stepper
+            v-slot="{ isNextDisabled, isPrevDisabled, nextStep, prevStep }"
+            v-model="stepIndex"
+            class="stepper-block"
+          >
+            <form
+              @submit="
+                (e) => {
+                  e.preventDefault()
+                  validate()
 
-                if (stepIndex === steps.length && meta.valid) {
-                  onSubmit(values)
+                  if (stepIndex === steps.length && meta.valid) {
+                    onSubmit(values)
+                  }
                 }
-              }
-            ">
+              "
+            >
               <div class="stepper-nav-container">
-                <StepperItem v-for="step in steps" :key="step.step" v-slot="{ state }" class="stepper-item"
-                  :step="step.step">
-                  <StepperSeparator v-if="step.step !== steps[steps.length - 1].step" class="stepper-separator"
-                    :class="{ 'separator-completed': state === 'completed' }" />
+                <StepperItem
+                  v-for="step in steps"
+                  :key="step.step"
+                  v-slot="{ state }"
+                  class="stepper-item"
+                  :step="step.step"
+                >
+                  <StepperSeparator
+                    v-if="step.step !== steps[steps.length - 1].step"
+                    class="stepper-separator"
+                    :class="{ 'separator-completed': state === 'completed' }"
+                  />
 
                   <StepperTrigger as-child>
-                    <Button :variant="state === 'completed' || state === 'active' ? 'default' : 'outline'" size="icon"
-                      class="stepper-button" :class="[
+                    <Button
+                      :variant="state === 'completed' || state === 'active' ? 'default' : 'outline'"
+                      size="icon"
+                      class="stepper-button"
+                      :class="[
                         state === 'active' && 'active-button',
                         state === 'completed' && 'completed-button',
-                      ]" :disabled="state !== 'completed' && !meta.valid">
+                      ]"
+                      :disabled="state !== 'completed' && !meta.valid"
+                    >
                       <Check v-if="state === 'completed'" class="step-icon" />
                       <span v-else class="step-number">{{ step.step }}</span>
                     </Button>
                   </StepperTrigger>
 
                   <div class="stepper-title-container">
-                    <StepperTitle :class="[
-                      state === 'active' && 'active-text',
-                      state === 'completed' && 'completed-text',
-                    ]" class="stepper-title">
+                    <StepperTitle
+                      :class="[
+                        state === 'active' && 'active-text',
+                        state === 'completed' && 'completed-text',
+                      ]"
+                      class="stepper-title"
+                    >
                       {{ step.title }}
                     </StepperTitle>
-                    <StepperDescription :class="[
-                      state === 'active' && 'active-text-muted',
-                      state === 'completed' && 'completed-text-muted',
-                    ]" class="stepper-description">
+                    <StepperDescription
+                      :class="[
+                        state === 'active' && 'active-text-muted',
+                        state === 'completed' && 'completed-text-muted',
+                      ]"
+                      class="stepper-description"
+                    >
                       {{ step.description }}
                     </StepperDescription>
                   </div>
@@ -146,17 +170,32 @@ function onSubmit(values: GenericObject) {
               </div>
 
               <div class="form-actions">
-                <Button :disabled="isPrevDisabled" variant="outline" size="lg" class="action-button back-button"
-                  @click="prevStep()">
+                <Button
+                  :disabled="isPrevDisabled"
+                  variant="outline"
+                  size="lg"
+                  class="action-button back-button"
+                  @click="prevStep()"
+                >
                   {{ t('common.back') }}
                 </Button>
                 <div class="button-group">
-                  <Button v-if="stepIndex !== steps.length" :type="meta.valid ? 'button' : 'submit'"
-                    :disabled="isNextDisabled" size="lg" class="action-button next-button"
-                    @click="meta.valid && nextStep()">
+                  <Button
+                    v-if="stepIndex !== steps.length"
+                    :type="meta.valid ? 'button' : 'submit'"
+                    :disabled="isNextDisabled"
+                    size="lg"
+                    class="action-button next-button"
+                    @click="meta.valid && nextStep()"
+                  >
                     {{ t('common.next') }}
                   </Button>
-                  <Button v-if="stepIndex === steps.length" size="lg" type="submit" class="action-button submit-button">
+                  <Button
+                    v-if="stepIndex === steps.length"
+                    size="lg"
+                    type="submit"
+                    class="action-button submit-button"
+                  >
                     {{ t('auth.submitButton') }}
                   </Button>
                 </div>
@@ -312,7 +351,6 @@ function onSubmit(values: GenericObject) {
   align-items: center;
   gap: 0.75rem;
 }
-
 
 @media (min-width: 768px) {
   .container {
