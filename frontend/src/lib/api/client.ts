@@ -27,7 +27,7 @@ function createApiClient() {
         async (req, _, res) => {
           const authStore = useAuthStore()
 
-          if ((res.status === 401 || res.status === 403) && authStore.token) {
+          if (res.status === 401 && authStore.token) {
             authStore.logout()
           }
 
