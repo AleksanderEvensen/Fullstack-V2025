@@ -19,6 +19,5 @@ data class ConversationSummaryDto(
     val user: UserDto,
     val listingId: Long,
     val listingTitle: String,
-    val unreadCount: Long,
     val lastMessage: LastMessageDto?
 )

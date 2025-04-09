@@ -12,7 +12,6 @@ object ChatMessageMapper {
             listingId = chatMessage.listing.id,
             content = chatMessage.content,
             timestamp = chatMessage.timestamp,
-            read = chatMessage.read
         )
     }
 }

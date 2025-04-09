@@ -31,6 +31,4 @@ data class ChatMessage(
     val content: String,
 
     val timestamp: Instant = Instant.now(),
-
-    var read: Boolean = false
 )

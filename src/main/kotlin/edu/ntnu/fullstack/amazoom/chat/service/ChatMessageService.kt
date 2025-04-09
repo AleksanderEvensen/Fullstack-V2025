@@ -36,7 +36,7 @@ class ChatMessageService(
     private val listingRepository: ListingRepository
 ) {
     private val logger = LoggerFactory.getLogger(ChatMessageService::class.java)
-    private val MAX_MESSAGE_LENGTH = 2000
+    private val MAX_MESSAGE_LENGTH = 1000
 
     /**
      * Gets unique conversations for the current user.
@@ -58,9 +58,6 @@ class ChatMessageService(
 
             val otherUser = userService.getUserById(otherUserId)
             val listing = listingService.getListing(listingId)
-            val unreadCount = chatMessageRepository.countUnreadMessagesForConversation(
-                currentUserId, otherUserId, listingId
-            )
 
             val latestMessagePage = PageRequest.of(0, 1)
             val latestMessage = chatMessageRepository.findMessagesBetweenUsersForListing(
@@ -71,7 +68,6 @@ class ChatMessageService(
                 LastMessageDto(
                     content = it.content,
                     timestamp = it.timestamp,
-                    isFromCurrentUser = it.sender.id == currentUserId
                 )
             }
 
@@ -80,7 +76,6 @@ class ChatMessageService(
                 user = UserMapper.toDto(otherUser),
                 listingId = listingId,
                 listingTitle = listing.title,
-                unreadCount = unreadCount,
                 lastMessage = lastMessageDto
             )
         }
@@ -112,42 +107,6 @@ class ChatMessageService(
         )
 
         return messages.map { ChatMessageMapper.toDto(it) }
-    }
-
-    /**
-     * Marks messages in a conversation as read.
-     *
-     * @param otherUserId The ID of the other user in the conversation
-     * @param listingId The ID of the listing being discussed
-     */
-    @Transactional
-    fun markMessagesAsRead(
-        otherUserId: Long,
-        listingId: Long
-    ) {
-        val userId = userService.getCurrentUser().id
-
-        logger.debug("Marking messages as read between users {} and {} for listing: {}",
-            userId, otherUserId, listingId)
-
-        val count = chatMessageRepository.markMessagesAsRead(userId, otherUserId, listingId)
-
-        if (count > 0) {
-            logger.debug("Marked {} messages as read", count)
-
-            val readReceipt = ReadReceiptDto(
-                senderId = userId,
-                recipientId = otherUserId,
-                timestamp = Instant.now(),
-                listingId = listingId
-            )
-
-            simpMessagingTemplate.convertAndSendToUser(
-                otherUserId.toString(),
-                "/queue/receipts",
-                readReceipt
-            )
-        }
     }
 
     /**
@@ -194,7 +153,6 @@ class ChatMessageService(
             listing = listing,
             content = sanitizedContent,
             timestamp = Instant.now(),
-            read = false
         )
 
         val savedMessage = chatMessageRepository.save(chatMessage)

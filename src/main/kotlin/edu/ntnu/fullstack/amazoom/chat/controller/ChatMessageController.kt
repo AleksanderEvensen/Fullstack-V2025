@@ -73,17 +73,14 @@ class ChatMessageController(
         ApiResponse(
             responseCode = "200",
             description = "Messages retrieved successfully",
-            content = [Content(schema = Schema(implementation = ChatMessageDto::class))]
         ),
         ApiResponse(
             responseCode = "401",
             description = "User not authenticated",
-            content = [Content(schema = Schema(implementation = ErrorResponseDto::class))]
         ),
         ApiResponse(
             responseCode = "403",
             description = "User not authorized to access this conversation",
-            content = [Content(schema = Schema(implementation = ErrorResponseDto::class))]
         )
     )
     @GetMapping("/conversation/{listingId}/{otherUserId}")
@@ -101,36 +98,5 @@ class ChatMessageController(
                 pageable
             )
         )
-    }
-
-    /**
-     * Marks messages in a conversation as read.
-     *
-     * @param listingId The ID of the listing being discussed
-     * @param otherUserId The ID of the other user in the conversation
-     * @return No content response
-     */
-    @Operation(
-        summary = "Mark messages as read",
-        description = "Marks all messages in a conversation as read by the current user"
-    )
-    @ApiResponses(
-        ApiResponse(
-            responseCode = "204",
-            description = "Messages marked as read successfully"
-        ),
-        ApiResponse(
-            responseCode = "401",
-            description = "User not authenticated",
-            content = [Content(schema = Schema(implementation = ErrorResponseDto::class))]
-        )
-    )
-    @PostMapping("/read/{listingId}/{otherUserId}")
-    fun markMessagesAsRead(
-        @PathVariable listingId: Long,
-        @PathVariable otherUserId: Long,
-    ): ResponseEntity<Void> {
-        chatMessageService.markMessagesAsRead(otherUserId, listingId)
-        return ResponseEntity.noContent().build()
     }
 }
