@@ -84,7 +84,7 @@ class VippsService(
                         response.bodyToMono(VippsUserInfoResponse::class.java)
                     }
                 }
-                .block() ?: throw RuntimeException("Emtpy response from Vipps API")
+                .block() ?: throw RuntimeException("Empty response from Vipps API")
         }
     }
 
