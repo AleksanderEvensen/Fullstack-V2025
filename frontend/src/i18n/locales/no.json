@@ -285,5 +285,10 @@
         "postal": "Postnummer"
       }
     }
+  },
+  "notFound": {
+    "title": "404 - Siden ble ikke funnet",
+    "message": "Beklager, siden du leter etter eksisterer ikke.",
+    "backToHome": "Tilbake til hjemmesiden"
   }
 }

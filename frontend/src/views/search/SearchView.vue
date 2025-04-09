@@ -16,9 +16,9 @@ import SearchFilter from './components/SearchFilter.vue'
 import type { paths } from '@/lib/api/schema'
 import ProductCard from '../home/components/ProductCard.vue'
 import { searchListings } from '@/lib/api/queries/listings'
-import { useI18n } from 'vue-i18n'
+import { useTypedI18n } from '@/i18n'
 
-const { t } = useI18n()
+const { t } = useTypedI18n()
 
 type ListingSearchParams = paths['/api/listings/search']['get']['parameters']['query']
 const queryParams = useUrlSearchParams<NonNullable<ListingSearchParams>>('history', {

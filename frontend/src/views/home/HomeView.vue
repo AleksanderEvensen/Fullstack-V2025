@@ -5,11 +5,11 @@ import { RouterLink, useRouter } from 'vue-router'
 import { Icon, type IconName } from '@/components/ui/icon'
 import ProductGrid from '@/views/home/components/ProductGrid.vue'
 import { MapIcon, Search } from 'lucide-vue-next'
-import { useI18n } from 'vue-i18n'
 import { getListings } from '@/lib/api/queries/listings'
 import { getCategories } from '@/lib/api/queries/categories'
 import { ref } from 'vue'
-const { t } = useI18n()
+import { useTypedI18n } from '@/i18n'
+const { t } = useTypedI18n()
 const router = useRouter()
 const { data } = getListings({
   page: 0,
@@ -126,10 +126,10 @@ const handleSearch = () => {
   font-size: 0.9rem;
 }
 
-/* Categories */
+/* Categories - improved for mobile */
 .categories-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(7, 1fr);
   gap: 10px;
   margin-bottom: 2rem;
   max-width: 1000px;
@@ -138,20 +138,17 @@ const handleSearch = () => {
   padding: 0 1rem;
 }
 
-
 .category-item {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   text-decoration: none;
   color: var(--foreground);
-  font-size: 0.8rem;
-  width: calc(14.28% - 10px);
-  min-width: 80px;
-  padding: 0.5rem;
+  padding: 0.75rem 0.5rem;
   border-radius: var(--radius);
   transition: background-color 0.2s;
-  gap: 10px;
+  gap: 8px;
 }
 
 .category-item:hover {
@@ -162,6 +159,10 @@ const handleSearch = () => {
   text-align: center;
   line-height: 1.2;
   font-size: 0.8rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
 }
 
 /* Popular listings */
@@ -176,20 +177,42 @@ const handleSearch = () => {
 }
 
 /* Responsive adjustments */
-@media (max-width: 64rem) {
+@media (max-width: 900px) {
+  .categories-container {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .categories-container {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    padding: 0 0.5rem;
+  }
 
   .category-item {
-    width: calc(25% - 10px);
+    padding: 0.5rem;
   }
 }
 
 @media (max-width: 480px) {
-  .category-item {
-    width: calc(33.33% - 10px);
+  .categories-container {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .category-name {
+    font-size: 0.75rem;
   }
 
   .cart-button {
     display: none;
+  }
+}
+
+@media (max-width: 320px) {
+  .categories-container {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 </style>
