@@ -3,6 +3,7 @@ package edu.ntnu.fullstack.amazoom.auth.controller
 import edu.ntnu.fullstack.amazoom.auth.dto.AuthResponseDto
 import edu.ntnu.fullstack.amazoom.auth.dto.LoginRequestDto
 import edu.ntnu.fullstack.amazoom.auth.dto.RegisterRequestDto
+import edu.ntnu.fullstack.amazoom.auth.dto.UpdatePasswordRequestDto
 import edu.ntnu.fullstack.amazoom.auth.service.AuthService
 import edu.ntnu.fullstack.amazoom.common.dto.FullUserDto
 import edu.ntnu.fullstack.amazoom.common.service.UserService
@@ -65,6 +66,22 @@ class AuthController(
     fun me(): ResponseEntity<FullUserDto>{
         val user = userService.getProfile()
         return ResponseEntity.ok(user)
+    }
+
+    /**
+     * Updates the user's password.
+     *
+     * @param request The password update request
+     * @return Response indicating successful update
+     */
+    @PostMapping("/update-password")
+    fun updatePassword(@Valid @RequestBody request: UpdatePasswordRequestDto): ResponseEntity<AuthResponseDto> {
+        val authResponse = authService.updatePassword(
+            request.currentPassword,
+            request.newPassword
+        )
+
+        return ResponseEntity.ok(authResponse)
     }
 
     /**

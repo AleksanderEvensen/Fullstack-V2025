@@ -1,8 +1,10 @@
 package edu.ntnu.fullstack.amazoom.common.service
 
+import edu.ntnu.fullstack.amazoom.common.dto.AddressDto
 import edu.ntnu.fullstack.amazoom.common.repository.RoleRepository
 import edu.ntnu.fullstack.amazoom.common.dto.CreateUserDto
 import edu.ntnu.fullstack.amazoom.common.dto.FullUserDto
+import edu.ntnu.fullstack.amazoom.common.entity.Address
 import edu.ntnu.fullstack.amazoom.common.entity.RoleName
 import edu.ntnu.fullstack.amazoom.common.entity.User
 import edu.ntnu.fullstack.amazoom.common.exception.MissingRoleException
@@ -10,6 +12,7 @@ import edu.ntnu.fullstack.amazoom.common.exception.UserAlreadyExistsException
 import edu.ntnu.fullstack.amazoom.common.exception.UserNotFoundException
 import edu.ntnu.fullstack.amazoom.common.mapper.UserMapper
 import edu.ntnu.fullstack.amazoom.common.repository.UserRepository
+import jakarta.transaction.Transactional
 import org.slf4j.LoggerFactory
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
@@ -60,6 +63,18 @@ class UserService(
         val savedUser = userRepository.save(user)
         logger.info("Successfully created user with ID: {}", savedUser.id)
         return savedUser
+    }
+
+    /**
+     * Updates the password for the currently authenticated user.
+     *
+     * @param password The new password to set
+     */
+    fun updatePassword(password: String){
+        val user = getCurrentUser()
+        user.password = password
+        userRepository.save(user)
+        logger.info("Password updated for user: {}", user.email)
     }
 
     /**
@@ -119,5 +134,45 @@ class UserService(
         }
 
         return user
+    }
+
+    /**
+     * Updates the user's profile image.
+     *
+     * @param imageUrl The URL or filename of the uploaded image
+     */
+    @Transactional
+    fun updateProfileImage(imageUrl: String) {
+        val user = getCurrentUser()
+
+        // Update the user's profile image URL
+        user.profileImageUrl = imageUrl
+
+        userRepository.save(user)
+        logger.info("Profile image updated for user: {}", user.email)
+    }
+
+    /**
+     * Updates the user's address information.
+     *
+     * @param address The new address information
+     */
+    @Transactional
+    fun updateAddress(address: AddressDto) {
+        val user = getCurrentUser()
+
+        // Convert DTO to entity and update the user's address
+        val addressEntity = Address(
+            streetName = address.streetName,
+            streetNumber = address.streetNumber,
+            postalCode = address.postalCode,
+            city = address.city,
+            country = address.country
+        )
+
+        user.address = addressEntity
+
+        userRepository.save(user)
+        logger.info("Address updated for user: {}", user.email)
     }
 }
