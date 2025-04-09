@@ -3,11 +3,13 @@ package edu.ntnu.fullstack.amazoom.auth.config
 import edu.ntnu.fullstack.amazoom.auth.filter.JwtAuthFilter
 import edu.ntnu.fullstack.amazoom.auth.service.JwtService
 import edu.ntnu.fullstack.amazoom.auth.service.UserDetailsServiceImpl
+import edu.ntnu.fullstack.amazoom.common.config.MinIOProperties
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
@@ -28,7 +30,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-@EnableConfigurationProperties(AuthProperties::class)
+@EnableConfigurationProperties(AuthProperties::class, MinIOProperties::class)
 class SecurityConfig(
     private val jwtService: JwtService,
     private val userDetailsService: UserDetailsServiceImpl,
@@ -57,6 +59,7 @@ class SecurityConfig(
                         "/api/auth/register",
                         "/api/auth/login",
                     ).permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/images/**").permitAll()
                     .anyRequest().authenticated()
             }
             .addFilterBefore(
