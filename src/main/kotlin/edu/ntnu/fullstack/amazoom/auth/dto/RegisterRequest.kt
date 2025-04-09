@@ -4,7 +4,11 @@ import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 
-data class RegisterRequest(
+/**
+ * Data Transfer Object (DTO) for user registration requests.
+ * Contains all required fields to register a new user in the system.
+ */
+data class RegisterRequestDto(
     @field:NotBlank(message = "First name is required")
     val firstName: String,
 

@@ -15,7 +15,8 @@ import java.util.Date
 import javax.crypto.SecretKey
 
 /**
- * Service for JWT token management - generation, validation, and claim extraction
+ * Service for JWT token management including generation, validation, and claim extraction.
+ * This service is central to the application's security infrastructure.
  */
 @Service
 class JwtService(
@@ -24,11 +25,14 @@ class JwtService(
     private val logger = LoggerFactory.getLogger(JwtService::class.java)
 
     /**
-     * Generates a JWT token for the given user details
-     * @param userDetails The authenticated user details
-     * @return A signed JWT token
+     * Generates a JWT token for an authenticated user.
+     *
+     * @param userDetails The authenticated user details containing username and authorities
+     * @return A signed JWT token string
      */
     fun generateToken(userDetails: CustomUserDetails): String {
+        logger.debug("Generating token for user: {}", userDetails.username)
+
         val now = Date()
         val expiration = Date(now.time + authProperties.tokenExpiration * 1000)
 
@@ -47,9 +51,10 @@ class JwtService(
     }
 
     /**
-     * Extracts the username from a JWT token
+     * Extracts the username from a JWT token.
+     *
      * @param token The JWT token
-     * @return The username or null if extraction fails
+     * @return The extracted username or null if extraction fails
      */
     fun extractUsername(token: String): String? {
         try {
@@ -61,9 +66,11 @@ class JwtService(
     }
 
     /**
-     * Validates a JWT token
+     * Validates a JWT token.
+     *
      * @param token The JWT token to validate
      * @return True if the token is valid, false otherwise
+     * @throws ExpiredJwtException if the token has expired
      */
     fun isTokenValid(token: String): Boolean {
         try {
@@ -105,10 +112,11 @@ class JwtService(
     }
 
     /**
-     * Extracts a specific claim from the token
+     * Extracts a specific claim from the token.
+     *
      * @param token The JWT token
-     * @param claimsResolver Function to extract specific claim from Claims
-     * @return The extracted claim value or null
+     * @param claimsResolver Function to extract a specific claim from Claims
+     * @return The extracted claim value or null if extraction fails
      */
     fun <T> extractClaim(token: String, claimsResolver: (Claims) -> T): T? {
         val claims = extractAllClaims(token)
@@ -116,10 +124,10 @@ class JwtService(
     }
 
     /**
-     * Extracts all claims from the token
+     * Extracts all claims from the token.
+     *
      * @param token The JWT token
      * @return The Claims object or null if extraction fails
-     * @throws JwtException if token processing fails
      */
     private fun extractAllClaims(token: String): Claims? {
         try {
@@ -145,7 +153,8 @@ class JwtService(
     }
 
     /**
-     * Gets signing key for JWT signature verification
+     * Gets the signing key for JWT signature verification.
+     *
      * @return The secret key used for signing
      */
     private fun getSigningKey(): SecretKey {

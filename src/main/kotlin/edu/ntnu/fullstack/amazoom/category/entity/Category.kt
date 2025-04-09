@@ -3,6 +3,10 @@ package edu.ntnu.fullstack.amazoom.category.entity
 import edu.ntnu.fullstack.amazoom.category.dto.CategoryDto
 import jakarta.persistence.*
 
+/**
+ * Entity representing a product category in the system.
+ * Categories are used to organize listings.
+ */
 @Entity(name = "categories")
 data class Category(
     @Id
@@ -23,13 +27,4 @@ data class Category(
 
     @Version
     val version: Long? = null
-) {
-    fun toDto(): CategoryDto {
-        return CategoryDto(
-            name = name,
-            description = description,
-            translationString = translationString,
-            icon = icon
-        )
-    }
-}
+)

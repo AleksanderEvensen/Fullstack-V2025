@@ -6,6 +6,10 @@ import edu.ntnu.fullstack.amazoom.listing.dto.ListingDto
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
+/**
+ * Entity representing a product listing in the system.
+ * Contains details about a product being sold.
+ */
 @Entity
 @Table(name = "listings")
 data class Listing(
@@ -71,32 +75,18 @@ data class Listing(
     @Column(name = "updated_at")
     var updatedAt: LocalDateTime = LocalDateTime.now(),
 ) {
+    /**
+     * Updates the updatedAt timestamp before persisting changes.
+     */
     @PreUpdate
     fun preUpdate() {
         updatedAt = LocalDateTime.now()
     }
+}
 
-    fun toDto(): ListingDto {
-        return ListingDto(
-            id = id,
-            title = title,
-            categoryId = category.id,
-            condition = condition,
-            seller = seller.toDto(),
-            price = price,
-            originalPrice = originalPrice,
-            description = description,
-            modelYear = modelYear,
-            manufacturer = manufacturer,
-            model = model,
-            serialNumber = serialNumber,
-            purchaseDate = purchaseDate,
-            usageDuration = usageDuration,
-            defects = defects,
-            modifications = modifications,
-            reasonForSelling = reasonForSelling,
-            images = images,
-            createdAt = createdAt,
-        )
-    }
+/**
+ * Enumeration of possible conditions for a listed item.
+ */
+enum class ListingCondition {
+    NEW, LIKE_NEW, VERY_GOOD, GOOD, ACCEPTABLE
 }

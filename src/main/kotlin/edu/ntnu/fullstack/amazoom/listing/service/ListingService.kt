@@ -4,18 +4,24 @@ import edu.ntnu.fullstack.amazoom.common.repository.UserRepository
 import edu.ntnu.fullstack.amazoom.category.exception.CategoryNotFoundException
 import edu.ntnu.fullstack.amazoom.category.repository.CategoryRepository
 import edu.ntnu.fullstack.amazoom.common.service.UserService
-import edu.ntnu.fullstack.amazoom.listing.dto.CreateOrUpdateListingRequest
+import edu.ntnu.fullstack.amazoom.listing.dto.CreateOrUpdateListingRequestDto
 import edu.ntnu.fullstack.amazoom.listing.dto.ListingDto
 import edu.ntnu.fullstack.amazoom.listing.entity.Listing
+import edu.ntnu.fullstack.amazoom.listing.exception.ListingNotFoundException
 import edu.ntnu.fullstack.amazoom.listing.mapper.ListingMapper
 import edu.ntnu.fullstack.amazoom.listing.repository.ListingRepository
+import jakarta.transaction.Transactional
+import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
-import java.util.UUID
 
+/**
+ * Service for managing product listings.
+ * Handles CRUD operations for listings.
+ */
 @Service
 class ListingService(
     private val listingRepository: ListingRepository,
@@ -23,8 +29,17 @@ class ListingService(
     private val userRepository: UserRepository,
     private val userService: UserService
 ) {
+    private val logger = LoggerFactory.getLogger(ListingService::class.java)
 
-    fun createListing(request: CreateOrUpdateListingRequest): ListingDto {
+    /**
+     * Creates a new listing.
+     *
+     * @param request The request DTO with listing details
+     * @return The created listing as a DTO
+     * @throws CategoryNotFoundException if the specified category does not exist
+     */
+    @Transactional
+    fun createListing(request: CreateOrUpdateListingRequestDto): ListingDto {
         val category = categoryRepository.findById(request.categoryId)
             .orElseThrow { CategoryNotFoundException("No category found with ID=${request.categoryId}") }
 
@@ -32,33 +47,79 @@ class ListingService(
 
         val entity = ListingMapper.toEntity(request, category, seller)
         val savedEntity = listingRepository.save(entity)
+
+        logger.info("Created listing with ID: {}", savedEntity.id)
         return ListingMapper.toResponseDto(savedEntity)
     }
 
-    fun getListing(id: Long): Listing {
-        return listingRepository.findById(id)
-            .orElseThrow { NoSuchElementException("Listing with id $id not found") }
+    /**
+     * Retrieves a listing by its ID.
+     *
+     * @param id The ID of the listing to retrieve
+     * @return The listing entity
+     * @throws ListingNotFoundException if the listing does not exist
+     */
+    fun getListing(id: Long): ListingDto {
+        val listing = listingRepository.findById(id)
+            .orElseThrow { ListingNotFoundException("Listing with id $id not found") }
+
+        logger.info("Retrieved listing with ID: {}", id)
+        return ListingMapper.toResponseDto(listing)
     }
 
-    @PreAuthorize("hasRole('ADMIN') or @listingService.isListingOwner(#id, authentication)")
-    fun updateListing(id: Long, request: CreateOrUpdateListingRequest): ListingDto {
+    /**
+     * Updates an existing listing.
+     *
+     * @param id The ID of the listing to update
+     * @param request The request DTO with updated details
+     * @return The updated listing as a DTO
+     * @throws ListingNotFoundException if the listing does not exist
+     * @throws CategoryNotFoundException if the specified category does not exist
+     */
+    @Transactional
+    @PreAuthorize("hasRole('ADMIN') or @listingService.isListingOwner(#id, authentication.name)")
+    fun updateListing(id: Long, request: CreateOrUpdateListingRequestDto): ListingDto {
+
         val existingListing = listingRepository.findById(id)
-            .orElseThrow { NoSuchElementException("Listing with id $id not found") }
+            .orElseThrow { ListingNotFoundException("Listing with id $id not found") }
+
         val category = categoryRepository.findById(request.categoryId)
-            .orElseThrow { NoSuchElementException("No category found with ID=${request.categoryId}") }
+            .orElseThrow { CategoryNotFoundException("No category found with ID=${request.categoryId}") }
+
         val updatedEntity = ListingMapper.updateEntity(existingListing, request, category)
         val savedEntity = listingRepository.save(updatedEntity)
+
+        logger.info("Updated listing with ID: {}", savedEntity.id)
         return ListingMapper.toResponseDto(savedEntity)
     }
 
-    @PreAuthorize("hasRole('ADMIN') or @listingService.isListingOwner(#id, authentication)")
+    /**
+     * Deletes a listing by its ID.
+     *
+     * @param id The ID of the listing to delete
+     * @throws ListingNotFoundException if the listing does not exist
+     */
+    @Transactional
+    @PreAuthorize("hasRole('ADMIN') or @listingService.isListingOwner(#id, authentication.name)")
     fun deleteListing(id: Long) {
+
         if (!listingRepository.existsById(id)) {
-            throw NoSuchElementException("Listing with id $id not found")
+            throw ListingNotFoundException("Listing with id $id not found")
         }
+
         listingRepository.deleteById(id)
+        logger.info("Deleted listing with ID: {}", id)
     }
 
+    /**
+     * Retrieves a paginated and sorted list of listings.
+     *
+     * @param page The page number to retrieve (0-based)
+     * @param size The number of listings per page
+     * @param sortBy The field to sort by
+     * @param direction The sort direction (ASC or DESC)
+     * @return A page of listing DTOs
+     */
     fun getPaginatedAndSortedListings(
         page: Int,
         size: Int,
@@ -70,14 +131,20 @@ class ListingService(
         return listingsPage.map { ListingMapper.toResponseDto(it) }
     }
 
-    fun isListingOwner(listingId: Long, userId: Long): Boolean {
+    /**
+     * Checks if the specified user is the owner of a listing.
+     *
+     * @param listingId The ID of the listing to check
+     * @param userEmail The email of the user to check
+     * @return True if the user is the owner, false otherwise
+     */
+    fun isListingOwner(listingId: Long, userEmail: String): Boolean {
         val listing = listingRepository.findById(listingId)
         return if (listing.isPresent) {
             val listingEntity = listing.get()
-            listingEntity.seller.id == userId
+            listingEntity.seller.email == userEmail
         } else {
             false
         }
     }
-
 }

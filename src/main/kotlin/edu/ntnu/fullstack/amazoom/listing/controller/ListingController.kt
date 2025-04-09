@@ -1,8 +1,10 @@
 package edu.ntnu.fullstack.amazoom.listing.controller
 
-import edu.ntnu.fullstack.amazoom.listing.dto.CreateOrUpdateListingRequest
+import edu.ntnu.fullstack.amazoom.listing.dto.CreateOrUpdateListingRequestDto
 import edu.ntnu.fullstack.amazoom.listing.dto.ListingDto
 import edu.ntnu.fullstack.amazoom.listing.service.ListingService
+import jakarta.validation.Valid
+import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
@@ -10,67 +12,81 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 /**
- * REST controller for managing listings.
+ * REST controller for managing product listings.
+ * Provides endpoints for CRUD operations on listings.
  */
 @RestController
 @RequestMapping("/api/listings")
 class ListingController(
     private val listingService: ListingService
 ) {
+    private val logger = LoggerFactory.getLogger(ListingController::class.java)
 
     /**
      * Creates a new listing.
      *
-     * @param request the listing request
-     * @return the created listing response
+     * @param request The listing request with details
+     * @return The created listing
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    fun createListing(@RequestBody request: CreateOrUpdateListingRequest): ListingDto {
-        return listingService.createListing(request)
+    fun createListing(@Valid @RequestBody request: CreateOrUpdateListingRequestDto): ResponseEntity<ListingDto> {
+        val createdListing = listingService.createListing(request)
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdListing)
     }
 
     /**
      * Retrieves a listing by its ID.
      *
-     * @param id the ID of the listing
-     * @return the listing response
+     * @param id The ID of the listing to retrieve
+     * @return The listing
      */
     @GetMapping("/{id}")
-    fun getListing(@PathVariable id: Long): ListingDto {
-        return listingService.getListing(id).toDto()
+    fun getListing(@PathVariable id: Long): ResponseEntity<ListingDto> {
+        logger.debug("REST request to get listing: {}", id)
+        val listing = listingService.getListing(id)
+        return ResponseEntity.ok(listing)
     }
 
     /**
      * Updates an existing listing.
      *
-     * @param id the ID of the listing to update
-     * @param request the listing request with updated data
-     * @return the updated listing response
+     * @param id The ID of the listing to update
+     * @param request The listing request with updated data
+     * @return The updated listing
      */
     @PutMapping("/{id}")
     fun updateListing(
         @PathVariable id: Long,
-        @RequestBody request: CreateOrUpdateListingRequest
-    ): ListingDto {
-        return listingService.updateListing(id, request)
+        @Valid @RequestBody request: CreateOrUpdateListingRequestDto
+    ): ResponseEntity<ListingDto> {
+        logger.debug("REST request to update listing: {}", id)
+        val updatedListing = listingService.updateListing(id, request)
+        return ResponseEntity.ok(updatedListing)
     }
 
     /**
      * Deletes a listing by its ID.
      *
-     * @param id the ID of the listing to delete
+     * @param id The ID of the listing to delete
+     * @return No content response
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun deleteListing(@PathVariable id: Long) {
+    fun deleteListing(@PathVariable id: Long): ResponseEntity<Void> {
+        logger.debug("REST request to delete listing: {}", id)
         listingService.deleteListing(id)
+        return ResponseEntity.noContent().build()
     }
 
     /**
-     * Lists all listings.
+     * Lists all listings with pagination and sorting.
      *
-     * @return a list of all listing responses
+     * @param page The page number (0-based)
+     * @param size The page size
+     * @param sortBy The field to sort by
+     * @param direction The sort direction
+     * @return A page of listings
      */
     @GetMapping
     fun getPaginatedAndSortedListings(
@@ -79,6 +95,7 @@ class ListingController(
         @RequestParam(defaultValue = "price") sortBy: String,
         @RequestParam(defaultValue = "ASC") direction: Sort.Direction
     ): ResponseEntity<Page<ListingDto>> {
+        logger.debug("REST request to get listings page: {}, size: {}", page, size)
         val paginatedListings = listingService.getPaginatedAndSortedListings(page, size, sortBy, direction)
         return ResponseEntity.ok(paginatedListings)
     }

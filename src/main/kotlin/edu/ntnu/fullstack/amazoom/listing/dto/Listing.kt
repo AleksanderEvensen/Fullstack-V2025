@@ -4,7 +4,10 @@ import edu.ntnu.fullstack.amazoom.common.dto.UserDto
 import edu.ntnu.fullstack.amazoom.listing.entity.ListingCondition
 import java.time.LocalDateTime
 
-
+/**
+ * Data Transfer Object (DTO) for a listing.
+ * Contains all details about a product listing.
+ */
 data class ListingDto(
     val id: Long,
     val title: String,
@@ -24,7 +27,5 @@ data class ListingDto(
     val modifications: List<String>,
     val reasonForSelling: String?,
     val createdAt: LocalDateTime,
-
-    // Images
     val images: List<String>
 )

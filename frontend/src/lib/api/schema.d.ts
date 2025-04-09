@@ -216,7 +216,7 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        CreateOrUpdateListingRequest: {
+        CreateOrUpdateListingRequestDto: {
             title: string;
             /** Format: int64 */
             categoryId: number;
@@ -280,39 +280,41 @@ export interface components {
             profileImageUrl?: string;
             address?: components["schemas"]["AddressDto"];
         };
-        CreateOrUpdateCategoryRequest: {
+        CreateOrUpdateCategoryRequestDto: {
             name: string;
             description: string;
             translationString: string;
             icon: string;
         };
         CategoryDto: {
+            /** Format: int64 */
+            id: number;
             name: string;
             description: string;
             translationString: string;
             icon: string;
         };
-        CreateOrUpdateListingBookmarkRequest: {
+        CreateListingBookmarkRequestDto: {
             /** Format: int64 */
             listingId: number;
         };
-        ListingBookmarkResponse: {
+        ListingBookmarkResponseDto: {
             /** Format: int64 */
             id: number;
             listing: components["schemas"]["ListingDto"];
         };
-        RegisterRequest: {
+        RegisterRequestDto: {
             firstName: string;
             lastName: string;
             email: string;
             password: string;
             phoneNumber: string;
         };
-        AuthResponse: {
+        AuthResponseDto: {
             accessToken: string;
             message: string;
         };
-        LoginRequest: {
+        LoginRequestDto: {
             email: string;
             password: string;
         };
@@ -338,17 +340,17 @@ export interface components {
             /** Format: int64 */
             offset?: number;
             sort?: components["schemas"]["SortObject"];
-            unpaged?: boolean;
             paged?: boolean;
             /** Format: int32 */
             pageNumber?: number;
             /** Format: int32 */
             pageSize?: number;
+            unpaged?: boolean;
         };
         SortObject: {
             empty?: boolean;
-            unsorted?: boolean;
             sorted?: boolean;
+            unsorted?: boolean;
         };
         ConversationSummaryDto: {
             user: components["schemas"]["UserDto"];
@@ -386,6 +388,8 @@ export interface components {
         ChatMessageDto: {
             sender: components["schemas"]["UserDto"];
             recipient: components["schemas"]["UserDto"];
+            /** Format: int64 */
+            listingId: number;
             content: string;
             /** Format: date-time */
             timestamp: string;
@@ -461,7 +465,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CreateOrUpdateListingRequest"];
+                "application/json": components["schemas"]["CreateOrUpdateListingRequestDto"];
             };
         };
         responses: {
@@ -529,7 +533,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CreateOrUpdateCategoryRequest"];
+                "application/json": components["schemas"]["CreateOrUpdateCategoryRequestDto"];
             };
         };
         responses: {
@@ -598,7 +602,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CreateOrUpdateListingRequest"];
+                "application/json": components["schemas"]["CreateOrUpdateListingRequestDto"];
             };
         };
         responses: {
@@ -663,7 +667,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CreateOrUpdateCategoryRequest"];
+                "application/json": components["schemas"]["CreateOrUpdateCategoryRequestDto"];
             };
         };
         responses: {
@@ -693,7 +697,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ListingBookmarkResponse"][];
+                    "*/*": components["schemas"]["ListingBookmarkResponseDto"][];
                 };
             };
         };
@@ -707,7 +711,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CreateOrUpdateListingBookmarkRequest"];
+                "application/json": components["schemas"]["CreateListingBookmarkRequestDto"];
             };
         };
         responses: {
@@ -717,7 +721,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ListingBookmarkResponse"];
+                    "*/*": components["schemas"]["ListingBookmarkResponseDto"];
                 };
             };
         };
@@ -731,7 +735,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["RegisterRequest"];
+                "application/json": components["schemas"]["RegisterRequestDto"];
             };
         };
         responses: {
@@ -741,7 +745,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["AuthResponse"];
+                    "*/*": components["schemas"]["AuthResponseDto"];
                 };
             };
         };
@@ -755,7 +759,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["LoginRequest"];
+                "application/json": components["schemas"]["LoginRequestDto"];
             };
         };
         responses: {
@@ -765,7 +769,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["AuthResponse"];
+                    "*/*": components["schemas"]["AuthResponseDto"];
                 };
             };
         };

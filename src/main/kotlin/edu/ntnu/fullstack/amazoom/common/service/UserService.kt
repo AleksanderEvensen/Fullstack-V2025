@@ -1,37 +1,51 @@
 package edu.ntnu.fullstack.amazoom.common.service
 
-import edu.ntnu.fullstack.amazoom.auth.service.CustomUserDetails
 import edu.ntnu.fullstack.amazoom.common.repository.RoleRepository
 import edu.ntnu.fullstack.amazoom.common.dto.CreateUserDto
 import edu.ntnu.fullstack.amazoom.common.dto.FullUserDto
-import edu.ntnu.fullstack.amazoom.common.dto.UserDto
 import edu.ntnu.fullstack.amazoom.common.entity.RoleName
 import edu.ntnu.fullstack.amazoom.common.entity.User
+import edu.ntnu.fullstack.amazoom.common.exception.MissingRoleException
 import edu.ntnu.fullstack.amazoom.common.exception.UserAlreadyExistsException
 import edu.ntnu.fullstack.amazoom.common.exception.UserNotFoundException
+import edu.ntnu.fullstack.amazoom.common.mapper.UserMapper
 import edu.ntnu.fullstack.amazoom.common.repository.UserRepository
+import org.slf4j.LoggerFactory
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
-import java.util.Optional
 
+/**
+ * Service for managing user operations.
+ * Handles user creation, retrieval, and profile management.
+ */
 @Service
 class UserService(
     private val userRepository: UserRepository,
     private val roleRepository: RoleRepository,
 ) {
+    private val logger = LoggerFactory.getLogger(UserService::class.java)
 
+    /**
+     * Creates a new user in the system.
+     *
+     * @param data The data for the new user
+     * @return The created user entity
+     * @throws UserAlreadyExistsException if a user with the email or phone number already exists
+     * @throws MissingRoleException if the USER role doesn't exist in the database
+     */
     fun createUser(data: CreateUserDto): User {
-        if(userRepository.existsByEmail(data.email)) {
+        if (userRepository.existsByEmail(data.email)) {
+            logger.warn("Failed to create user: Email {} already exists", data.email)
             throw UserAlreadyExistsException("User with email ${data.email} already exists")
         }
 
-        if(userRepository.existsByPhoneNumber(data.phoneNumber)) {
+        if (userRepository.existsByPhoneNumber(data.phoneNumber)) {
+            logger.warn("Failed to create user: Phone number {} already exists", data.phoneNumber)
             throw UserAlreadyExistsException("User with phone number ${data.phoneNumber} already exists")
         }
 
-        val userRole = roleRepository.findByName(RoleName.ROLE_USER) ?:
-            throw UserNotFoundException("Role not found")
-
+        val userRole = roleRepository.findByName(RoleName.ROLE_USER)
+            ?: throw MissingRoleException("ROLE_USER not found in database")
 
         val user = User(
             firstName = data.firstName,
@@ -43,33 +57,64 @@ class UserService(
             roles = mutableSetOf(userRole)
         )
 
-        return userRepository.save(user)
+        val savedUser = userRepository.save(user)
+        logger.info("Successfully created user with ID: {}", savedUser.id)
+        return savedUser
     }
 
+    /**
+     * Gets the profile of the currently authenticated user.
+     *
+     * @return The full user profile DTO
+     * @throws UserNotFoundException if the authenticated user doesn't exist
+     */
     fun getProfile(): FullUserDto {
         val currentUser = getCurrentUser()
-
-        return currentUser.toFullDto()
+        return UserMapper.toFullDto(currentUser)
     }
 
+    /**
+     * Gets the user entity for the currently authenticated user.
+     *
+     * @return The current user entity
+     * @throws UserNotFoundException if the authenticated user doesn't exist
+     */
     fun getCurrentUser(): User {
         val authentication = SecurityContextHolder.getContext().authentication
         val email = authentication.name
-        return userRepository.findByEmail(email).orElseThrow{
+
+        return userRepository.findByEmail(email).orElseThrow {
+            logger.warn("User not found with email: {}", email)
             UserNotFoundException("User with email $email not found")
         }
     }
 
+    /**
+     * Gets a user by their ID.
+     *
+     * @param id The ID of the user to retrieve
+     * @return The user entity
+     * @throws UserNotFoundException if no user exists with the given ID
+     */
     fun getUserById(id: Long): User {
         val user = userRepository.findById(id).orElseThrow {
+            logger.warn("User not found with ID: {}", id)
             UserNotFoundException("User with id $id not found")
         }
 
         return user
     }
 
+    /**
+     * Gets a user by their email address.
+     *
+     * @param email The email of the user to retrieve
+     * @return The user entity
+     * @throws UserNotFoundException if no user exists with the given email
+     */
     fun getUserByEmail(email: String): User {
         val user = userRepository.findByEmail(email).orElseThrow {
+            logger.warn("User not found with email: {}", email)
             UserNotFoundException("User with email $email not found")
         }
 

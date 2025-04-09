@@ -1,3 +1,6 @@
 package edu.ntnu.fullstack.amazoom.bookmark.exception
 
-class BookmarkAlreadyExists : RuntimeException("Bookmark already exists.")
+/**
+ * Exception thrown when attempting to create a bookmark that already exists.
+ */
+class BookmarkAlreadyExistsException(message: String = "Bookmark already exists.") : RuntimeException(message)

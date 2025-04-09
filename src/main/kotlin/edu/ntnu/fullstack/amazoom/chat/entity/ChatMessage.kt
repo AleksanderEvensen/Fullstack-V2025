@@ -6,6 +6,10 @@ import edu.ntnu.fullstack.amazoom.listing.entity.Listing
 import jakarta.persistence.*
 import java.time.Instant
 
+/**
+ * Entity representing a chat message in the system.
+ * Contains the message content and metadata about sender, recipient, and related listing.
+ */
 @Entity
 @Table(name = "chat_messages")
 data class ChatMessage(
@@ -29,14 +33,4 @@ data class ChatMessage(
     val timestamp: Instant = Instant.now(),
 
     var read: Boolean = false
-) {
-    fun toDto(): ChatMessageDto {
-        return ChatMessageDto(
-            sender = sender.toDto(),
-            recipient = recipient.toDto(),
-            content = content,
-            timestamp = timestamp,
-            read = read
-        )
-    }
-}
+)

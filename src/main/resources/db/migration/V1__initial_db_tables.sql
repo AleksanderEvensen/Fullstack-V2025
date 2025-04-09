@@ -5,6 +5,7 @@ CREATE TABLE categories
     `description`      VARCHAR(255)          NOT NULL,
     translation_string VARCHAR(255)          NOT NULL,
     icon               VARCHAR(255)          NOT NULL,
+    version            BIGINT                NULL,
     CONSTRAINT pk_categories PRIMARY KEY (id)
 );
 
