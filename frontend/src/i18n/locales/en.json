@@ -276,7 +276,13 @@
 
       "old-password": "Old Password",
       "new-password": "New Password",
-      "confirm-password": "Confirm new password"
+      "confirm-password": "Confirm new password",
+
+      "address": {
+        "street": "Street Address",
+        "city": "City",
+        "postal": "Postal Code"
+      }
     }
   }
 }

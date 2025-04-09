@@ -4,9 +4,9 @@ import { Button } from '@/components/ui/button'
 import { formatNameInitials } from '@/lib/utils'
 import { CogIcon } from 'lucide-vue-next'
 import { ref } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { RouterLink } from 'vue-router'
 import UserListing from './components/UserListing.vue'
+import { useTypedI18n } from '@/i18n'
 
 const userInfo = ref({
   name: 'Ola Nordmann',
@@ -101,7 +101,7 @@ const setActiveTab = (tab: string) => {
   activeTab.value = tab
 }
 
-const { t } = useI18n()
+const { t } = useTypedI18n()
 </script>
 
 <template>

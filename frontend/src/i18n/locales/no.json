@@ -276,7 +276,13 @@
 
       "old-password": "Gammelt password",
       "new-password": "Nytt passord",
-      "confirm-password": "Bekreft nytt passord"
+      "confirm-password": "Bekreft nytt passord",
+
+      "address": {
+        "street": "Addresse",
+        "city": "By",
+        "postal": "Postnummer"
+      }
     }
   }
 }

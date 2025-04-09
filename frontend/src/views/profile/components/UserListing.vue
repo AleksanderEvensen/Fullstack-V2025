@@ -2,11 +2,11 @@
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { useTypedI18n } from '@/i18n'
 import { formatDate } from '@vueuse/core'
 import { HeartIcon, MoreHorizontalIcon } from 'lucide-vue-next'
-import { useI18n } from 'vue-i18n'
 
-const { t } = useI18n()
+const { t } = useTypedI18n()
 
 defineProps<{
   image: string
