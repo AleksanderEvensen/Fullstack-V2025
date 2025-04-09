@@ -123,6 +123,8 @@
     "title": "Opprett ny annonse",
     "description": "Fyll ut skjemaet nedenfor for å opprette annonsen din",
     "createButton": "Opprett annonse",
+    "success": "Annonsen ble opprettet",
+    "error": "Annonsen ble ikke opprettet",
     "steps": {
       "basicInfo": {
         "title": "Grunnleggende informasjon",

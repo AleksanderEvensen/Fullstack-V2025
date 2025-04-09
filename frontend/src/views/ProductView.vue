@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { getListing } from '@/lib/api/queries/listings'
 import { useRoute } from 'vue-router'
-import { formatAddress } from '@/lib/utils'
+import { formatAddress, formatPictureUrl } from '@/lib/utils'
 import { useTypedI18n } from '@/i18n'
 
 const { t } = useTypedI18n()
@@ -28,15 +28,15 @@ const calculateDiscount = (original: number, current: number) => {
 
 const getTranslatedCondition = (condition: string) => {
   switch (condition) {
-    case 'New':
+    case 'NEW':
       return t('product.conditionLabels.new')
-    case 'Like New':
+    case 'LIKE_NEW':
       return t('product.conditionLabels.likeNew')
-    case 'Very Good':
+    case 'VERY_GOOD':
       return t('product.conditionLabels.veryGood')
-    case 'Good':
+    case 'GOOD':
       return t('product.conditionLabels.good')
-    case 'Acceptable':
+    case 'ACCEPTABLE':
       return t('product.conditionLabels.acceptable')
     default:
       return condition
@@ -53,12 +53,13 @@ const shouldDisplayOriginalPrice = computed(() => {
     <div class="product-grid">
       <div class="product-images">
         <div class="main-image">
-          <img :src="product.images[currentImageIndex]" :alt="product.title" />
+          <img :src="formatPictureUrl(product.images[currentImageIndex])" :alt="product.title" />
         </div>
         <div class="image-thumbnails">
           <button v-for="(image, index) in product.images" :key="index" @click="currentImageIndex = index"
             class="thumbnail-button" :class="{ active: currentImageIndex === index }">
-            <img :src="image" :alt="`${t('product.imageAlt')} ${index + 1}`" />
+            <img :src="formatPictureUrl(image)" :alt="`${t('product.imageAlt')} ${index + 1}`" />
+            {{ formatPictureUrl(image) }}
           </button>
         </div>
       </div>
@@ -106,7 +107,7 @@ const shouldDisplayOriginalPrice = computed(() => {
           <CardContent>
             <div class="seller-info">
               <Avatar class="seller-avatar">
-                <AvatarImage :src="product.seller.profileImageUrl ?? ''" :alt="product.seller.firstName" />
+                <AvatarImage :src="product.seller.profileImageUrl ? formatPictureUrl(product.seller.profileImageUrl) : ''" :alt="product.seller.firstName" />
                 <AvatarFallback>{{ product.seller.firstName[0] }}</AvatarFallback>
               </Avatar>
               <div class="seller-details">

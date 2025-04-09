@@ -3,9 +3,10 @@ import { RouterLink } from 'vue-router'
 import { HeartIcon, MessageCircleIcon } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { formatAddress } from '@/lib/utils'
+import { formatAddress, formatPictureUrl } from '@/lib/utils'
 import type { components } from '@/lib/api/schema'
 import { useTypedI18n } from '@/i18n'
+
 
 const { t } = useTypedI18n()
 
@@ -14,12 +15,14 @@ type Product = components['schemas']['ListingDto']
 defineProps<{
   product: Product
 }>()
+
+
 </script>
 
 <template>
   <div class="product-card">
     <RouterLink :to="`/marketplace/product/${product.id}`" class="product-image">
-      <img :src="product.images[0]" :alt="product.title" />
+      <img :src="formatPictureUrl(product.images[0])" :alt="product.title" />
     </RouterLink>
     <div class="product-info">
       <RouterLink :to="`/marketplace/product/${product.id}`" class="product-title">
@@ -30,7 +33,7 @@ defineProps<{
         <div class="seller-info">
           <Avatar class="seller-avatar">
             <AvatarImage
-              :src="product.seller.profileImageUrl ?? ''"
+              :src="product.seller.profileImageUrl ? formatPictureUrl(product.seller.profileImageUrl) : ''"
               :alt="product.seller.firstName"
             />
             <AvatarFallback>{{ product.seller.firstName[0] }}</AvatarFallback>

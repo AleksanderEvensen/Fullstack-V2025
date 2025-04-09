@@ -92,7 +92,6 @@ const triggerFileInput = () => {
                 <p>{{ $t('createListing.form.imageUploadText') }}</p>
             </div>
         </div>
-
     </div>
 </template>
 
