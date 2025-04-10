@@ -64,7 +64,7 @@ object ListingMapper {
             category = category,
             condition = request.condition,
             price = request.price,
-            originalPrice = request.originalPrice,
+            originalPrice = request.originalPrice ?: existing.originalPrice,
             description = request.description,
             modelYear = request.modelYear,
             manufacturer = request.manufacturer,
@@ -76,6 +76,7 @@ object ListingMapper {
             modifications = request.modifications ?: emptyList(),
             reasonForSelling = request.reasonForSelling,
             images = request.images ?: emptyList(),
+            status = request.status ?: existing.status,
             latitude = request.latitude,
             longitude = request.longitude,
         )

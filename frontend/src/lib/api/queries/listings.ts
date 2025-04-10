@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import type { paths } from '../schema'
 import { fetchClient } from '@/lib/api/client'
 
@@ -35,6 +35,21 @@ export function getListing(id: number) {
   })
 }
 
+type UpdateListingInput =
+  paths['/api/listings/{id}']['put']['requestBody']['content']['application/json']
+export function useUpdateListing() {
+  return useMutation({
+    mutationFn: async (input: UpdateListingInput & { id: number }) => {
+      const response = await fetchClient.PUT('/api/listings/{id}', {
+        params: { path: { id: input.id } },
+        body: {
+          ...input,
+        },
+      })
+      return response.data
+    },
+  })
+}
 type ListingSearchInput = paths['/api/listings/search']['get']['parameters']['query']
 export function searchListings(input: ListingSearchInput) {
   return useQuery({
@@ -49,6 +64,31 @@ export function searchListings(input: ListingSearchInput) {
       })
       return response.data
     },
+  })
+}
+
+export function useInfiniteListings(input: Omit<ListingSearchInput, 'page'>) {
+  return useInfiniteQuery({
+    queryKey: [LISTING_QUERY_KEY, 'infinite-search', input],
+    queryFn: async ({ pageParam = 0 }) => {
+      const response = await fetchClient.GET('/api/listings/search', {
+        params: {
+          query: {
+            ...input,
+            page: pageParam,
+          },
+        },
+      })
+      return response.data
+    },
+    getNextPageParam: (lastPage) => {
+      if (!lastPage) return undefined
+      // If we're on the last page, return undefined to signal we're done
+      if (lastPage.last) return undefined
+      // Otherwise return the next page number
+      return (lastPage.pageable?.pageNumber ?? 0) + 1
+    },
+    initialPageParam: 0,
   })
 }
 
@@ -98,6 +138,51 @@ export function useUnbookmarkListing() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [LISTING_QUERY_KEY] })
+    },
+  })
+}
+
+export function useDeleteListing() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (id: number) => {
+      const response = await fetchClient.DELETE('/api/listings/{id}', {
+        params: { path: { id } },
+      })
+      return response.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [LISTING_QUERY_KEY] })
+    },
+  })
+}
+
+type UserListingRequest = paths['/api/listings/me']['get']['parameters']['query']
+export function useGetUserListings(input: UserListingRequest) {
+  return useQuery({
+    queryKey: [LISTING_QUERY_KEY, 'user', input],
+    queryFn: async () => {
+      const response = await fetchClient.GET('/api/listings/me', {
+        params: {
+          query: input,
+        },
+      })
+      return response.data
+    },
+  })
+}
+
+type BookmarkedListingRequest = paths['/api/listings/bookmarks']['get']['parameters']['query']
+export function useBookmarkedListings(input: BookmarkedListingRequest) {
+  return useQuery({
+    queryKey: [LISTING_QUERY_KEY, 'bookmarked', input],
+    queryFn: async () => {
+      const response = await fetchClient.GET('/api/listings/bookmarks', {
+        params: {
+          query: input,
+        },
+      })
+      return response.data
     },
   })
 }

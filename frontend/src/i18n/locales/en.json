@@ -18,7 +18,9 @@
     "next": "Next",
     "previous": "Previous",
     "goback": "Go Back",
-    "settings": "Settings"
+    "settings": "Settings",
+    "loadMore": "Load more",
+    "loadingMore": "Loading more..."
   },
   "search": {
     "title": "Find what your heart desires",
@@ -30,6 +32,7 @@
     "noResults": "No listings match your search criteria. Try adjusting your filters.",
     "pagination": "Page {current} of {total}",
     "resultsCount": "nothing here| {count} result | {count} results",
+    "mapView": "Map View",
     "sort": {
       "newest": "Newest first",
       "oldest": "Oldest first",
@@ -205,6 +208,15 @@
       "good": "Good",
       "acceptable": "Acceptable"
     },
+    "status": {
+      "active": "Active",
+      "sold": "Sold"
+    },
+    "delete": "Delete Listing",
+    "toggleSold": "Mark as Sold",
+    "toggleActive": "Mark as Active",
+    "deleteSuccess": "Listing deleted successfully",
+    "toggleSoldSuccess": "Listing status updated successfully",
     "aboutThisItem": "About this item",
     "buyNow": "Buy Now",
     "messageButton": "Message Seller",
@@ -259,28 +271,49 @@
     "currency": "kr"
   },
   "profile": {
-    "listings": "My Listings",
+    "listings": "Your Listings",
     "view-listing": "View Listing",
+    "empty": {
+      "active": "You don't have any active listings. Create a new listing to get started!",
+      "sold": "You haven't sold any items yet. Your sold items will appear here.",
+      "bookmarked": "You haven't bookmarked any listings yet. Your bookmarked items will appear here."
+    },
+    "activeListings": "Active",
+    "soldListings": "Sold",
+    "bookmarkedListings": "Bookmarked",
     "settings": {
       "greeting": "Hello, {name}",
       "description": "Here you can change your settings, manage your addresses and delete your account information.",
-
       "profile-picture": "Profilbilde",
       "changePicture": "Select profile picture",
       "deletePicture": "Delete profile picture",
-
+      "personal-information": "Personal Information",
       "name": "Name",
       "email": "Email",
       "phone": "Phone Number",
-
       "old-password": "Old Password",
       "new-password": "New Password",
       "confirm-password": "Confirm new password",
-
+      "save-password": "Save password",
+      "password-required": "Password is required",
+      "password-min-length": "Password must be at least 8 characters",
+      "password-uppercase": "Password must contain at least one uppercase letter",
+      "password-lowercase": "Password must contain at least one lowercase letter",
+      "password-number": "Password must contain at least one number",
+      "passwords-not-match": "Passwords don't match",
+      "password-updated": "Password updated successfully",
+      "password-update-failed": "Failed to update password",
       "address": {
+        "title": "Address",
         "street": "Street Address",
+        "streetNumber": "Street Number",
         "city": "City",
-        "postal": "Postal Code"
+        "postal": "Postal Code",
+        "country": "Country",
+        "save-address": "Save address",
+        "address-required": "Address is required",
+        "address-updated": "Address updated successfully",
+        "address-update-failed": "Failed to update address"
       }
     }
   },

@@ -1,101 +1,19 @@
 <script lang="ts" setup>
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import { formatNameInitials } from '@/lib/utils'
+import { formatNameInitials, formatPictureUrl } from '@/lib/utils'
 import { CogIcon } from 'lucide-vue-next'
 import { ref } from 'vue'
 import { RouterLink } from 'vue-router'
-import UserListing from './components/UserListing.vue'
 import { useTypedI18n } from '@/i18n'
+import { useAuthStore } from '@/stores/auth'
+import SoldListingsTab from './components/SoldListingsTab.vue'
+import ActiveListingsTab from './components/ActiveListingsTab.vue'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import BookmarkedListingsTab from './components/BookmarkedListingsTab.vue'
 
-const userInfo = ref({
-  name: 'Ola Nordmann',
-  avatar: 'https://avatar.iran.liara.run/public/33.jpg',
-  email: 'ola.nordmann@norge.no',
-})
-
-const userListings = ref([
-  {
-    id: 1,
-    title: 'Tesla Model 3 Long Range',
-    price: 5700000,
-    location: 'Oslo',
-    image: 'https://picsum.photos/id/1/400/400',
-    seller: {
-      name: 'Tesla Motors',
-      avatar: 'https://github.com/shadcn.png',
-    },
-    condition: 'New',
-    postedAt: '2024-03-15',
-  },
-  {
-    id: 2,
-    title: 'COWI - Senior Developer Position',
-    price: 0,
-    location: 'Oslo',
-    image: 'https://picsum.photos/id/2/400/400',
-    seller: {
-      name: 'COWI',
-      avatar: 'https://github.com/shadcn.png',
-    },
-    condition: 'Job Listing',
-    postedAt: '2024-03-14',
-  },
-  {
-    id: 3,
-    title: 'Nike Air Max 270',
-    price: 700,
-    location: 'Trondheim',
-    image: 'https://picsum.photos/id/3/400/400',
-    seller: {
-      name: 'Sneaker Store',
-      avatar: 'https://github.com/shadcn.png',
-    },
-    condition: 'Like New',
-    postedAt: '2024-03-13',
-  },
-  {
-    id: 4,
-    title: 'Nike Air Max 270',
-    price: 700,
-    location: 'Trondheim',
-    image: 'https://picsum.photos/id/3/400/400',
-    seller: {
-      name: 'Sneaker Store',
-      avatar: 'https://github.com/shadcn.png',
-    },
-    condition: 'Like New',
-    postedAt: '2024-03-13',
-  },
-  {
-    id: 3,
-    title: 'Nike Air Max 270',
-    price: 700,
-    location: 'Trondheim',
-    image: 'https://picsum.photos/id/3/400/400',
-    seller: {
-      name: 'Sneaker Store',
-      avatar: 'https://github.com/shadcn.png',
-    },
-    condition: 'Like New',
-    postedAt: '2024-03-13',
-  },
-  {
-    id: 3,
-    title: 'Nike Air Max 270',
-    price: 700,
-    location: 'Trondheim',
-    image: 'https://picsum.photos/id/3/400/400',
-    seller: {
-      name: 'Sneaker Store',
-      avatar: 'https://github.com/shadcn.png',
-    },
-    condition: 'Like New',
-    postedAt: '2024-03-13',
-  },
-])
-
-const activeTab = ref('all')
+const { user } = useAuthStore()
+const activeTab = ref('active')
 
 const setActiveTab = (tab: string) => {
   activeTab.value = tab
@@ -106,119 +24,184 @@ const { t } = useTypedI18n()
 
 <template>
   <div class="container">
-    <div class="profile-container">
-      <Avatar class="profile-avatar">
-        <AvatarImage :src="userInfo.avatar" />
-        <AvatarFallback class="profile-fallback">{{
-          formatNameInitials(userInfo.name)
-        }}</AvatarFallback>
-      </Avatar>
-      <div class="profile-info">
-        <h2 class="text-2xl info-name">{{ userInfo.name }}</h2>
-        <span class="text-sm info-email">{{ userInfo.email }}</span>
-        <div class="profile-actions">
-          <RouterLink to="/profile/settings">
-            <Button variant="outline" size="sm" class="text-xs">
-              <CogIcon /> {{ t('common.settings') }}
-            </Button>
-          </RouterLink>
+    <Card class="profile-container">
+      <CardContent>
+        <div class="profile-content">
+          <Avatar class="profile-avatar">
+            <AvatarImage :src="formatPictureUrl(user?.profileImageUrl ?? '')" />
+            <AvatarFallback class="profile-fallback">{{
+              formatNameInitials(user?.name ?? '')
+            }}</AvatarFallback>
+          </Avatar>
+          <div class="profile-info">
+            <h2 class="info-name">{{ user?.name }}</h2>
+            <span class="info-email">{{ user?.email }}</span>
+            <div class="profile-actions">
+              <RouterLink to="/profile/settings">
+                <Button variant="outline" size="sm">
+                  <CogIcon /> {{ t('common.settings') }}
+                </Button>
+              </RouterLink>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
 
-    <hr style="margin: 1rem 0" />
-    <div class="listings">
-      <h1 class="listings-header">Mine annonser</h1>
+    <Card class="listings">
+      <CardHeader>
+        <CardTitle>{{ t('profile.listings') }}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <!-- Filter tabs -->
+        <div class="filter-tabs">
+          <Button :variant="activeTab === 'active' ? 'default' : 'outline'" @click="setActiveTab('active')">
+            {{ t('profile.activeListings') }}
+          </Button>
+          <Button :variant="activeTab === 'sold' ? 'default' : 'outline'" @click="setActiveTab('sold')">
+            {{ t('profile.soldListings') }}
+          </Button>
+          <Button :variant="activeTab === 'bookmarked' ? 'default' : 'outline'" @click="setActiveTab('bookmarked')">
+            {{ t('profile.bookmarkedListings') }}
+          </Button>
+        </div>
 
-      <!-- Filter tabs -->
-      <div class="filter-tabs">
-        <Button
-          :variant="activeTab === 'all' ? 'default' : 'outline'"
-          @click="setActiveTab('all')"
-        >
-          Alle (1)
-        </Button>
-        <Button
-          :variant="activeTab === 'active' ? 'default' : 'outline'"
-          @click="setActiveTab('active')"
-        >
-          Ferdig (1)
-        </Button>
-      </div>
-
-      <!-- Listings -->
-      <div class="listings-list">
-        <UserListing
-          v-for="listing in userListings"
-          :key="listing.id"
-          :image="listing.image"
-          :title="listing.title"
-          :likes="10"
-          :published="new Date()"
-        />
-      </div>
-    </div>
+        <!-- Tab content -->
+        <ActiveListingsTab v-if="activeTab === 'active'" />
+        <SoldListingsTab v-else-if="activeTab === 'sold'" />
+        <BookmarkedListingsTab v-else />
+      </CardContent>
+    </Card>
   </div>
 </template>
 
 <style scoped>
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: calc(var(--spacing) * 4);
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 6);
+}
+
 .profile-container {
-  margin-top: calc(var(--spacing) * 10);
+  margin-top: calc(var(--spacing) * 6);
+}
+
+.profile-content {
   display: flex;
   gap: calc(var(--spacing) * 5);
   align-items: center;
+  margin-top: calc(var(--spacing) * 2);
 }
 
 .info-name {
+  font-size: var(--text-2xl);
   font-weight: var(--font-weight-semibold);
+  color: var(--foreground);
 }
 
 .info-email {
   color: var(--muted-foreground);
+  font-size: var(--text-sm);
 }
 
 .profile-avatar {
-  width: calc(var(--spacing) * 30);
-  height: calc(var(--spacing) * 30);
-
-  .profile-fallback {
-    font-size: var(--text-5xl);
-  }
+  width: calc(var(--spacing) * 20);
+  height: calc(var(--spacing) * 20);
+  border: 2px solid var(--border);
+  box-shadow: var(--shadow-sm);
 }
+
+.profile-avatar .profile-fallback {
+  font-size: var(--text-4xl);
+}
+
 .profile-actions {
-  margin-top: var(--spacing);
-  svg {
-    width: calc(var(--spacing) * 6);
-    height: calc(var(--spacing) * 6);
-  }
-
-  .button {
-    display: flex;
-    gap: calc(var(--spacing) * 2);
-    padding: calc(var(--spacing)) calc(var(--spacing) * 3);
-  }
+  margin-top: calc(var(--spacing) * 2);
 }
 
-.listings-header {
-  font-size: calc(var(--text-2xl) * 1.3);
-  font-weight: var(--font-weight-semibold);
-  margin-bottom: calc(var(--spacing) * 5);
+.profile-actions svg {
+  width: calc(var(--spacing) * 4);
+  height: calc(var(--spacing) * 4);
+}
+
+.profile-actions .button {
+  display: flex;
+  gap: calc(var(--spacing) * 2);
+  align-items: center;
+  padding: calc(var(--spacing) * 2) calc(var(--spacing) * 4);
+}
+
+.listings {
+  margin-top: calc(var(--spacing) * 6);
 }
 
 .filter-tabs {
   display: flex;
   gap: calc(var(--spacing) * 2);
-  margin-bottom: calc(var(--spacing) * 5);
+  margin-bottom: calc(var(--spacing) * 4);
+  flex-wrap: wrap;
 }
 
-.listings-list {
-  display: flex;
-  flex-direction: column;
-  gap: calc(var(--spacing) * 4);
+@media (max-width: 768px) {
+  .container {
+    padding: calc(var(--spacing) * 2);
+    gap: calc(var(--spacing) * 4);
+  }
 
-  container-type: inline-size;
-  container-name: user-listings;
+  .profile-container {
+    margin-top: calc(var(--spacing) * 4);
+  }
+
+  .profile-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .profile-avatar {
+    width: calc(var(--spacing) * 16);
+    height: calc(var(--spacing) * 16);
+  }
+
+  .profile-actions {
+    justify-content: center;
+  }
+
+  .listings {
+    margin-top: calc(var(--spacing) * 4);
+  }
+
+  .filter-tabs {
+    justify-content: center;
+  }
+
+  .profile-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
 }
 
 
+
+@media (max-width: 480px) {
+  .container {
+    padding: var(--spacing);
+    gap: calc(var(--spacing) * 3);
+  }
+
+  .profile-avatar {
+    width: calc(var(--spacing) * 14);
+    height: calc(var(--spacing) * 14);
+  }
+
+  .info-name {
+    font-size: var(--text-xl);
+  }
+
+
+}
 </style>
