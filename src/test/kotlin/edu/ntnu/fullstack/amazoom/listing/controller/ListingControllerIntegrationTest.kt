@@ -72,8 +72,7 @@ class ListingControllerIntegrationTest {
 
         // Create user
         user = User(
-            firstName = "Test",
-            lastName = "User",
+            name = "Test User",
             email = "test@example.com",
             password = "password",
             phoneNumber = "1234567890",

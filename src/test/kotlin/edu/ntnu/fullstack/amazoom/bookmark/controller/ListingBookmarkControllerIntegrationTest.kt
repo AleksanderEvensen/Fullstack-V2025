@@ -72,8 +72,7 @@ class ListingBookmarkControllerIntegrationTest {
         closeable = MockitoAnnotations.openMocks(this)
 
         sellerUser = User(
-            firstName = "Seller",
-            lastName = "User",
+            name = "Seller User",
             email = "seller@example.com",
             password = "password",
             phoneNumber = "1234567890",
@@ -110,8 +109,7 @@ class ListingBookmarkControllerIntegrationTest {
 
         // Create buyer user
         user = User(
-            firstName = "Buyer",
-            lastName = "User",
+            name = "Buyer User",
             email = "buyer@example.com",
             password = "password",
             phoneNumber = "0987654321",

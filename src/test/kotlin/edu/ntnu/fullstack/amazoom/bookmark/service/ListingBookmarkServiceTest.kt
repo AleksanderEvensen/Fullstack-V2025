@@ -49,8 +49,7 @@ class ListingBookmarkServiceTest {
 
     private val testUser = User(
         id = 1L,
-        firstName = "Test",
-        lastName = "User",
+        name = "Test User",
         email = "test@example.com",
         phoneNumber = "1234567890",
         password = "password",
@@ -74,8 +73,7 @@ class ListingBookmarkServiceTest {
 
     private val otherUser = User(
         id = 2L,
-        firstName = "Other",
-        lastName = "User",
+        name = "Other User",
         email = "other@example.com",
         phoneNumber = "0987654321",
         password = "password",

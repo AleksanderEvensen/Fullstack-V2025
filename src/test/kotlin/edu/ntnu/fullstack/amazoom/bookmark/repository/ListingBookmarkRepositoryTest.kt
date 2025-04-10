@@ -38,8 +38,7 @@ class ListingBookmarkRepositoryTest {
     fun setup() {
         // Create and persist a user
         user = User(
-            firstName = "Test",
-            lastName = "User",
+            name = "Test User",
             email = "test.user@example.com",
             phoneNumber = "1234567890",
             address = Address(

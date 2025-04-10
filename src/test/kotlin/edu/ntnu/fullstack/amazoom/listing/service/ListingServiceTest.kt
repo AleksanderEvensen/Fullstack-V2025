@@ -54,8 +54,7 @@ class ListingServiceTest {
 
     private val testUser = User(
         id = 1L,
-        firstName = "Test",
-        lastName = "User",
+        name = "Test User",
         email = "test@example.com",
         phoneNumber = "1234567890",
         password = "password",

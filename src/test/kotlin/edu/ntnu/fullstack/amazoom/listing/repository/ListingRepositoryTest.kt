@@ -46,8 +46,7 @@ class ListingRepositoryTest {
 
         // Create and persist a user
         user = User(
-            firstName = "Test",
-            lastName = "User",
+            name = "Test User",
             email = "test.user@example.com",
             password = "password",
             phoneNumber = "1234567890",
@@ -201,8 +200,7 @@ class ListingRepositoryTest {
     fun `test find listings by seller`() {
         // Create additional user and listing
         val otherUser = User(
-            firstName = "Other",
-            lastName = "User",
+            name = "Other User",
             email = "other.user@example.com",
             password = "password",
             phoneNumber = "9876543210",
