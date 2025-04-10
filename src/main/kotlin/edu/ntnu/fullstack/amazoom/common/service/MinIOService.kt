@@ -16,7 +16,8 @@ import java.util.UUID
 @Profile("!test")
 class MinioService(
     private val minIOProperties: MinIOProperties
-) {
+) : IMinIOService {
+
     private val minioClient: MinioClient = MinioClient.builder()
         .endpoint(minIOProperties.endpoint)
         .credentials(minIOProperties.accessKey, minIOProperties.secretKey)
@@ -29,8 +30,7 @@ class MinioService(
         }
     }
 
-    // Upload an image with a specific name
-    fun uploadImage(file: MultipartFile, fileNameBase: String): String {
+    override fun uploadImage(file: MultipartFile, fileNameBase: String): String {
         val extension = getFileExtension(file.originalFilename)
         val uuid = UUID.randomUUID().toString()
         val baseName = fileNameBase.substringBeforeLast(".", fileNameBase)
@@ -48,8 +48,7 @@ class MinioService(
         return fileName
     }
 
-    // Get image data for serving through the proxy
-    fun getImageData(fileName: String): ByteArray {
+    override fun getImageData(fileName: String): ByteArray {
         return minioClient.getObject(
             GetObjectArgs.builder()
                 .bucket(minIOProperties.bucketName)
@@ -58,7 +57,7 @@ class MinioService(
         ).use { it.readAllBytes() }
     }
 
-    fun getImageContentType(fileName: String): String {
+    override fun getImageContentType(fileName: String): String {
         return try {
             val stat = minioClient.statObject(
                 StatObjectArgs.builder()

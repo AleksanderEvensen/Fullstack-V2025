@@ -4,6 +4,7 @@ import edu.ntnu.fullstack.amazoom.common.dto.AddressDto
 import edu.ntnu.fullstack.amazoom.common.dto.ErrorResponseDto
 import edu.ntnu.fullstack.amazoom.common.dto.UpdateAddressRequestDto
 import edu.ntnu.fullstack.amazoom.common.dto.UpdateProfileResponseDto
+import edu.ntnu.fullstack.amazoom.common.service.IMinIOService
 import edu.ntnu.fullstack.amazoom.common.service.MinioService
 import edu.ntnu.fullstack.amazoom.common.service.UserService
 import io.swagger.v3.oas.annotations.Operation
@@ -31,8 +32,7 @@ import org.springframework.web.multipart.MultipartFile
 @RestController
 @RequestMapping("/api/user")
 @Tag(name = "User", description = "Operations for managing user profiles")
-@Profile("!test")
-class UserController(private val userService: UserService, private val minIoService: MinioService) {
+class UserController(private val userService: UserService, private val minIoService: IMinIOService) {
     private val logger = LoggerFactory.getLogger(UserController::class.java)
 
     /**

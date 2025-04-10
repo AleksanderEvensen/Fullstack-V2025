@@ -1,6 +1,7 @@
 package edu.ntnu.fullstack.amazoom.common.controller
 
 import edu.ntnu.fullstack.amazoom.common.dto.ErrorResponseDto
+import edu.ntnu.fullstack.amazoom.common.service.IMinIOService
 import edu.ntnu.fullstack.amazoom.common.service.MinioService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
@@ -24,8 +25,7 @@ import java.util.concurrent.TimeUnit
 @RestController
 @RequestMapping("/api/images")
 @Tag(name = "Images", description = "Operations for image upload and retrieval")
-@Profile("!test")
-class ImageController(private val minioService: MinioService) {
+class ImageController(private val minioService: IMinIOService) {
 
     @Operation(
         summary = "Get image",

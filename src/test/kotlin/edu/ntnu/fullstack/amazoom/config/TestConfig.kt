@@ -1,7 +1,9 @@
 package edu.ntnu.fullstack.amazoom.config
 
 import edu.ntnu.fullstack.amazoom.common.controller.ImageController
+import edu.ntnu.fullstack.amazoom.common.service.IMinIOService
 import edu.ntnu.fullstack.amazoom.common.service.MinioService
+import edu.ntnu.fullstack.amazoom.common.service.MockMinIOService
 import org.mockito.Mockito
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
@@ -19,12 +21,10 @@ class TestConfig {
     }
 
     @Bean
-    fun minioService(): MinioService {
-        return Mockito.mock(MinioService::class.java)
+    @Primary
+    fun minioService(): IMinIOService {
+        return MockMinIOService()
     }
 
-    @Bean
-    fun imageController(): ImageController {
-        return Mockito.mock(ImageController::class.java)
-    }
+
 } 
