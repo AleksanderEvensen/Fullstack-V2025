@@ -29,40 +29,44 @@ const handleSearch = () => {
 </script>
 
 <template>
-  <div class="container home-page">
-    <div class="search-header">
-      <div class="search-container">
-        <Input
-          class="search-input"
-          :placeholder="t('home.search.placeholder')"
-          v-model="searchQuery"
-          @keyup.enter="handleSearch"
-        />
-        <Button size="icon" class="search-button" @click="handleSearch">
-          <Search :size="24" />
-        </Button>
+  <main class="container home-page">
+    <section class="hero">
+      <div class="search-header">
+        <div class="search-container">
+          <Input
+            class="search-input"
+            :placeholder="t('home.search.placeholder')"
+            v-model="searchQuery"
+            @keyup.enter="handleSearch"
+          />
+          <Button size="icon" class="search-button" @click="handleSearch">
+            <Search :size="24" />
+          </Button>
+        </div>
       </div>
-    </div>
+    </section>
 
     <!-- Categories -->
-    <div class="categories-container">
-      <RouterLink
-        v-for="category in categoriesData"
-        :to="`/search?categoryName=${category.name}`"
-        class="category-item"
-        :key="category.name"
-      >
-        <Icon :name="icon(category.icon)" />
-        <div class="category-name">{{ category.name }}</div>
-      </RouterLink>
-    </div>
+    <section class="categories">
+      <div class="categories-container">
+        <RouterLink
+          v-for="category in categoriesData"
+          :to="`/search?categoryName=${category.name}`"
+          class="category-item"
+          :key="category.name"
+        >
+          <Icon :name="icon(category.icon)" />
+          <div class="category-name">{{ category.name }}</div>
+        </RouterLink>
+      </div>
+    </section>
 
     <!-- Popular announcements -->
-    <div class="popular-section">
+    <section class="featured popular-section">
       <h2 class="section-title">{{ t('home.recentListings') }}</h2>
       <ProductGrid :products="data?.content ?? []" />
-    </div>
-  </div>
+    </section>
+  </main>
 </template>
 
 <style scoped>

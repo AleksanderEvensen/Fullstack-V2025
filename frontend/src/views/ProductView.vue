@@ -125,266 +125,268 @@ const handleToggleSold = () => {
 </script>
 
 <template>
-  <div class="container" v-if="product">
-    <div class="product-grid">
-      <div class="product-images">
-        <div class="main-image">
-          <img :src="formatPictureUrl(product.images[currentImageIndex])" :alt="product.title" />
+  <main>
+    <div class="container" v-if="product">
+      <div class="product-grid">
+        <div class="product-images">
+          <div class="main-image">
+            <img :src="formatPictureUrl(product.images[currentImageIndex])" :alt="product.title" />
+          </div>
+          <div class="image-thumbnails">
+            <button
+              v-for="(image, index) in product.images"
+              :key="index"
+              @click="currentImageIndex = index"
+              class="thumbnail-button"
+              :class="{ active: currentImageIndex === index }"
+            >
+              <img :src="formatPictureUrl(image)" :alt="`${t('product.imageAlt')} ${index + 1}`" />
+            </button>
+          </div>
         </div>
-        <div class="image-thumbnails">
-          <button
-            v-for="(image, index) in product.images"
-            :key="index"
-            @click="currentImageIndex = index"
-            class="thumbnail-button"
-            :class="{ active: currentImageIndex === index }"
-          >
-            <img :src="formatPictureUrl(image)" :alt="`${t('product.imageAlt')} ${index + 1}`" />
-          </button>
-        </div>
-      </div>
 
-      <!-- Product Info -->
-      <div class="product-info">
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              <div class="title-container">
-                <span>{{ product.title }}</span>
-                <div class="product-action-buttons">
-                  <Button
-                    v-if="canBookmark"
-                    variant="ghost"
-                    size="icon"
-                    class="action-button"
-                    @click="handleBookmark"
-                    :disabled="isBookmarking || isUnbookmarking"
-                  >
-                    <HeartIcon :class="cn('icon', product.isBookmarked ? 'icon-filled' : '')" />
-                  </Button>
-                  <DropdownMenu v-if="canDelete">
-                    <DropdownMenuTrigger>
-                      <EllipsisIcon />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem
-                        class="dropdown-menu-item"
-                        @click="handleToggleSold"
-                        :disabled="isTogglingSold"
-                      >
-                        <CheckIcon />
-                        {{
-                          product.status === 'ACTIVE'
-                            ? t('product.toggleSold')
-                            : t('product.toggleActive')
-                        }}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        class="dropdown-menu-item danger"
-                        @click="handleDelete"
-                        :disabled="isDeleting"
-                      >
-                        <TrashIcon />
-                        {{ t('product.delete') }}
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+        <!-- Product Info -->
+        <div class="product-info">
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                <div class="title-container">
+                  <span>{{ product.title }}</span>
+                  <div class="product-action-buttons">
+                    <Button
+                      v-if="canBookmark"
+                      variant="ghost"
+                      size="icon"
+                      class="action-button"
+                      @click="handleBookmark"
+                      :disabled="isBookmarking || isUnbookmarking"
+                    >
+                      <HeartIcon :class="cn('icon', product.isBookmarked ? 'icon-filled' : '')" />
+                    </Button>
+                    <DropdownMenu v-if="canDelete">
+                      <DropdownMenuTrigger>
+                        <EllipsisIcon />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem
+                          class="dropdown-menu-item"
+                          @click="handleToggleSold"
+                          :disabled="isTogglingSold"
+                        >
+                          <CheckIcon />
+                          {{
+                            product.status === 'ACTIVE'
+                              ? t('product.toggleSold')
+                              : t('product.toggleActive')
+                          }}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          class="dropdown-menu-item danger"
+                          @click="handleDelete"
+                          :disabled="isDeleting"
+                        >
+                          <TrashIcon />
+                          {{ t('product.delete') }}
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </div>
+              </CardTitle>
+              <div class="badges-container">
+                <Badge variant="outline" class="condition-badge">
+                  {{ getTranslatedCondition(product.condition) }}
+                </Badge>
+                <Badge
+                  :variant="product.status === 'ACTIVE' ? 'default' : 'secondary'"
+                  class="status-badge"
+                >
+                  {{
+                    product.status === 'ACTIVE'
+                      ? t('product.status.active')
+                      : t('product.status.sold')
+                  }}
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <!-- Price -->
+              <div class="price-section">
+                <div class="price-display">
+                  <span class="current-price">{{ formatPrice(product.price) }}</span>
+                  <span class="original-price" v-if="shouldDisplayOriginalPrice">{{
+                    formatPrice(product.originalPrice!)
+                  }}</span>
+                  <span class="discount" v-if="shouldDisplayOriginalPrice && product.originalPrice">
+                    {{ formatPrice(product.originalPrice - product.price) }}
+                    {{ t('product.pricing.save') }}
+                    {{ calculateDiscount(product.originalPrice, product.price) }}%
+                  </span>
                 </div>
               </div>
-            </CardTitle>
-            <div class="badges-container">
-              <Badge variant="outline" class="condition-badge">
-                {{ getTranslatedCondition(product.condition) }}
-              </Badge>
-              <Badge
-                :variant="product.status === 'ACTIVE' ? 'default' : 'secondary'"
-                class="status-badge"
-              >
-                {{
-                  product.status === 'ACTIVE'
-                    ? t('product.status.active')
-                    : t('product.status.sold')
-                }}
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <!-- Price -->
-            <div class="price-section">
-              <div class="price-display">
-                <span class="current-price">{{ formatPrice(product.price) }}</span>
-                <span class="original-price" v-if="shouldDisplayOriginalPrice">{{
-                  formatPrice(product.originalPrice!)
-                }}</span>
-                <span class="discount" v-if="shouldDisplayOriginalPrice && product.originalPrice">
-                  {{ formatPrice(product.originalPrice - product.price) }}
-                  {{ t('product.pricing.save') }}
-                  {{ calculateDiscount(product.originalPrice, product.price) }}%
-                </span>
+
+              <!-- Actions -->
+              <div class="action-buttons">
+                <Button variant="outline" class="message-button" size="lg">{{
+                  t('product.messageButton')
+                }}</Button>
               </div>
-            </div>
+            </CardContent>
+          </Card>
 
-            <!-- Actions -->
-            <div class="action-buttons">
-              <Button variant="outline" class="message-button" size="lg">{{
-                t('product.messageButton')
-              }}</Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        <!-- Seller Info -->
-        <Card>
-          <CardHeader>
-            <CardTitle>{{ t('product.sellerInfo.title') }}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div class="seller-info">
-              <Avatar class="seller-avatar">
-                <AvatarImage
-                  :src="
-                    product.seller.profileImageUrl
-                      ? formatPictureUrl(product.seller.profileImageUrl)
-                      : ''
-                  "
-                  :alt="product.seller.name"
-                />
-                <AvatarFallback>{{ product.seller.name[0] }}</AvatarFallback>
-              </Avatar>
-              <div class="seller-details">
-                <h3>{{ product.seller.name }}</h3>
-                <div class="seller-info-text" v-if="product.seller.address">
-                  {{ formatAddress(product.seller.address) }}
+          <!-- Seller Info -->
+          <Card>
+            <CardHeader>
+              <CardTitle>{{ t('product.sellerInfo.title') }}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div class="seller-info">
+                <Avatar class="seller-avatar">
+                  <AvatarImage
+                    :src="
+                      product.seller.profileImageUrl
+                        ? formatPictureUrl(product.seller.profileImageUrl)
+                        : ''
+                    "
+                    :alt="product.seller.name"
+                  />
+                  <AvatarFallback>{{ product.seller.name[0] }}</AvatarFallback>
+                </Avatar>
+                <div class="seller-details">
+                  <h3>{{ product.seller.name }}</h3>
+                  <div class="seller-info-text" v-if="product.seller.address">
+                    {{ formatAddress(product.seller.address) }}
+                  </div>
                 </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>{{ t('product.aboutThisItem') }}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p>{{ product.description }}</p>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>{{ t('product.aboutThisItem') }}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>{{ product.description }}</p>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </div>
 
-    <!-- Product Details Below -->
-    <div class="product-details">
-      <div class="details-grid">
-        <Card>
-          <MapboxMap
-            class="product-map rounded"
-            style="height: 400px"
-            :access-token="MAPBOX_API_TOKEN"
-            map-style="mapbox://styles/mapbox/streets-v12"
-            :center="[product.longitude, product.latitude]"
-            :zoom="12.0"
-            @mb-created="(map: Map) => (mapRef = map)"
+      <!-- Product Details Below -->
+      <div class="product-details">
+        <div class="details-grid">
+          <Card>
+            <MapboxMap
+              class="product-map rounded"
+              style="height: 400px"
+              :access-token="MAPBOX_API_TOKEN"
+              map-style="mapbox://styles/mapbox/streets-v12"
+              :center="[product.longitude, product.latitude]"
+              :zoom="12.0"
+              @mb-created="(map: Map) => (mapRef = map)"
+            >
+              <MapboxMarker :lng-lat="[product.longitude, product.latitude]">
+                <div class="map-marker">
+                  <PinIcon />
+                </div>
+              </MapboxMarker>
+              <MapboxNavigationControl position="top-right" />
+            </MapboxMap>
+          </Card>
+
+          <!-- Basic Info -->
+          <Card
+            v-if="product.modelYear || product.manufacturer || product.model || product.serialNumber"
           >
-            <MapboxMarker :lng-lat="[product.longitude, product.latitude]">
-              <div class="map-marker">
-                <PinIcon />
+            <CardHeader>
+              <CardTitle>{{ t('product.details.basicInfo') }}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div class="details-list">
+                <div class="detail-item" v-if="product.modelYear">
+                  <span class="detail-label">{{ t('product.labels.modelYear') }}</span>
+                  <span class="detail-value">{{ product.modelYear }}</span>
+                </div>
+                <div class="detail-item" v-if="product.manufacturer">
+                  <span class="detail-label">{{ t('product.labels.manufacturer') }}</span>
+                  <span class="detail-value">{{ product.manufacturer }}</span>
+                </div>
+                <div class="detail-item" v-if="product.model">
+                  <span class="detail-label">{{ t('product.labels.model') }}</span>
+                  <span class="detail-value">{{ product.model }}</span>
+                </div>
+                <div class="detail-item" v-if="product.serialNumber">
+                  <span class="detail-label">{{ t('product.labels.serialNumber') }}</span>
+                  <span class="detail-value">{{ product.serialNumber }}</span>
+                </div>
               </div>
-            </MapboxMarker>
-            <MapboxNavigationControl position="top-right" />
-          </MapboxMap>
-        </Card>
+            </CardContent>
+          </Card>
 
-        <!-- Basic Info -->
-        <Card
-          v-if="product.modelYear || product.manufacturer || product.model || product.serialNumber"
-        >
-          <CardHeader>
-            <CardTitle>{{ t('product.details.basicInfo') }}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div class="details-list">
-              <div class="detail-item" v-if="product.modelYear">
-                <span class="detail-label">{{ t('product.labels.modelYear') }}</span>
-                <span class="detail-value">{{ product.modelYear }}</span>
+          <!-- Usage Info -->
+          <Card v-if="product.purchaseDate || product.usageDuration">
+            <CardHeader>
+              <CardTitle>{{ t('product.details.usageInfo') }}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div class="details-list">
+                <div class="detail-item" v-if="product.purchaseDate">
+                  <span class="detail-label">{{ t('product.labels.purchaseDate') }}</span>
+                  <span class="detail-value">{{ product.purchaseDate }}</span>
+                </div>
+                <div class="detail-item" v-if="product.usageDuration">
+                  <span class="detail-label">{{ t('product.labels.usageDuration') }}</span>
+                  <span class="detail-value">{{ product.usageDuration }}</span>
+                </div>
               </div>
-              <div class="detail-item" v-if="product.manufacturer">
-                <span class="detail-label">{{ t('product.labels.manufacturer') }}</span>
-                <span class="detail-value">{{ product.manufacturer }}</span>
-              </div>
-              <div class="detail-item" v-if="product.model">
-                <span class="detail-label">{{ t('product.labels.model') }}</span>
-                <span class="detail-value">{{ product.model }}</span>
-              </div>
-              <div class="detail-item" v-if="product.serialNumber">
-                <span class="detail-label">{{ t('product.labels.serialNumber') }}</span>
-                <span class="detail-value">{{ product.serialNumber }}</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        <!-- Usage Info -->
-        <Card v-if="product.purchaseDate || product.usageDuration">
-          <CardHeader>
-            <CardTitle>{{ t('product.details.usageInfo') }}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div class="details-list">
-              <div class="detail-item" v-if="product.purchaseDate">
-                <span class="detail-label">{{ t('product.labels.purchaseDate') }}</span>
-                <span class="detail-value">{{ product.purchaseDate }}</span>
-              </div>
-              <div class="detail-item" v-if="product.usageDuration">
-                <span class="detail-label">{{ t('product.labels.usageDuration') }}</span>
-                <span class="detail-value">{{ product.usageDuration }}</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+          <!-- Defects -->
+          <Card v-if="product.defects.length">
+            <CardHeader>
+              <CardTitle>{{ t('product.details.knownDefects') }}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul class="details-list">
+                <li v-for="(defect, index) in product.defects" :key="index" class="detail-list-item">
+                  {{ defect }}
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
 
-        <!-- Defects -->
-        <Card v-if="product.defects.length">
-          <CardHeader>
-            <CardTitle>{{ t('product.details.knownDefects') }}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul class="details-list">
-              <li v-for="(defect, index) in product.defects" :key="index" class="detail-list-item">
-                {{ defect }}
-              </li>
-            </ul>
-          </CardContent>
-        </Card>
+          <!-- Modifications -->
+          <Card v-if="product.modifications?.length">
+            <CardHeader>
+              <CardTitle>{{ t('product.details.modifications') }}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul class="details-list">
+                <li
+                  v-for="(mod, index) in product.modifications"
+                  :key="index"
+                  class="detail-list-item"
+                >
+                  {{ mod }}
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
 
-        <!-- Modifications -->
-        <Card v-if="product.modifications?.length">
-          <CardHeader>
-            <CardTitle>{{ t('product.details.modifications') }}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul class="details-list">
-              <li
-                v-for="(mod, index) in product.modifications"
-                :key="index"
-                class="detail-list-item"
-              >
-                {{ mod }}
-              </li>
-            </ul>
-          </CardContent>
-        </Card>
-
-        <!-- Reason for Selling -->
-        <Card v-if="product.reasonForSelling">
-          <CardHeader>
-            <CardTitle>{{ t('product.details.reasonForSelling') }}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p class="detail-text">{{ product.reasonForSelling }}</p>
-          </CardContent>
-        </Card>
+          <!-- Reason for Selling -->
+          <Card v-if="product.reasonForSelling">
+            <CardHeader>
+              <CardTitle>{{ t('product.details.reasonForSelling') }}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p class="detail-text">{{ product.reasonForSelling }}</p>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
-  </div>
+  </main>
 </template>
 
 <style scoped>
