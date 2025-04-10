@@ -9,7 +9,7 @@ const { t } = useTypedI18n()
 </script>
 
 <template>
-  <FormField v-slot="{ componentField, value, setValue }" name="modelYear">
+  <FormField v-slot="{ value, setValue }" name="modelYear">
     <FormItem>
       <FormLabel>{{ t('createListing.form.modelYear') }}</FormLabel>
       <FormControl>

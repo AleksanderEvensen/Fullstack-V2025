@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import UserListing from './UserListing.vue'
-import { formatPictureUrl } from '@/lib/utils'
 import { useGetUserListings } from '@/lib/api/queries/listings'
 import { useTypedI18n } from '@/i18n'
 

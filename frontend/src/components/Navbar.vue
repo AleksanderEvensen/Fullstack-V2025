@@ -30,9 +30,6 @@ const locales: Record<Locales, { flag: string; name: string }> = {
   },
 }
 
-const profilePicture = computed(() => {
-  return useAuthStore().user?.profileImageUrl ?? ''
-})
 
 const user = computed(() => {
   return useAuthStore().user

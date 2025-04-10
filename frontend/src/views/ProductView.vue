@@ -8,7 +8,7 @@ import { getListing, LISTING_QUERY_KEY, useBookmarkListing, useDeleteListing, us
 import { useRoute } from 'vue-router'
 import { cn, formatAddress, formatPictureUrl, MAPBOX_API_TOKEN } from '@/lib/utils'
 import { useTypedI18n } from '@/i18n'
-import { EllipsisIcon, HeartIcon, TrashIcon, PinIcon, ShareIcon } from 'lucide-vue-next'
+import { EllipsisIcon, HeartIcon, TrashIcon, PinIcon } from 'lucide-vue-next'
 import { Map } from "mapbox-gl";
 import { MapboxMap, MapboxMarker, MapboxNavigationControl } from '@studiometa/vue-mapbox-gl'
 import { searchGeocodeAdvanced } from '@/lib/api/geocoding'
@@ -23,7 +23,6 @@ const { t } = useTypedI18n()
 const id = useRoute().params.id as unknown as number
 const { data: product } = getListing(id)
 const currentImageIndex = ref(0)
-const router = useRouter()
 const queryClient = useQueryClient()
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat('NO', {
@@ -168,7 +167,6 @@ const handleToggleSold = () => {
           <button v-for="(image, index) in product.images" :key="index" @click="currentImageIndex = index"
             class="thumbnail-button" :class="{ active: currentImageIndex === index }">
             <img :src="formatPictureUrl(image)" :alt="`${t('product.imageAlt')} ${index + 1}`" />
-            {{ formatPictureUrl(image) }}
           </button>
         </div>
       </div>

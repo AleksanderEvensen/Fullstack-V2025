@@ -88,7 +88,7 @@ class UserController(private val userService: UserService, private val minIoServ
     )
     @ApiResponses(
         ApiResponse(
-            responseCode = "203",
+            responseCode = "204",
             description = "Profile image deleted successfully",
         ),
         ApiResponse(
