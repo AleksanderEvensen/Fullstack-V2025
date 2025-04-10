@@ -627,6 +627,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * Send message
+         * @description Sends a new message to another user about a listing
+         */
         post: operations["sendMessage"];
         delete?: never;
         options?: never;
@@ -762,22 +766,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/chat/poll/{listingId}/{otherUserId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["pollForMessages"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/chat/conversations": {
         parameters: {
             query?: never;
@@ -785,6 +773,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * Get user conversations
+         * @description Retrieves all conversations for the current user
+         */
         get: operations["getConversations"];
         put?: never;
         post?: never;
@@ -801,6 +793,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * Get conversation messages
+         * @description Retrieves messages between the current user and another user for a specific listing
+         */
         get: operations["getConversation"];
         put?: never;
         post?: never;
@@ -1804,10 +1800,10 @@ export interface components {
             sortDirection: string;
         };
         PageListingDto: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             first?: boolean;
             last?: boolean;
             /** Format: int32 */
@@ -1816,9 +1812,9 @@ export interface components {
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
+            pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
         PageableObject: {
@@ -1891,6 +1887,42 @@ export interface components {
             content: string;
             /** Format: date-time */
             timestamp: string;
+        };
+        PageConversationSummaryDto: {
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            size?: number;
+            content?: components["schemas"]["ConversationSummaryDto"][];
+            /** Format: int32 */
+            number?: number;
+            sort?: components["schemas"]["SortObject"];
+            /** Format: int32 */
+            numberOfElements?: number;
+            pageable?: components["schemas"]["PageableObject"];
+            empty?: boolean;
+        };
+        PageChatMessageDto: {
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            size?: number;
+            content?: components["schemas"]["ChatMessageDto"][];
+            /** Format: int32 */
+            number?: number;
+            sort?: components["schemas"]["SortObject"];
+            /** Format: int32 */
+            numberOfElements?: number;
+            pageable?: components["schemas"]["PageableObject"];
+            empty?: boolean;
         };
         /** @description Complete user profile information */
         FullUserDto: {
@@ -3774,8 +3806,35 @@ export interface operations {
             };
         };
         responses: {
-            /** @description OK */
+            /** @description Message sent successfully */
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ChatMessageDto"];
+                };
+            };
+            /** @description Invalid message */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ChatMessageDto"];
+                };
+            };
+            /** @description User not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ChatMessageDto"];
+                };
+            };
+            /** @description Recipient or listing not found */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4082,54 +4141,44 @@ export interface operations {
             };
         };
     };
-    pollForMessages: {
-        parameters: {
-            query: {
-                lastTimestamp: number;
-            };
-            header?: never;
-            path: {
-                otherUserId: number;
-                listingId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ChatMessageDto"][];
-                };
-            };
-        };
-    };
     getConversations: {
         parameters: {
-            query?: never;
+            query?: {
+                page?: number;
+                size?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description OK */
+            /** @description Conversations retrieved successfully */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ConversationSummaryDto"][];
+                    "*/*": components["schemas"]["PageConversationSummaryDto"];
+                };
+            };
+            /** @description User not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageConversationSummaryDto"];
                 };
             };
         };
     };
     getConversation: {
         parameters: {
-            query?: never;
+            query?: {
+                page?: number;
+                size?: number;
+            };
             header?: never;
             path: {
                 listingId: number;
@@ -4139,13 +4188,22 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description OK */
+            /** @description Messages retrieved successfully */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ChatMessageDto"][];
+                    "*/*": components["schemas"]["PageChatMessageDto"];
+                };
+            };
+            /** @description User not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageChatMessageDto"];
                 };
             };
         };
