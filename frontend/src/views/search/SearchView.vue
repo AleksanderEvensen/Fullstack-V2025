@@ -111,7 +111,7 @@ const mapRef = ref<Map | null>(null)
 // Toggle map view dialog
 function toggleMapView(forced?: boolean) {
   if (arguments.length) {
-    mapViewOpen.value = forced!!
+    mapViewOpen.value = Boolean(forced)
   } else {
     mapViewOpen.value = !mapViewOpen.value
   }
