@@ -75,8 +75,41 @@ class UserController(private val userService: UserService, private val minIoServ
         return ResponseEntity.ok(UpdateProfileResponseDto("Profile image updated successfully"))
     }
 
+
     /**
-     * Updates the user's address information.
+     * Deletes the user's profile image.
+     *
+     * @return Response indicating successful deletion
+     */
+
+    @Operation(
+        summary = "Delete profile image",
+        description = "Deletes the profile image for the currently authenticated user"
+    )
+    @ApiResponses(
+        ApiResponse(
+            responseCode = "203",
+            description = "Profile image deleted successfully",
+        ),
+        ApiResponse(
+            responseCode = "400",
+            description = "Invalid request",
+            content = [Content(schema = Schema(implementation = ErrorResponseDto::class))]
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "User not authenticated",
+            content = [Content(schema = Schema(implementation = ErrorResponseDto::class))]
+        )
+    )
+    @PostMapping("/delete-profile-image")
+    fun deleteProfileImage(): Unit {
+        logger.info("Deleting profile image for user")
+        userService.updateProfileImage("")
+    }
+
+    /**
+ * Updates the user's address information.
      *
      * @param request The address update request
      * @return Response indicating successful update

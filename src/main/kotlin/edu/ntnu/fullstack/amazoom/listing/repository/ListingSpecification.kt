@@ -2,6 +2,7 @@ package edu.ntnu.fullstack.amazoom.listing.repository
 
 import edu.ntnu.fullstack.amazoom.listing.entity.Listing
 import edu.ntnu.fullstack.amazoom.listing.entity.ListingCondition
+import edu.ntnu.fullstack.amazoom.listing.entity.ListingStatus
 import jakarta.persistence.criteria.JoinType
 import org.springframework.data.jpa.domain.Specification
 
@@ -14,6 +15,14 @@ object ListingSpecification {
                     criteriaBuilder.lower(root.get("title")),
                     "%${it.lowercase()}%"
                 )
+            }
+        }
+    }
+
+    private fun withStatus(status: ListingStatus): Specification<Listing> {
+        return status.let {
+            Specification { root, _, criteriaBuilder ->
+                criteriaBuilder.equal(root.get<ListingStatus>("status"), it)
             }
         }
     }
@@ -186,7 +195,8 @@ object ListingSpecification {
         model: String? = null,
         sellerId: Long? = null,
         defectsCount: Int? = null,
-        modificationsCount: Int? = null
+        modificationsCount: Int? = null,
+        status: ListingStatus = ListingStatus.ACTIVE
     ): Specification<Listing> {
         // If q parameter is provided, use it for title/description search
         // otherwise use individual title and description parameters
@@ -205,5 +215,6 @@ object ListingSpecification {
             .and(withSellerId(sellerId))
             .and(withDefectsCount(defectsCount))
             .and(withModificationsCount(modificationsCount))
+            .and(withStatus(status))
     }
 } 

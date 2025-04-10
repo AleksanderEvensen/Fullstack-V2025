@@ -9,6 +9,7 @@ import FlagComponent from '@/components/ui/country-flag/CountryFlag.vue'
 import { computed, ref } from 'vue'
 import { type Locales, AvailableLocales, useTypedI18n } from '@/i18n'
 import { useAuthStore } from '@/stores/auth'
+import { formatNameInitials, formatPictureUrl } from '@/lib/utils'
 const isOpen = ref(false)
 const { t, locale } = useTypedI18n()
 const locales: Record<Locales, { flag: string; name: string }> = {
@@ -73,10 +74,10 @@ const user = computed(() => {
       <!-- Profile Avatar -->
       <RouterLink to="/profile" class="nav-item">
         <Avatar>
-
-          <AvatarImage :src="profilePicture" :alt="user?.firstName ?? 'Guest'" />
+          <AvatarImage :src="formatPictureUrl(user?.profileImageUrl ?? '')" :alt="user?.name ?? 'Guest'" />
           <AvatarFallback>
             <UserIcon v-if="!user" />
+            <span v-else>{{ formatNameInitials(user?.name ?? '') }}</span>
           </AvatarFallback>
         </Avatar>
       </RouterLink>
@@ -132,8 +133,11 @@ const user = computed(() => {
             <!-- Profile -->
             <RouterLink to="/profile" class="mobile-nav-item">
               <Avatar>
-                <AvatarImage :src="profilePicture" :alt="user?.firstName ?? 'Guest'" />
-                <AvatarFallback>{{ user?.firstName ?? 'Guest' }}</AvatarFallback>
+                <AvatarImage :src="formatPictureUrl(user?.profileImageUrl ?? '')" :alt="user?.name ?? 'Guest'" />
+                <AvatarFallback>
+                  <UserIcon v-if="!user" />
+                  <span v-else>{{ formatNameInitials(user?.name ?? '') }}</span>
+                </AvatarFallback>
               </Avatar>
               <span class="ml-3">{{ t('nav.profile') }}</span>
             </RouterLink>

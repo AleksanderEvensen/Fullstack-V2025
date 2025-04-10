@@ -9,11 +9,12 @@ const { t } = useTypedI18n()
 </script>
 
 <template>
-  <FormField v-slot="{ componentField }" name="modelYear">
+  <FormField v-slot="{ componentField, value, setValue }" name="modelYear">
     <FormItem>
       <FormLabel>{{ t('createListing.form.modelYear') }}</FormLabel>
       <FormControl>
-        <Input type="text" v-bind="componentField" :placeholder="t('createListing.form.modelYearPlaceholder')" />
+        <Input type="number" v-bind:modelValue="value" @update:modelValue="($event) => setValue(Number($event))"
+          :placeholder="t('createListing.form.modelYearPlaceholder')" />
       </FormControl>
       <FormMessage />
     </FormItem>
@@ -73,9 +74,10 @@ const { t } = useTypedI18n()
     <FormItem>
       <FormLabel>{{ t('createListing.form.reasonForSelling') }}</FormLabel>
       <FormControl>
-        <Textarea v-bind="componentField" :placeholder="t('createListing.form.reasonForSellingPlaceholder')" :rows="3" />
+        <Textarea v-bind="componentField" :placeholder="t('createListing.form.reasonForSellingPlaceholder')"
+          :rows="3" />
       </FormControl>
       <FormMessage />
     </FormItem>
   </FormField>
-</template> 
+</template>

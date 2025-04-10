@@ -1,20 +1,30 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { getListing, useBookmarkListing, useUnbookmarkListing } from '@/lib/api/queries/listings'
+import { getListing, LISTING_QUERY_KEY, useBookmarkListing, useDeleteListing, useUnbookmarkListing, useUpdateListing } from '@/lib/api/queries/listings'
 import { useRoute } from 'vue-router'
-import { cn, formatAddress, formatPictureUrl } from '@/lib/utils'
+import { cn, formatAddress, formatPictureUrl, MAPBOX_API_TOKEN } from '@/lib/utils'
 import { useTypedI18n } from '@/i18n'
-import { HeartIcon } from 'lucide-vue-next'
-
+import { EllipsisIcon, HeartIcon, TrashIcon, PinIcon, ShareIcon } from 'lucide-vue-next'
+import { Map } from "mapbox-gl";
+import { MapboxMap, MapboxMarker, MapboxNavigationControl } from '@studiometa/vue-mapbox-gl'
+import { searchGeocodeAdvanced } from '@/lib/api/geocoding'
+import { watchDebounced } from '@vueuse/core'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { useAuthStore } from '@/stores/auth'
+import { useRouter } from 'vue-router'
+import { toast } from 'vue-sonner'
+import { CheckIcon } from 'lucide-vue-next'
+import { useQueryClient } from '@tanstack/vue-query'
 const { t } = useTypedI18n()
 const id = useRoute().params.id as unknown as number
 const { data: product } = getListing(id)
 const currentImageIndex = ref(0)
-
+const router = useRouter()
+const queryClient = useQueryClient()
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat('NO', {
     style: 'currency',
@@ -49,6 +59,8 @@ const shouldDisplayOriginalPrice = computed(() => {
 
 const { mutate: bookmarkListing, isPending: isBookmarking } = useBookmarkListing()
 const { mutate: unbookmarkListing, isPending: isUnbookmarking } = useUnbookmarkListing()
+const { mutate: deleteListing, isPending: isDeleting } = useDeleteListing()
+const { mutate: toggleSold, isPending: isTogglingSold } = useUpdateListing()
 
 const handleBookmark = () => {
   if (!product.value) return
@@ -57,6 +69,91 @@ const handleBookmark = () => {
   } else {
     bookmarkListing(product.value.id)
   }
+}
+
+const mapRef = ref<Map>()
+
+
+const locationData = computed(() => ({
+  street: product.value?.seller.address?.streetName,
+  postalcode: product.value?.seller.address?.postalCode,
+  city: product.value?.seller.address?.city,
+}));
+
+
+const currentLocation = ref<{ lat: number, lon: number } | null>(null);
+
+
+async function flyToAddress(params: Parameters<typeof searchGeocodeAdvanced>[0]) {
+  if (!mapRef.value) return;
+  const [location] = await searchGeocodeAdvanced(params) ?? [];
+  if (location) {
+    currentLocation.value = {
+      lat: +location.lat,
+      lon: +location.lon,
+    }
+    mapRef.value.flyTo({
+      center: [+location.lon, +location.lat],
+      zoom: 14,
+    });
+  }
+}
+
+watchDebounced(locationData, async () => {
+  if (!product.value?.seller.address?.streetName || !product.value?.seller.address?.city || !product.value?.seller.address?.postalCode) return;
+  flyToAddress({
+    ...locationData.value,
+    country: "Norway",
+  });
+}, {
+  debounce: 1000,
+});
+
+watch(mapRef, () => {
+  if (!mapRef.value) return;
+  mapRef.value.once('load', () => {
+    flyToAddress({
+      ...locationData.value,
+      country: "Norway",
+    });
+  })
+})
+
+const { user, isAuthenticated } = useAuthStore()
+const canDelete = computed(() => {
+  return product.value?.seller.id === user?.id
+})
+
+const canBookmark = computed(() => {
+  return isAuthenticated && product.value?.seller.id !== user?.id
+})
+
+const handleDelete = () => {
+  if (!product.value?.id) return
+  deleteListing(product.value.id, {
+    onSuccess: () => {
+      toast.success(t('product.deleteSuccess'))
+    }
+  })
+}
+
+const handleToggleSold = () => {
+  if (!product.value?.id) return
+  toggleSold({
+    id: product.value.id,
+    status: product.value.status === 'ACTIVE' ? 'SOLD' : 'ACTIVE',
+    title: product.value.title,
+    categoryId: product.value.categoryId,
+    condition: product.value.condition,
+    price: product.value.price,
+    originalPrice: product.value.originalPrice,
+    description: product.value.description,
+  }, {
+    onSuccess: () => {
+      toast.success(t('product.toggleSoldSuccess'))
+      queryClient.invalidateQueries({ queryKey: [LISTING_QUERY_KEY] })
+    }
+  })
 }
 </script>
 
@@ -68,13 +165,8 @@ const handleBookmark = () => {
           <img :src="formatPictureUrl(product.images[currentImageIndex])" :alt="product.title" />
         </div>
         <div class="image-thumbnails">
-          <button
-            v-for="(image, index) in product.images"
-            :key="index"
-            @click="currentImageIndex = index"
-            class="thumbnail-button"
-            :class="{ active: currentImageIndex === index }"
-          >
+          <button v-for="(image, index) in product.images" :key="index" @click="currentImageIndex = index"
+            class="thumbnail-button" :class="{ active: currentImageIndex === index }">
             <img :src="formatPictureUrl(image)" :alt="`${t('product.imageAlt')} ${index + 1}`" />
             {{ formatPictureUrl(image) }}
           </button>
@@ -88,19 +180,37 @@ const handleBookmark = () => {
             <CardTitle>
               <div class="title-container">
                 <span>{{ product.title }}</span>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  class="action-button"
-                  @click="handleBookmark"
-                  :disabled="isBookmarking || isUnbookmarking"
-                >
-                  <HeartIcon :class="cn('icon', product.isBookmarked ? 'icon-filled' : '')" />
-                </Button>
+                <div class="product-action-buttons">
+                  <Button v-if="canBookmark" variant="ghost" size="icon" class="action-button" @click="handleBookmark"
+                    :disabled="isBookmarking || isUnbookmarking">
+                    <HeartIcon :class="cn('icon', product.isBookmarked ? 'icon-filled' : '')" />
+                  </Button>
+                  <DropdownMenu v-if="canDelete">
+                    <DropdownMenuTrigger>
+                      <EllipsisIcon />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+
+                      <DropdownMenuItem class="dropdown-menu-item" @click="handleToggleSold" :disabled="isTogglingSold">
+                        <CheckIcon />
+                        {{ product.status === 'ACTIVE' ? t('product.toggleSold') : t('product.toggleActive') }}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem class="dropdown-menu-item danger" @click="handleDelete" :disabled="isDeleting">
+                        <TrashIcon />
+                        {{ t('product.delete') }}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </div>
             </CardTitle>
-            <div class="condition-badge">
-              <Badge variant="outline">{{ getTranslatedCondition(product.condition) }}</Badge>
+            <div class="badges-container">
+              <Badge variant="outline" class="condition-badge">
+                {{ getTranslatedCondition(product.condition) }}
+              </Badge>
+              <Badge :variant="product.status === 'ACTIVE' ? 'default' : 'secondary'" class="status-badge">
+                {{ product.status === 'ACTIVE' ? t('product.status.active') : t('product.status.sold') }}
+              </Badge>
             </div>
           </CardHeader>
           <CardContent>
@@ -110,7 +220,7 @@ const handleBookmark = () => {
                 <span class="current-price">{{ formatPrice(product.price) }}</span>
                 <span class="original-price" v-if="shouldDisplayOriginalPrice">{{
                   formatPrice(product.originalPrice!)
-                }}</span>
+                  }}</span>
                 <span class="discount" v-if="shouldDisplayOriginalPrice && product.originalPrice">
                   {{ formatPrice(product.originalPrice - product.price) }}
                   {{ t('product.pricing.save') }}
@@ -121,10 +231,9 @@ const handleBookmark = () => {
 
             <!-- Actions -->
             <div class="action-buttons">
-              <Button class="buy-button" size="lg">{{ t('product.buyNow') }}</Button>
               <Button variant="outline" class="message-button" size="lg">{{
                 t('product.messageButton')
-              }}</Button>
+                }}</Button>
             </div>
           </CardContent>
         </Card>
@@ -137,14 +246,10 @@ const handleBookmark = () => {
           <CardContent>
             <div class="seller-info">
               <Avatar class="seller-avatar">
-                <AvatarImage
-                  :src="
-                    product.seller.profileImageUrl
-                      ? formatPictureUrl(product.seller.profileImageUrl)
-                      : ''
-                  "
-                  :alt="product.seller.name"
-                />
+                <AvatarImage :src="product.seller.profileImageUrl
+                  ? formatPictureUrl(product.seller.profileImageUrl)
+                  : ''
+                  " :alt="product.seller.name" />
                 <AvatarFallback>{{ product.seller.name[0] }}</AvatarFallback>
               </Avatar>
               <div class="seller-details">
@@ -167,11 +272,27 @@ const handleBookmark = () => {
       </div>
     </div>
 
+
+
     <!-- Product Details Below -->
     <div class="product-details">
       <div class="details-grid">
-        <!-- Basic Info -->
+
         <Card>
+          <MapboxMap class="product-map rounded" style="height: 400px;" :access-token="MAPBOX_API_TOKEN"
+            map-style="mapbox://styles/mapbox/streets-v12" :center="[9.139, 60.687]" :zoom="5.0"
+            @mb-created="(map: Map) => mapRef = map">
+            <MapboxMarker v-if="currentLocation" :lng-lat="[currentLocation.lon, currentLocation.lat]">
+              <div class="map-marker">
+                <PinIcon />
+              </div>
+            </MapboxMarker>
+            <MapboxNavigationControl position="top-right" />
+          </MapboxMap>
+        </Card>
+
+        <!-- Basic Info -->
+        <Card v-if="product.modelYear || product.manufacturer || product.model || product.serialNumber">
           <CardHeader>
             <CardTitle>{{ t('product.details.basicInfo') }}</CardTitle>
           </CardHeader>
@@ -198,7 +319,7 @@ const handleBookmark = () => {
         </Card>
 
         <!-- Usage Info -->
-        <Card>
+        <Card v-if="product.purchaseDate || product.usageDuration">
           <CardHeader>
             <CardTitle>{{ t('product.details.usageInfo') }}</CardTitle>
           </CardHeader>
@@ -237,11 +358,7 @@ const handleBookmark = () => {
           </CardHeader>
           <CardContent>
             <ul class="details-list">
-              <li
-                v-for="(mod, index) in product.modifications"
-                :key="index"
-                class="detail-list-item"
-              >
+              <li v-for="(mod, index) in product.modifications" :key="index" class="detail-list-item">
                 {{ mod }}
               </li>
             </ul>
@@ -291,11 +408,27 @@ const handleBookmark = () => {
   padding: 0;
 }
 
+.dropdown-menu-item {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacing) * 2);
+}
+
+.danger {
+  color: red;
+}
+
 .main-image {
   aspect-ratio: 1;
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   overflow: hidden;
   background-color: var(--accent);
+}
+
+.product-action-buttons {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacing) * 2);
 }
 
 .main-image img {
@@ -334,6 +467,7 @@ const handleBookmark = () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: calc(var(--spacing) * 2);
 }
 
 /* Product Info */
@@ -440,6 +574,7 @@ const handleBookmark = () => {
   display: flex;
   flex-direction: column;
   gap: calc(var(--spacing) * 4);
+  margin-top: calc(var(--spacing) * 4);
 }
 
 .buy-button,
@@ -548,7 +683,7 @@ const handleBookmark = () => {
 }
 
 /* Make certain sections span full width */
-.details-grid > :nth-child(n + 3) {
+.details-grid> :nth-child(n + 3) {
   grid-column: 1 / -1;
 }
 
@@ -568,5 +703,102 @@ const handleBookmark = () => {
   .product-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* Map Styles */
+.product-map {
+  width: 100%;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin: calc(var(--spacing) * 4) 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: var(--background);
+  border: 1px solid var(--border);
+}
+
+.map-container {
+  margin: calc(var(--spacing) * 4) 0;
+  padding: calc(var(--spacing) * 4);
+  background-color: var(--background);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.map-marker {
+  background-color: var(--primary);
+  color: white;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transform: translateY(-50%);
+}
+
+.map-marker :deep(svg) {
+  width: 20px;
+  height: 20px;
+}
+
+:deep(.mapboxgl-ctrl-top-right) {
+  top: 16px;
+  right: 16px;
+}
+
+:deep(.mapboxgl-ctrl) {
+  border-radius: var(--radius);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: var(--background);
+  border: 1px solid var(--border);
+}
+
+:deep(.mapboxgl-ctrl button) {
+  border-radius: var(--radius);
+  background-color: var(--background);
+  border: 1px solid var(--border);
+}
+
+:deep(.mapboxgl-ctrl button:hover) {
+  background-color: var(--accent);
+}
+
+.badges-container {
+  display: flex;
+  gap: calc(var(--spacing) * 2);
+  margin-top: calc(var(--spacing) * 2);
+}
+
+.condition-badge {
+  background-color: var(--accent);
+  border-color: var(--border);
+  color: var(--foreground);
+  font-weight: var(--font-weight-medium);
+  padding: calc(var(--spacing) * 1) calc(var(--spacing) * 2);
+}
+
+.status-badge {
+  font-weight: var(--font-weight-medium);
+  padding: calc(var(--spacing) * 1) calc(var(--spacing) * 2);
+}
+
+.status-badge[data-variant="default"] {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.status-badge[data-variant="secondary"] {
+  background-color: var(--secondary);
+  color: var(--secondary-foreground);
+}
+
+.action-button {
+  transition: all 0.2s ease;
+}
+
+.action-button:hover {
+  background-color: var(--accent);
+  transform: scale(1.05);
 }
 </style>
