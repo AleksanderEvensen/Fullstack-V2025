@@ -18,39 +18,36 @@ import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
-import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Service
 import org.springframework.web.util.HtmlUtils
 import java.time.Instant
 
 /**
- * Service for managing chat messages.
- * Handles sending, retrieving, and marking messages as read.
+ * Service class for handling chat messages.
+ * Provides methods for sending messages, retrieving conversations, and long polling for new messages.
  */
 @Service
 class ChatMessageService(
     private val chatMessageRepository: ChatMessageRepository,
-    private val simpMessagingTemplate: SimpMessagingTemplate,
     private val userService: UserService,
     private val listingService: ListingService,
     private val listingRepository: ListingRepository
 ) {
     private val logger = LoggerFactory.getLogger(ChatMessageService::class.java)
     private val MAX_MESSAGE_LENGTH = 1000
+    private val LONG_POLL_TIMEOUT = 30000L
+    private val POLLING_SLEEP_INTERVAL = 500L
 
     /**
      * Gets unique conversations for the current user.
-     *
-     * @param pageable Pagination parameters
-     * @return A page of conversation summaries
      */
-    fun getUniqueConversations(pageable: Pageable): Page<ConversationSummaryDto> {
+    fun getUniqueConversations(): List<ConversationSummaryDto> {
         val currentUser = userService.getCurrentUser()
         val currentUserId = currentUser.id
 
         logger.debug("Getting unique conversations for user: {}", currentUserId)
 
-        val uniqueConversations = chatMessageRepository.findUniqueConversationIds(currentUserId, pageable)
+        val uniqueConversations = chatMessageRepository.findUniqueConversationIds(currentUserId)
 
         return uniqueConversations.map { conversation ->
             val otherUserId = conversation.otherUserId
@@ -59,9 +56,8 @@ class ChatMessageService(
             val otherUser = userService.getUserById(otherUserId)
             val listing = listingService.getListing(listingId)
 
-            val latestMessagePage = PageRequest.of(0, 1)
             val latestMessage = chatMessageRepository.findMessagesBetweenUsersForListing(
-                currentUserId, otherUserId, listingId, latestMessagePage
+                currentUserId, otherUserId, listingId
             ).firstOrNull()
 
             val lastMessageDto = latestMessage?.let {
@@ -71,7 +67,6 @@ class ChatMessageService(
                 )
             }
 
-            // Build the conversation summary
             ConversationSummaryDto(
                 user = UserMapper.toDto(otherUser),
                 listingId = listingId,
@@ -82,18 +77,12 @@ class ChatMessageService(
     }
 
     /**
-     * Gets messages for a specific conversation between the current user and another user about a listing.
-     *
-     * @param otherUserId The ID of the other user in the conversation
-     * @param listingId The ID of the listing being discussed
-     * @param pageable Pagination parameters
-     * @return A page of chat messages
+     * Gets messages for a specific conversation.
      */
     fun getMessagesForConversation(
         otherUserId: Long,
-        listingId: Long,
-        pageable: Pageable,
-    ): Page<ChatMessageDto> {
+        listingId: Long
+    ): List<ChatMessageDto> {
         val userId = userService.getCurrentUser().id
 
         logger.debug("Getting messages between users {} and {} for listing: {}",
@@ -102,8 +91,7 @@ class ChatMessageService(
         val messages = chatMessageRepository.findMessagesBetweenUsersForListing(
             userId,
             otherUserId,
-            listingId,
-            pageable
+            listingId
         )
 
         return messages.map { ChatMessageMapper.toDto(it) }
@@ -111,18 +99,9 @@ class ChatMessageService(
 
     /**
      * Sends a new message.
-     *
-     * @param request The message request data
-     * @return The created message as a DTO
-     * @throws InvalidMessageException if the message is invalid
-     * @throws MessageTooLongException if the message is too long
-     * @throws RecipientNotFoundException if the recipient doesn't exist
      */
     @Transactional
     fun sendMessage(request: ChatMessageRequestDto): ChatMessageDto {
-        logger.debug("Sending message to recipient: {} for listing: {}",
-            request.recipientId, request.listingId)
-
         if (request.content.isBlank()) {
             throw InvalidMessageException("Message content cannot be empty")
         }
@@ -156,37 +135,61 @@ class ChatMessageService(
         )
 
         val savedMessage = chatMessageRepository.save(chatMessage)
-        val messageDto = ChatMessageMapper.toDto(savedMessage)
 
         logger.info("Message sent from user {} to user {} about listing: {}",
             sender.id, recipient.id, listing.id)
 
-        simpMessagingTemplate.convertAndSendToUser(
-            request.recipientId.toString(),
-            "/queue/messages",
-            messageDto
-        )
-
-        return messageDto
+        return ChatMessageMapper.toDto(savedMessage)
     }
+
+    /**
+     * Long polls for new messages in a specific conversation.
+     */
+    @Throws(InterruptedException::class)
+    fun pollForMessages(
+        lastMessageTimestamp: Instant,
+        otherUserId: Long,
+        listingId: Long
+    ): List<ChatMessageDto> {
+        val currentUser = userService.getCurrentUser()
+        val startTime = System.currentTimeMillis()
+
+        while (System.currentTimeMillis() - startTime < LONG_POLL_TIMEOUT) {
+            // Check for new messages in this specific conversation
+            val newMessages = chatMessageRepository.findNewMessagesForConversation(
+                currentUserId = currentUser.id,
+                otherUserId = otherUserId,
+                listingId = listingId,
+                since = lastMessageTimestamp,
+            )
+
+            if (newMessages.isNotEmpty()) {
+                logger.debug("Found {} new messages for conversation", newMessages.size)
+                return newMessages.map { ChatMessageMapper.toDto(it) }
+            }
+
+            // Sleep for a short interval before checking again
+            Thread.sleep(POLLING_SLEEP_INTERVAL)
+        }
+
+        // Return empty list after timeout
+        return emptyList()
+    }
+
+    /**
+     * Gets the current user.
+     */
+    fun getCurrentUser() = userService.getCurrentUser()
 
     /**
      * Verifies that a conversation between users about a listing is valid.
      * At least one of the users must be the seller of the listing.
-     *
-     * @param senderId The ID of the message sender
-     * @param recipientId The ID of the message recipient
-     * @param listingId The ID of the listing
-     * @throws MessageAccessDeniedException if the conversation is invalid
      */
     private fun verifyConversationAccess(senderId: Long, recipientId: Long, listingId: Long) {
         val listing = listingService.getListing(listingId)
 
         if (listing.seller.id != senderId && listing.seller.id != recipientId) {
-            logger.warn("Invalid conversation: neither participant is the listing owner. " +
-                    "Sender: {}, Recipient: {}, Listing: {}, Owner: {}",
-                senderId, recipientId, listingId, listing.seller.id)
-
+            logger.warn("Invalid conversation: neither participant is the listing owner")
             throw MessageAccessDeniedException()
         }
     }
