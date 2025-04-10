@@ -15,7 +15,7 @@
 
 ### Aleksander
 - [ ] Listings 
-  - [ ] Lat/Lon in listings
+  - [x] Lat/Lon in listings
   - [ ] See the location on the listing page (map)
 - [ ] Search Page
   - [ ] Map on search page

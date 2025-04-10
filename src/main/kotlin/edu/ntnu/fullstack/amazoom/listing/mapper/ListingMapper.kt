@@ -39,7 +39,9 @@ object ListingMapper {
             defects = request.defects ?: emptyList(),
             modifications = request.modifications ?: emptyList(),
             reasonForSelling = request.reasonForSelling,
-            images = request.images ?: emptyList()
+            images = request.images ?: emptyList(),
+            latitude = request.latitude,
+            longitude = request.longitude,
         )
     }
 
@@ -73,7 +75,9 @@ object ListingMapper {
             defects = request.defects ?: emptyList(),
             modifications = request.modifications ?: emptyList(),
             reasonForSelling = request.reasonForSelling,
-            images = request.images ?: emptyList()
+            images = request.images ?: emptyList(),
+            latitude = request.latitude,
+            longitude = request.longitude,
         )
     }
 
@@ -105,7 +109,9 @@ object ListingMapper {
             createdAt = entity.createdAt,
             images = entity.images,
             status = entity.status,
-            isBookmarked = false
+            isBookmarked = false,
+            latitude = entity.latitude,
+            longitude = entity.longitude,
         )
     }
 }

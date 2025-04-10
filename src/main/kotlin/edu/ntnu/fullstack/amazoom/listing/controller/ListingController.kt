@@ -277,7 +277,13 @@ class ListingController(
         @Parameter(description = "Field to sort by", example = "createdAt", schema = Schema(type = "string"))
         @RequestParam(defaultValue = "createdAt") sortBy: String,
         @Parameter(description = "Sort direction", example = "DESC", schema = Schema(type = "string"))
-        @RequestParam(defaultValue = "DESC") sortDirection: String
+        @RequestParam(defaultValue = "DESC") sortDirection: String,
+        @Parameter(description = "Latitude for location-based search", example = "63.4305")
+        @RequestParam latitude: Double?,
+        @Parameter(description = "Longitude for location-based search", example = "9.0343")
+        @RequestParam longitude: Double?,
+        @Parameter(description = "The radius in kilometers for location-based search", example = "5.0")
+        @RequestParam(defaultValue = "5.0") radiusKm: Double,
     ): ResponseEntity<Page<ListingDto>> {
         val searchRequest = ListingSearchRequestDto(
             q = q,
@@ -297,6 +303,7 @@ class ListingController(
             size = size,
             sortBy = sortBy,
             sortDirection = sortDirection
+
         )
         
         val searchResults = listingService.searchListings(searchRequest)

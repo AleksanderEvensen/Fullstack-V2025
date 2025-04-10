@@ -505,6 +505,18 @@ export interface components {
              */
             description: string;
             /**
+             * Format: double
+             * @description GPS Latitude location of the listing
+             * @example 63.124345
+             */
+            latitude: number;
+            /**
+             * Format: double
+             * @description GPS Longitude location of the listing
+             * @example 10.123456
+             */
+            longitude: number;
+            /**
              * Format: int32
              * @description Year the product was manufactured
              * @example 2022
@@ -639,6 +651,18 @@ export interface components {
              * @example MacBook Pro 2022: In excellent condition. Barely used.
              */
             description: string;
+            /**
+             * Format: double
+             * @description GPS Latitude location of the listing
+             * @example 63.124345
+             */
+            latitude: number;
+            /**
+             * Format: double
+             * @description GPS Longitude location of the listing
+             * @example 10.123456
+             */
+            longitude: number;
             /** @description Information about the seller */
             seller: components["schemas"]["UserDto"];
             /**
@@ -805,6 +829,12 @@ export interface components {
             size: number;
             sortBy: string;
             sortDirection: string;
+            /** Format: double */
+            latitude?: number;
+            /** Format: double */
+            longitude?: number;
+            /** Format: double */
+            radiusKm: number;
         };
         PageListingDto: {
             /** Format: int64 */
@@ -828,12 +858,12 @@ export interface components {
             /** Format: int64 */
             offset?: number;
             sort?: components["schemas"]["SortObject"];
-            unpaged?: boolean;
             paged?: boolean;
             /** Format: int32 */
             pageNumber?: number;
             /** Format: int32 */
             pageSize?: number;
+            unpaged?: boolean;
         };
         SortObject: {
             empty?: boolean;
@@ -1486,6 +1516,21 @@ export interface operations {
                  * @example DESC
                  */
                 sortDirection?: string;
+                /**
+                 * @description Latitude for location-based search
+                 * @example 63.4305
+                 */
+                latitude?: number;
+                /**
+                 * @description Longitude for location-based search
+                 * @example 9.0343
+                 */
+                longitude?: number;
+                /**
+                 * @description The radius in kilometers for location-based search
+                 * @example 5
+                 */
+                radiusKm?: number;
             };
             header?: never;
             path?: never;

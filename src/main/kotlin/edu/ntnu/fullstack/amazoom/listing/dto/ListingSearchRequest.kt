@@ -19,5 +19,8 @@ data class ListingSearchRequestDto(
     val page: Int = 0,
     val size: Int = 20,
     val sortBy: String = "createdAt",
-    val sortDirection: String = "DESC"
+    val sortDirection: String = "DESC",
+    val latitude: Double? = null,
+    val longitude: Double? = null,
+    val radiusKm: Double = 5.0
 ) 
