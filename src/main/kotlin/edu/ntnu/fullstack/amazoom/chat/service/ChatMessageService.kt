@@ -8,6 +8,7 @@ import edu.ntnu.fullstack.amazoom.chat.exception.MessageTooLongException
 import edu.ntnu.fullstack.amazoom.chat.exception.RecipientNotFoundException
 import edu.ntnu.fullstack.amazoom.chat.mapper.ChatMessageMapper
 import edu.ntnu.fullstack.amazoom.chat.repository.ChatMessageRepository
+import edu.ntnu.fullstack.amazoom.common.entity.User
 import edu.ntnu.fullstack.amazoom.common.mapper.UserMapper
 import edu.ntnu.fullstack.amazoom.common.service.UserService
 import edu.ntnu.fullstack.amazoom.listing.exception.ListingNotFoundException
@@ -142,38 +143,24 @@ class ChatMessageService(
         return ChatMessageMapper.toDto(savedMessage)
     }
 
-    /**
-     * Long polls for new messages in a specific conversation.
-     */
-    @Throws(InterruptedException::class)
-    fun pollForMessages(
+    fun checkForNewMessages(
+        user: User,
         lastMessageTimestamp: Instant,
         otherUserId: Long,
         listingId: Long
     ): List<ChatMessageDto> {
-        val currentUser = userService.getCurrentUser()
-        val startTime = System.currentTimeMillis()
+        val newMessages = chatMessageRepository.findNewMessagesForConversation(
+            currentUserId = user.id,
+            otherUserId = otherUserId,
+            listingId = listingId,
+            since = lastMessageTimestamp
+        )
 
-        while (System.currentTimeMillis() - startTime < LONG_POLL_TIMEOUT) {
-            // Check for new messages in this specific conversation
-            val newMessages = chatMessageRepository.findNewMessagesForConversation(
-                currentUserId = currentUser.id,
-                otherUserId = otherUserId,
-                listingId = listingId,
-                since = lastMessageTimestamp,
-            )
-
-            if (newMessages.isNotEmpty()) {
-                logger.debug("Found {} new messages for conversation", newMessages.size)
-                return newMessages.map { ChatMessageMapper.toDto(it) }
-            }
-
-            // Sleep for a short interval before checking again
-            Thread.sleep(POLLING_SLEEP_INTERVAL)
+        if (newMessages.isNotEmpty()) {
+            logger.debug("Found {} new messages for user: {}", newMessages.size, user.email)
         }
 
-        // Return empty list after timeout
-        return emptyList()
+        return newMessages.map { ChatMessageMapper.toDto(it) }
     }
 
     /**

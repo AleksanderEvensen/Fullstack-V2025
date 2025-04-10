@@ -91,7 +91,7 @@ export function useChatMessages() {
         throw error
       }
     },
-    refetchInterval: 1000,
+    // refetchInterval: 1000,
     enabled: computed(() => !!currentConversation.value),
     refetchOnWindowFocus: false,
     notifyOnChangeProps: ['data'],

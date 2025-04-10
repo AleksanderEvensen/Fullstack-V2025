@@ -4,32 +4,23 @@ import edu.ntnu.fullstack.amazoom.chat.dto.ChatMessageDto
 import edu.ntnu.fullstack.amazoom.chat.dto.ChatMessageRequestDto
 import edu.ntnu.fullstack.amazoom.chat.dto.ConversationSummaryDto
 import edu.ntnu.fullstack.amazoom.chat.service.ChatMessageService
-import edu.ntnu.fullstack.amazoom.common.dto.ErrorResponseDto
-import io.swagger.v3.oas.annotations.Operation
-import io.swagger.v3.oas.annotations.media.Content
-import io.swagger.v3.oas.annotations.media.Schema
-import io.swagger.v3.oas.annotations.responses.ApiResponse
-import io.swagger.v3.oas.annotations.responses.ApiResponses
+import edu.ntnu.fullstack.amazoom.common.service.UserService
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.slf4j.LoggerFactory
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.concurrent.DelegatingSecurityContextRunnable
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.context.request.async.DeferredResult
 import java.time.Instant
-import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 @RestController
 @RequestMapping("/api/chat")
 @Tag(name = "Chat", description = "Operations for chat messaging")
 class ChatController(
-    private val chatMessageService: ChatMessageService
+    private val chatMessageService: ChatMessageService,
+    private val userService: UserService
 ) {
     private val logger = LoggerFactory.getLogger(ChatController::class.java)
     private val LONG_POLL_TIMEOUT = 30000L
@@ -78,32 +69,46 @@ class ChatController(
         @PathVariable listingId: Long,
         @RequestParam("lastTimestamp") lastTimestamp: Long
     ): DeferredResult<ResponseEntity<List<ChatMessageDto>>> {
-        val result = DeferredResult<ResponseEntity<List<ChatMessageDto>>>(LONG_POLL_TIMEOUT + 1000L)
+        val result = DeferredResult<ResponseEntity<List<ChatMessageDto>>>(30000L) // 30 seconds timeout
         val lastMessageTime = Instant.ofEpochMilli(lastTimestamp)
 
-        result.onTimeout {
-            result.setResult(ResponseEntity.ok(emptyList()))
+        val currentUser = userService.getCurrentUser()
+
+        logger.debug("Starting poll for user: {}, listingId: {}, otherUserId: {}",
+            currentUser.email, listingId, otherUserId)
+
+        val executor = Executors.newSingleThreadScheduledExecutor()
+
+        val task = object : Runnable {
+            override fun run() {
+                try {
+                    val messages = chatMessageService.checkForNewMessages(
+                        currentUser,
+                        lastMessageTime,
+                        otherUserId,
+                        listingId
+                    )
+
+                    if (messages.isNotEmpty()) {
+                        result.setResult(ResponseEntity.ok(messages))
+                        return
+                    }
+
+                    if (!result.isSetOrExpired) {
+                        executor.schedule(this, 500, TimeUnit.MILLISECONDS)
+                    }
+                } catch (e: Exception) {
+                    logger.error("Error checking for messages: {}", e.message, e)
+                    result.setErrorResult(ResponseEntity.status(500).body(emptyList<ChatMessageDto>()))
+                }
+            }
         }
 
-        val securityContext = SecurityContextHolder.getContext()
-        val runnable = DelegatingSecurityContextRunnable(Runnable {
-            try {
-                val messages = chatMessageService.pollForMessages(
-                    lastMessageTime,
-                    otherUserId,
-                    listingId
-                )
-                result.setResult(ResponseEntity.ok(messages))
-            } catch (e: Exception) {
-                logger.error("Error during long polling: {}", e.message)
-                result.setErrorResult(
-                    ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(emptyList<ChatMessageDto>())
-                )
-            }
-        }, securityContext)
+        executor.schedule(task, 0, TimeUnit.MILLISECONDS)
 
-        CompletableFuture.runAsync(runnable)
+        result.onCompletion {
+            executor.shutdown()
+        }
 
         return result
     }
