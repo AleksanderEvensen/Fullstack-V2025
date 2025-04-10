@@ -212,25 +212,25 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/bookmarks": {
+    "/api/bookmarks/{listingId}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /**
-         * List user bookmarks
-         * @description Lists all bookmarks for the currently authenticated user
-         */
-        get: operations["listAllBookmarksForUser"];
+        get?: never;
         put?: never;
         /**
          * Create a bookmark
          * @description Creates a new bookmark for a listing. Users cannot bookmark their own listings.
          */
         post: operations["createBookmark"];
-        delete?: never;
+        /**
+         * Delete a bookmark
+         * @description Deletes a bookmark by its listing ID. Users can only delete their own bookmarks.
+         */
+        delete: operations["deleteBookmark"];
         options?: never;
         head?: never;
         patch?: never;
@@ -356,6 +356,58 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/bookmarks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List user bookmarks
+         * @description Lists all bookmarks for the currently authenticated user
+         */
+        get: operations["listAllBookmarksForUser"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/vipps/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["initiate"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/vipps/callback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["register_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/ping": {
         parameters: {
             query?: never;
@@ -391,26 +443,6 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/bookmarks/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /**
-         * Delete a bookmark
-         * @description Deletes a bookmark by its ID. Users can only delete their own bookmarks.
-         */
-        delete: operations["deleteBookmark"];
         options?: never;
         head?: never;
         patch?: never;
@@ -530,6 +562,12 @@ export interface components {
              *     ]
              */
             images?: string[];
+            /**
+             * @description Listing status
+             * @example ACTIVE
+             * @enum {string}
+             */
+            status?: "ACTIVE" | "SOLD";
         };
         /** @description User address information */
         AddressDto: {
@@ -659,6 +697,17 @@ export interface components {
              */
             createdAt: string;
             /**
+             * @description Is the listing bookmarked by the user
+             * @example true
+             */
+            isBookmarked: boolean;
+            /**
+             * @description Listing status
+             * @example ACTIVE
+             * @enum {string}
+             */
+            status: "ACTIVE" | "SOLD";
+            /**
              * @description List of image URLs for this listing
              * @example [
              *       "macbook-12345.jpg",
@@ -666,6 +715,7 @@ export interface components {
              *     ]
              */
             images: string[];
+            bookmarked?: boolean;
         };
         /** @description Basic user information for public display */
         UserDto: {
@@ -766,17 +816,17 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["ListingDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            pageable?: components["schemas"]["PageableObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
+            pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
         PageableObject: {
@@ -792,12 +842,8 @@ export interface components {
         };
         SortObject: {
             empty?: boolean;
-            unsorted?: boolean;
             sorted?: boolean;
-        };
-        CreateListingBookmarkRequestDto: {
-            /** Format: int64 */
-            listingId: number;
+            unsorted?: boolean;
         };
         ListingBookmarkResponseDto: {
             /** Format: int64 */
@@ -843,17 +889,17 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["ConversationSummaryDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            pageable?: components["schemas"]["PageableObject"];
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
+            pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
         ChatMessageDto: {
@@ -1626,47 +1672,16 @@ export interface operations {
             };
         };
     };
-    listAllBookmarksForUser: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description List of bookmarks retrieved successfully */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ListingBookmarkResponseDto"];
-                };
-            };
-            /** @description User not authenticated */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ErrorResponseDto"];
-                };
-            };
-        };
-    };
     createBookmark: {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                listingId: number;
+            };
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateListingBookmarkRequestDto"];
-            };
-        };
+        requestBody?: never;
         responses: {
             /** @description Bookmark created successfully */
             201: {
@@ -1697,6 +1712,44 @@ export interface operations {
             };
             /** @description Bookmark already exists */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    deleteBookmark: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                listingId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Bookmark deleted successfully */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized to delete this bookmark */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Bookmark not found */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1930,6 +1983,75 @@ export interface operations {
             };
         };
     };
+    listAllBookmarksForUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of bookmarks retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ListingBookmarkResponseDto"];
+                };
+            };
+            /** @description User not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    initiate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    register_1: {
+        parameters: {
+            query: {
+                params: {
+                    [key: string]: string;
+                };
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     ping: {
         parameters: {
             query?: never;
@@ -1988,44 +2110,6 @@ export interface operations {
             };
             /** @description Not authenticated */
             401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ErrorResponseDto"];
-                };
-            };
-        };
-    };
-    deleteBookmark: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Bookmark deleted successfully */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Unauthorized to delete this bookmark */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ErrorResponseDto"];
-                };
-            };
-            /** @description Bookmark not found */
-            404: {
                 headers: {
                     [name: string]: unknown;
                 };

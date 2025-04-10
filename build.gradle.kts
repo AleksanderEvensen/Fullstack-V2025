@@ -53,6 +53,7 @@ dependencies {
 	testImplementation("org.mockito:mockito-core:$mockitoVersion")
 	testImplementation("org.mockito:mockito-junit-jupiter:$mockitoVersion")
 	testImplementation("org.mockito:mockito-inline:5.2.0")
+	testImplementation("com.h2database:h2:2.2.224")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
