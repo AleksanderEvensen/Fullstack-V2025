@@ -7,7 +7,7 @@ const props = defineProps<DropdownMenuTriggerProps & { class?: HTMLAttributes['c
 </script>
 
 <template>
-  <DropdownMenuTrigger v-bind="props" :class="cn('dropdown-menu-trigger', props.class)">
+  <DropdownMenuTrigger  v-bind="props" :class="cn(!props.asChild && 'dropdown-menu-trigger', props.class)">
     <slot />
   </DropdownMenuTrigger>
 </template>
