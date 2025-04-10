@@ -17,7 +17,6 @@ CREATE TABLE chat_messages
     listing_id   BIGINT                NOT NULL,
     content      VARCHAR(2000)         NOT NULL,
     timestamp    datetime              NULL,
-    `read`       BIT(1)                NOT NULL,
     CONSTRAINT pk_chat_messages PRIMARY KEY (id)
 );
 
