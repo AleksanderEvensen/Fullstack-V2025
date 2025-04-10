@@ -56,6 +56,8 @@ const handleToggleSold = () => {
     price: props.listing.price,
     originalPrice: props.listing.originalPrice,
     description: props.listing.description,
+    longitude: props.listing.longitude,
+    latitude: props.listing.latitude,
   }, {
     onSuccess: () => {
       toast.success(t('product.toggleSoldSuccess'))

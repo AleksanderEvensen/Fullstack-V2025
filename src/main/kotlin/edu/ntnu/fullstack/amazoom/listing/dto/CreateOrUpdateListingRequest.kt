@@ -38,11 +38,9 @@ data class CreateOrUpdateListingRequestDto(
     val description: String,
 
     @field:Schema(description = "GPS Latitude location of the listing", example = "63.124345", required = true)
-    @field:NotBlank(message = "GPS Latitude is required")
     val latitude: Double,
 
     @field:Schema(description = "GPS Longitude location of the listing", example = "10.123456", required = true)
-    @field:NotBlank(message = "GPS Longitude is required")
     val longitude: Double,
 
     // Product Details

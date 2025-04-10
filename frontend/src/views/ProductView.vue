@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -18,8 +18,6 @@ import { useTypedI18n } from '@/i18n'
 import { EllipsisIcon, HeartIcon, TrashIcon, PinIcon } from 'lucide-vue-next'
 import { Map } from 'mapbox-gl'
 import { MapboxMap, MapboxMarker, MapboxNavigationControl } from '@studiometa/vue-mapbox-gl'
-import { searchGeocodeAdvanced } from '@/lib/api/geocoding'
-import { watchDebounced } from '@vueuse/core'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,13 +25,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useAuthStore } from '@/stores/auth'
-import { useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
 import { CheckIcon } from 'lucide-vue-next'
 import { useQueryClient } from '@tanstack/vue-query'
-import { Textarea } from '@/components/ui/textarea'
-import { useSendMessage } from '@/lib/api/queries/sendMessage'
-
 const { t } = useTypedI18n()
 const id = useRoute().params.id as unknown as number
 const { data: product } = getListing(id)
@@ -87,58 +81,6 @@ const handleBookmark = () => {
 
 const mapRef = ref<Map>()
 
-const locationData = computed(() => ({
-  street: product.value?.seller.address?.streetName,
-  postalcode: product.value?.seller.address?.postalCode,
-  city: product.value?.seller.address?.city,
-}))
-
-const currentLocation = ref<{ lat: number; lon: number } | null>(null)
-
-async function flyToAddress(params: Parameters<typeof searchGeocodeAdvanced>[0]) {
-  if (!mapRef.value) return
-  const [location] = (await searchGeocodeAdvanced(params)) ?? []
-  if (location) {
-    currentLocation.value = {
-      lat: +location.lat,
-      lon: +location.lon,
-    }
-    mapRef.value.flyTo({
-      center: [+location.lon, +location.lat],
-      zoom: 14,
-    })
-  }
-}
-
-watchDebounced(
-  locationData,
-  async () => {
-    if (
-      !product.value?.seller.address?.streetName ||
-      !product.value?.seller.address?.city ||
-      !product.value?.seller.address?.postalCode
-    )
-      return
-    flyToAddress({
-      ...locationData.value,
-      country: 'Norway',
-    })
-  },
-  {
-    debounce: 1000,
-  },
-)
-
-watch(mapRef, () => {
-  if (!mapRef.value) return
-  mapRef.value.once('load', () => {
-    flyToAddress({
-      ...locationData.value,
-      country: 'Norway',
-    })
-  })
-})
-
 const { user, isAuthenticated } = useAuthStore()
 const canDelete = computed(() => {
   return product.value?.seller.id === user?.id
@@ -179,29 +121,6 @@ const handleToggleSold = () => {
       },
     },
   )
-}
-
-const messageContent = ref('')
-const { mutate: sendMessage } = useSendMessage()
-
-const handleSendMessage = () => {
-  if (!messageContent.value.trim() || !product.value) return
-
-  const messageData = {
-    recipientId: product.value.seller.id,
-    listingId: product.value.id,
-    content: messageContent.value,
-  }
-
-  sendMessage(messageData, {
-    onSuccess: () => {
-      messageContent.value = ''
-      toast.success(t('messages.sendSuccess') || 'Message sent')
-    },
-    onError: () => {
-      toast.error(t('messages.sendError') || 'Failed to send message')
-    },
-  })
 }
 </script>
 
@@ -307,16 +226,9 @@ const handleSendMessage = () => {
 
             <!-- Actions -->
             <div class="action-buttons">
-              <Textarea v-model="messageContent" :placeholder="t('product.messagePlaceholder')" />
-              <Button
-                variant="outline"
-                class="message-button"
-                size="lg"
-                @click="handleSendMessage"
-                :disabled="!messageContent.trim()"
-              >
-                {{ t('product.messageButton') }}
-              </Button>
+              <Button variant="outline" class="message-button" size="lg">{{
+                t('product.messageButton')
+              }}</Button>
             </div>
           </CardContent>
         </Card>
@@ -368,14 +280,11 @@ const handleSendMessage = () => {
             style="height: 400px"
             :access-token="MAPBOX_API_TOKEN"
             map-style="mapbox://styles/mapbox/streets-v12"
-            :center="[9.139, 60.687]"
-            :zoom="5.0"
+            :center="[product.longitude, product.latitude]"
+            :zoom="12.0"
             @mb-created="(map: Map) => (mapRef = map)"
           >
-            <MapboxMarker
-              v-if="currentLocation"
-              :lng-lat="[currentLocation.lon, currentLocation.lat]"
-            >
+            <MapboxMarker :lng-lat="[product.longitude, product.latitude]">
               <div class="map-marker">
                 <PinIcon />
               </div>

@@ -9,7 +9,7 @@ import FlagComponent from '@/components/ui/country-flag/CountryFlag.vue'
 import { computed, ref } from 'vue'
 import { type Locales, AvailableLocales, useTypedI18n } from '@/i18n'
 import { useAuthStore } from '@/stores/auth'
-import { formatNameInitials, formatPictureUrl } from '@/lib/utils'
+import { formatPictureUrl } from '@/lib/utils'
 import {
   DropdownMenu,
   DropdownMenuContent,

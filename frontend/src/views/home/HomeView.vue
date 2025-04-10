@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input'
 import { RouterLink, useRouter } from 'vue-router'
 import { Icon, type IconName } from '@/components/ui/icon'
 import ProductGrid from '@/views/home/components/ProductGrid.vue'
-import { MapIcon, Search } from 'lucide-vue-next'
+import { Search } from 'lucide-vue-next'
 import { getListings } from '@/lib/api/queries/listings'
 import { getCategories } from '@/lib/api/queries/categories'
 import { ref } from 'vue'
@@ -41,15 +41,6 @@ const handleSearch = () => {
         <Button size="icon" class="search-button" @click="handleSearch">
           <Search :size="24" />
         </Button>
-      </div>
-
-      <div class="cart-button">
-        <RouterLink to="/map" class="cart-link">
-          <Button variant="outline" class="map-button">
-            <MapIcon :size="24" />
-            <span>{{ t('home.map') }}</span>
-          </Button>
-        </RouterLink>
       </div>
     </div>
 
@@ -96,14 +87,6 @@ const handleSearch = () => {
   transform: translateY(-50%);
 }
 
-.map-button {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
 .search-container {
   position: relative;
   display: flex;
@@ -119,20 +102,7 @@ const handleSearch = () => {
   padding-right: 50px;
 }
 
-.cart-button {
-  display: flex;
-  align-items: center;
-  margin-left: 1rem;
-}
 
-.cart-link {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-decoration: none;
-  color: var(--foreground);
-  font-size: 0.9rem;
-}
 
 /* Categories - improved for mobile */
 .categories-container {

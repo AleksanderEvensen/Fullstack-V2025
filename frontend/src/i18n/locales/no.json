@@ -18,7 +18,10 @@
     "next": "Neste",
     "previous": "Forrige",
     "goback": "Gå tilbake",
-    "settings": "Innstillinger"
+    "settings": "Innstillinger",
+    "loadMore": "Last mer",
+    "loadingMore": "Laster mer...",
+    "submitting": "Sender inn..."
   },
   "search": {
     "title": "Finn det hjertet ditt begjærer",
@@ -30,6 +33,7 @@
     "noResults": "Ingen annonser samsvarer med søkekriteriene dine. Prøv å justere filtrene.",
     "pagination": "Side {current} av {total}",
     "resultsCount": "Ingen annonser her | {count} resultat | {count} resultater",
+    "mapView": "Kartvisning",
     "sort": {
       "newest": "Nyeste først",
       "oldest": "Eldste først",
@@ -47,7 +51,10 @@
       "category": "Kategori",
       "selectCategory": "Velg kategori",
       "manufacturer": "Produsent",
-      "searchManufacturer": "Søk etter produsent..."
+      "searchManufacturer": "Søk etter produsent...",
+      "location": "Plassering",
+      "locationTitle": "Lokasjonsradius",
+      "radiusDisplay": "{distance} km"
     },
     "settings": "Innstillinger",
     "goback": "Gå tilbake"
@@ -110,6 +117,15 @@
         "passwordRequired": "Passord er påkrevd"
       }
     },
+    "register": {
+      "title": "Registrer",
+      "description": "Opprett en ny konto",
+      "vipps": "Fortsett med Vipps",
+      "vippsExplain": "Fyll ut feltene nedenfor eller",
+      "haveAccount": "Har du allerede en konto?",
+      "loginLink": "Logg inn",
+      "button": "Registrer konto"
+    },
     "validation": {
       "nameMin": "Navnet må være minst 2 tegn",
       "emailInvalid": "Vennligst skriv inn en gyldig e-postadresse",
@@ -138,6 +154,10 @@
       "productDetails": {
         "title": "Produktdetaljer",
         "description": "Legg til spesifikasjoner"
+      },
+      "location": {
+        "title": "Plassering",
+        "description": "Angi varens plassering"
       },
       "images": {
         "title": "Bilder",
@@ -187,7 +207,24 @@
       "reasonForSellingPlaceholder": "Hvorfor selger du denne varen?",
       "productImages": "Produktbilder",
       "imageUploadText": "Dra og slipp bilder her eller klikk for å laste opp",
-      "noImages": "Ingen bilder lastet opp"
+      "noImages": "Ingen bilder lastet opp",
+      "location": {
+        "title": "Varens plassering",
+        "street": "Gate",
+        "streetPlaceholder": "Skriv inn gatenavn",
+        "streetNumber": "Gatenummer",
+        "streetNumberPlaceholder": "Skriv inn gatenummer",
+        "city": "By",
+        "cityPlaceholder": "Skriv inn by",
+        "postal": "Postnummer",
+        "postalPlaceholder": "Skriv inn postnummer",
+        "country": "Land",
+        "search": "Søk plassering",
+        "instructions": "Skriv inn en adresse ovenfor eller klikk på kartet for å angi varens plassering",
+        "locationSet": "Plassering er angitt",
+        "clear": "Fjern plassering",
+        "validationMessage": "Å angi en plassering hjelper kjøpere å finne varer i nærheten"
+      }
     },
     "categories": {
       "electronics": "Elektronikk",
@@ -201,6 +238,8 @@
       "basicInfoDescription": "Se gjennom annonsens grunnleggende detaljer",
       "productDetails": "Produktdetaljer",
       "productDetailsDescription": "Se gjennom produktspesifikasjonene",
+      "locationInfo": "Plasseringsinformasjon",
+      "locationInfoDescription": "Se gjennom varens plassering",
       "imagesTitle": "Bilder",
       "imagesDescription": "Se gjennom produktbildene dine",
       "imageAlt": "Produktbilde"
@@ -246,7 +285,8 @@
       "knownDefects": "Kjente defekter",
       "modifications": "Modifikasjoner",
       "reasonForSelling": "Årsak til salg",
-      "specifications": "Spesifikasjoner"
+      "specifications": "Spesifikasjoner",
+      "location": "Varens plassering"
     },
     "labels": {
       "modelYear": "Modellår",
@@ -294,6 +334,7 @@
       "profile-picture": "Profilbilde",
       "changePicture": "Velg profilbilde",
       "deletePicture": "Slett profilbilde",
+      "personal-information": "Personlig informasjon",
       "name": "Navn",
       "email": "E-post",
       "phone": "Telefon Nummer",
@@ -320,7 +361,11 @@
         "address-required": "Adresse er påkrevd",
         "address-updated": "Adressen ble oppdatert",
         "address-update-failed": "Kunne ikke oppdatere adressen"
-      }
+      },
+      "profile-picture-uploaded": "Profilbilde ble lastet opp",
+      "profile-picture-upload-failed": "Kunne ikke laste opp profilbilde",
+      "profile-picture-deleted": "Profilbilde ble slettet",
+      "profile-picture-delete-failed": "Kunne ikke slette profilbilde"
     }
   },
   "notFound": {

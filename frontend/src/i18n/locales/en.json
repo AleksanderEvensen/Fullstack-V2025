@@ -20,7 +20,8 @@
     "goback": "Go Back",
     "settings": "Settings",
     "loadMore": "Load more",
-    "loadingMore": "Loading more..."
+    "loadingMore": "Loading more...",
+    "submitting": "Submitting..."
   },
   "search": {
     "title": "Find what your heart desires",
@@ -133,6 +134,10 @@
         "title": "Product Details",
         "description": "Add specifications"
       },
+      "location": {
+        "title": "Location",
+        "description": "Set your item location"
+      },
       "images": {
         "title": "Images",
         "description": "Upload product photos"
@@ -181,7 +186,24 @@
       "reasonForSellingPlaceholder": "Why are you selling this item?",
       "productImages": "Product Images",
       "imageUploadText": "Drag and drop images here or click to upload",
-      "noImages": "No images uploaded"
+      "noImages": "No images uploaded",
+      "location": {
+        "title": "Item Location",
+        "street": "Street",
+        "streetPlaceholder": "Enter street name",
+        "streetNumber": "Street Number",
+        "streetNumberPlaceholder": "Enter street number",
+        "city": "City",
+        "cityPlaceholder": "Enter city",
+        "postal": "Postal Code",
+        "postalPlaceholder": "Enter postal code",
+        "country": "Country",
+        "search": "Search Location",
+        "instructions": "Enter an address above or click on the map to set your item's location",
+        "locationSet": "Location has been set",
+        "clear": "Clear location",
+        "validationMessage": "Setting a location helps buyers find items near them"
+      }
     },
     "categories": {
       "electronics": "Electronics",
@@ -195,6 +217,8 @@
       "basicInfoDescription": "Review your listing's basic details",
       "productDetails": "Product Details",
       "productDetailsDescription": "Review your product specifications",
+      "locationInfo": "Location Information",
+      "locationInfoDescription": "Review your item's location",
       "imagesTitle": "Images",
       "imagesDescription": "Review your product images",
       "imageAlt": "Product image"
@@ -240,7 +264,8 @@
       "knownDefects": "Known Defects",
       "modifications": "Modifications",
       "reasonForSelling": "Reason for Selling",
-      "specifications": "Specifications"
+      "specifications": "Specifications",
+      "location": "Item Location"
     },
     "labels": {
       "modelYear": "Model Year",
@@ -315,7 +340,11 @@
         "address-required": "Address is required",
         "address-updated": "Address updated successfully",
         "address-update-failed": "Failed to update address"
-      }
+      },
+      "profile-picture-uploaded": "Profile picture uploaded successfully",
+      "profile-picture-upload-failed": "Failed to upload profile picture",
+      "profile-picture-deleted": "Profile picture deleted successfully",
+      "profile-picture-delete-failed": "Failed to delete profile picture"
     }
   },
   "notFound": {

@@ -3,13 +3,9 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useTypedI18n } from '@/i18n'
-import { formatNameInitials, formatPictureUrl, MAPBOX_API_TOKEN } from '@/lib/utils'
-import { ArrowLeftIcon, Building2Icon, HouseIcon, MapPinIcon } from 'lucide-vue-next'
+import { formatNameInitials, formatPictureUrl } from '@/lib/utils'
+import { ArrowLeftIcon } from 'lucide-vue-next'
 import { computed, ref, watch, onMounted } from 'vue'
-import { MapboxMap, MapboxMarker, MapboxNavigationControl } from '@studiometa/vue-mapbox-gl'
-import { watchDebounced } from '@vueuse/core'
-import { searchGeocodeAdvanced } from '@/lib/api/geocoding'
-import { Map } from 'mapbox-gl'
 import { RouterLink } from 'vue-router'
 import { Card, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -34,27 +30,15 @@ import {
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 
+// Import the LocationInfoForm component
+import LocationInfoForm from '@/components/LocationInfoForm.vue'
+
 const { t } = useTypedI18n()
 const userStore = useAuthStore()
 const { mutate: mutateUserProfilePicture } = useMutateUserProfilePicture()
 const { mutate: mutateRemoveUserProfilePicture } = useRemoveUserProfilePicture()
 const { mutate: updatePassword } = useUpdateUserPassword()
 const { mutate: updateAddress } = useUpdateUserAddress()
-
-const mapRef = ref<Map>()
-const street = ref(userStore.user?.address?.streetName)
-const city = ref(userStore.user?.address?.city)
-const postalCode = ref(userStore.user?.address?.postalCode)
-const streetNumber = ref(userStore.user?.address?.streetNumber || '')
-const country = ref(userStore.user?.address?.country || 'Norway')
-
-const locationData = computed(() => ({
-  street: street.value,
-  postalcode: postalCode.value,
-  city: city.value,
-}))
-
-const currentLocation = ref<{ lat: number; lon: number } | null>(null)
 
 // Form schemas
 const passwordSchema = z
@@ -70,57 +54,29 @@ const passwordSchema = z
 
 const addressSchema = z.object({
   streetName: z.string().min(1, t('profile.settings.address-required')),
-  streetNumber: z.string().min(1, t('profile.settings.address-required')),
+  streetNumber: z.string(),
   city: z.string().min(1, t('profile.settings.address-required')),
   postalCode: z.string().min(1, t('profile.settings.address-required')),
   country: z.string().min(1, t('profile.settings.address-required')),
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
 })
 
 const passwordFormRef = ref<InstanceType<typeof Form> | null>(null)
 const addressFormRef = ref<InstanceType<typeof Form> | null>(null)
-
-async function flyToAddress(params: Parameters<typeof searchGeocodeAdvanced>[0]) {
-  if (!mapRef.value) return
-  const [location] = (await searchGeocodeAdvanced(params)) ?? []
-  if (location) {
-    currentLocation.value = {
-      lat: +location.lat,
-      lon: +location.lon,
-    }
-    mapRef.value.flyTo({
-      center: [+location.lon, +location.lat],
-      zoom: 14,
-    })
-  }
-}
-
-watchDebounced(
-  locationData,
-  async () => {
-    if (!locationData.value.street || !locationData.value.city || !locationData.value.postalcode)
-      return
-    flyToAddress({
-      ...locationData.value,
-      country: 'Norway',
-    })
-  },
-  {
-    debounce: 1000,
-  },
-)
-
-watch(mapRef, () => {
-  if (!mapRef.value) return
-  mapRef.value.once('load', () => {
-    flyToAddress({
-      ...locationData.value,
-      country: 'Norway',
-    })
-  })
-})
+const addressIsLoading = ref(false)
 
 const userProfileImageUrl = computed(() => formatPictureUrl(userStore.user?.profileImageUrl ?? ''))
 const profilePicture = ref<File | undefined>(undefined)
+const user = computed(() => userStore.user)
+
+// Initialize form values for address
+const initialAddressValues = ref({
+  streetName: user.value?.address?.streetName || '',
+  city: user.value?.address?.city || '',
+  postalCode: user.value?.address?.postalCode || '',
+  country: user.value?.address?.country || 'Norway',
+})
 
 async function deleteProfilePicture() {
   await mutateRemoveUserProfilePicture(undefined, {
@@ -134,8 +90,6 @@ async function deleteProfilePicture() {
     },
   })
 }
-
-const user = computed(() => userStore.user)
 
 function changeProfilePicture(event: Event) {
   const target = event.target as HTMLInputElement
@@ -173,40 +127,46 @@ async function handlePasswordUpdate(values: z.infer<typeof passwordSchema>) {
 }
 
 async function handleAddressUpdate(values: z.infer<typeof addressSchema>) {
-  await updateAddress(values, {
-    onSuccess: () => {
-      toast.success(t('profile.settings.address-updated'))
-      userStore.fetchUser()
-    },
-    onError: () => {
-      toast.error(t('profile.settings.address-update-failed'))
-    },
-  })
+  addressIsLoading.value = true
+
+  try {
+    await updateAddress(values, {
+      onSuccess: () => {
+        toast.success(t('profile.settings.address.address-updated'))
+        userStore.fetchUser()
+      },
+      onError: () => {
+        toast.error(t('profile.settings.address.address-update-failed'))
+      },
+    })
+  } finally {
+    addressIsLoading.value = false
+  }
 }
 
-// Add watchers for form values
-watch([street, streetNumber, city, postalCode, country], () => {
-  if (addressFormRef.value) {
-    addressFormRef.value.setValues({
-      streetName: street.value,
-      streetNumber: streetNumber.value,
-      city: city.value,
-      postalCode: postalCode.value,
-      country: country.value,
-    })
-  }
-})
+// Initialize form values when user data changes
+watch(
+  () => userStore.user,
+  (newUser) => {
+    if (newUser && addressFormRef.value) {
+      initialAddressValues.value = {
+        streetName: newUser.address?.streetName || '',
+        city: newUser.address?.city || '',
+        postalCode: newUser.address?.postalCode || '',
+        country: newUser.address?.country || 'Norway',
+      }
 
-// Initialize form values
+      // Set form values
+      addressFormRef.value.setValues(initialAddressValues.value)
+    }
+  },
+  { immediate: true },
+)
+
+// Initialize form on mount
 onMounted(() => {
   if (addressFormRef.value) {
-    addressFormRef.value.setValues({
-      streetName: street.value,
-      streetNumber: streetNumber.value,
-      city: city.value,
-      postalCode: postalCode.value,
-      country: country.value,
-    })
+    addressFormRef.value.setValues(initialAddressValues.value)
   }
 })
 </script>
@@ -233,6 +193,7 @@ onMounted(() => {
         }}</AvatarFallback>
       </Avatar>
       <div class="profile-info">
+        <Label class="setting-label">{{ t('profile.settings.profile-picture') }}</Label>
         <div class="profile-actions">
           <input
             @change="changeProfilePicture"
@@ -330,6 +291,7 @@ onMounted(() => {
             as=""
             :validation-schema="toTypedSchema(addressSchema)"
             ref="addressFormRef"
+            class="address-form"
           >
             <form
               @submit.prevent="
@@ -337,87 +299,22 @@ onMounted(() => {
               "
             >
               <div class="address-container">
-                <FormField v-slot="{ componentField }" name="streetName">
-                  <FormItem>
-                    <FormLabel>{{ t('profile.settings.address.street') }}</FormLabel>
-                    <FormControl>
-                      <div class="input-with-icon">
-                        <MapPinIcon />
-                        <Input v-bind="componentField" v-model="street" />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
+                <!-- Using the integrated LocationInfoForm component -->
+                <LocationInfoForm :initial-values="initialAddressValues" />
 
-                <FormField v-slot="{ componentField }" name="streetNumber">
-                  <FormItem>
-                    <FormLabel>{{ t('profile.settings.address.streetNumber') }}</FormLabel>
-                    <FormControl>
-                      <Input v-bind="componentField" v-model="streetNumber" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-
-                <div class="input-split">
-                  <FormField v-slot="{ componentField }" name="city">
-                    <FormItem>
-                      <FormLabel>{{ t('profile.settings.address.city') }}</FormLabel>
-                      <FormControl>
-                        <div class="input-with-icon">
-                          <Building2Icon />
-                          <Input v-bind="componentField" v-model="city" />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  </FormField>
-
-                  <FormField v-slot="{ componentField }" name="postalCode">
-                    <FormItem>
-                      <FormLabel>{{ t('profile.settings.address.postal') }}</FormLabel>
-                      <FormControl>
-                        <Input class="postal-input" v-bind="componentField" v-model="postalCode" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  </FormField>
-                </div>
-
-                <FormField v-slot="{ componentField }" name="country">
-                  <FormItem>
-                    <FormLabel>{{ t('profile.settings.address.country') }}</FormLabel>
-                    <FormControl>
-                      <Input v-bind="componentField" v-model="country" disabled />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-
-                <Button type="submit" class="save-button" :disabled="!meta.valid && !meta.dirty">
-                  {{ t('profile.settings.address.save-address') }}
-                </Button>
-
-                <div class="map-container">
-                  <MapboxMap
-                    style="height: 400px"
-                    :access-token="MAPBOX_API_TOKEN"
-                    map-style="mapbox://styles/mapbox/streets-v12"
-                    :center="[9.139, 60.687]"
-                    :zoom="5.0"
-                    @mb-created="(map: Map) => (mapRef = map)"
+                <!-- Save Address Button -->
+                <div class="save-address-container">
+                  <Button
+                    type="submit"
+                    class="save-address-button"
+                    :disabled="!meta.valid || addressIsLoading"
                   >
-                    <MapboxMarker
-                      v-if="currentLocation"
-                      :lng-lat="[currentLocation.lon, currentLocation.lat]"
-                    >
-                      <div class="map-marker">
-                        <HouseIcon />
-                      </div>
-                    </MapboxMarker>
-                    <MapboxNavigationControl position="top-right" />
-                  </MapboxMap>
+                    {{
+                      addressIsLoading
+                        ? t('common.submitting')
+                        : t('profile.settings.address.save-address')
+                    }}
+                  </Button>
                 </div>
               </div>
             </form>
@@ -510,112 +407,25 @@ onMounted(() => {
   color: var(--foreground);
 }
 
-.input-with-icon {
-  position: relative;
-  width: 100%;
-}
-
-.input-with-icon svg {
-  position: absolute;
-  top: 50%;
-  left: var(--spacing);
-  transform: translateY(-50%);
-  color: var(--muted-foreground);
-  height: 60%;
-}
-
-.input-with-icon input {
-  padding-left: calc(var(--spacing) * 8);
-  width: 100%;
-}
-
-.input-split {
-  display: flex;
-  flex-direction: column;
-  gap: calc(var(--spacing) * 4);
-}
-
-.postal-input {
-  text-align: center;
-  font-family: var(--font-mono);
-  letter-spacing: var(--spacing);
-}
-
-.map-container {
-  margin-top: calc(var(--spacing) * 4);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.map-marker {
-  display: grid;
-  place-items: center;
-  border-radius: 9999px;
-  background-color: var(--primary);
-  color: var(--primary-foreground);
-  padding: var(--spacing);
-  width: calc(var(--spacing) * 6);
-  height: calc(var(--spacing) * 6);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  transform: translateY(-50%);
-}
-
-.map-marker svg {
-  width: calc(var(--spacing) * 4);
-  height: calc(var(--spacing) * 4);
-}
-
-:deep(.mapboxgl-ctrl-top-right) {
-  top: 16px;
-  right: 16px;
-}
-
-:deep(.mapboxgl-ctrl) {
-  border-radius: var(--radius);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  background-color: var(--background);
-  border: 1px solid var(--border);
-}
-
-:deep(.mapboxgl-ctrl button) {
-  border-radius: var(--radius);
-  background-color: var(--background);
-  border: 1px solid var(--border);
-}
-
-:deep(.mapboxgl-ctrl button:hover) {
-  background-color: var(--accent);
-}
-
-.form-item {
-  margin-bottom: calc(var(--spacing) * 2);
-}
-
-.form-label {
-  font-weight: var(--font-weight-medium);
-  margin-bottom: calc(var(--spacing) * 1);
-}
-
-.form-message {
-  color: var(--destructive);
-  font-size: var(--text-sm);
-  margin-top: calc(var(--spacing) * 1);
-}
-
-.save-button {
-  margin-top: var(--spacing);
+.save-button,
+.save-address-button {
+  margin-top: calc(var(--spacing) * 2);
   margin-bottom: var(--spacing);
+}
+
+.save-address-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: calc(var(--spacing) * 4);
+}
+
+.save-address-button {
+  min-width: 150px;
 }
 
 @media (min-width: 1024px) {
   .settings-grid {
     grid-template-columns: 1fr 1fr;
-  }
-
-  .input-split {
-    flex-direction: row;
-    gap: calc(var(--spacing) * 4);
   }
 }
 
