@@ -7,6 +7,7 @@ import edu.ntnu.fullstack.amazoom.category.repository.CategoryRepository
 import edu.ntnu.fullstack.amazoom.chat.entity.ChatMessage
 import edu.ntnu.fullstack.amazoom.chat.repository.ChatMessageRepository
 import edu.ntnu.fullstack.amazoom.common.entity.Address
+import edu.ntnu.fullstack.amazoom.common.entity.Role
 import edu.ntnu.fullstack.amazoom.common.entity.RoleName
 import edu.ntnu.fullstack.amazoom.common.entity.User
 import edu.ntnu.fullstack.amazoom.common.repository.RoleRepository
@@ -47,26 +48,34 @@ class DatabaseSeeder @Autowired constructor(
     
     @Transactional
     override fun run(args: ApplicationArguments) {
-        logger.info("Checking if database schema is ready for seeding...")
-        
-        // Check if roles exist (which should be created by Flyway migrations)
-        val roleCount = roleRepository.count()
-        if (roleCount == 0L) {
-            logger.warn("No roles found in database. Flyway migrations may not have completed yet. Skipping seeding.")
-            return
-        }
-        
         logger.info("Database schema is ready. Starting database seeding...")
+        createRoles()
         val categories = createCategories()
         val users = createUsers()
-        val adminListing = createAdminListing(users[0], categories[0])
         val listings = createListings(users, categories)
+        val adminListing = createAdminListing(users[0], categories[0])
         createBookmarks(users, listings)
         createConversation(users[0], users[1], adminListing)
         createConversation(users[0], users[3], adminListing)
 
 
         logger.info("Database seeding completed!")
+    }
+
+    private fun createRoles() {
+        val adminRole = Role(
+            name = RoleName.ROLE_ADMIN
+        )
+        val userRole = Role(
+            name = RoleName.ROLE_USER
+        )
+
+        if (roleRepository.count() == 0L) {
+            logger.info("Creating roles...")
+            roleRepository.saveAll(listOf(adminRole, userRole))
+        } else {
+            logger.info("Roles already exist in the database.")
+        }
     }
 
     private fun createAdminListing(adminUser: User, category: Category): Listing {

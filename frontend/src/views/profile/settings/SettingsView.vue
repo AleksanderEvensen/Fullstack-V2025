@@ -9,16 +9,28 @@ import { computed, ref, watch, onMounted } from 'vue'
 import { MapboxMap, MapboxMarker, MapboxNavigationControl } from '@studiometa/vue-mapbox-gl'
 import { watchDebounced } from '@vueuse/core'
 import { searchGeocodeAdvanced } from '@/lib/api/geocoding'
-import { Map } from "mapbox-gl";
+import { Map } from 'mapbox-gl'
 import { RouterLink } from 'vue-router'
 import { Card, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import CardContent from '@/components/ui/card/CardContent.vue'
 import CardHeader from '@/components/ui/card/CardHeader.vue'
 import { useAuthStore } from '@/stores/auth'
-import { useMutateUserProfilePicture, useRemoveUserProfilePicture, useUpdateUserPassword, useUpdateUserAddress } from '@/lib/api/queries/user'
+import {
+  useMutateUserProfilePicture,
+  useRemoveUserProfilePicture,
+  useUpdateUserPassword,
+  useUpdateUserAddress,
+} from '@/lib/api/queries/user'
 import { toast } from 'vue-sonner'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 
@@ -30,30 +42,31 @@ const { mutate: updatePassword } = useUpdateUserPassword()
 const { mutate: updateAddress } = useUpdateUserAddress()
 
 const mapRef = ref<Map>()
-const street = ref(userStore.user?.address?.streetName);
-const city = ref(userStore.user?.address?.city);
-const postalCode = ref(userStore.user?.address?.postalCode);
-const streetNumber = ref(userStore.user?.address?.streetNumber || '');
-const country = ref(userStore.user?.address?.country || 'Norway');
+const street = ref(userStore.user?.address?.streetName)
+const city = ref(userStore.user?.address?.city)
+const postalCode = ref(userStore.user?.address?.postalCode)
+const streetNumber = ref(userStore.user?.address?.streetNumber || '')
+const country = ref(userStore.user?.address?.country || 'Norway')
 
 const locationData = computed(() => ({
   street: street.value,
   postalcode: postalCode.value,
   city: city.value,
-}));
+}))
 
-const currentLocation = ref<{ lat: number, lon: number } | null>(null);
+const currentLocation = ref<{ lat: number; lon: number } | null>(null)
 
 // Form schemas
-const passwordSchema = z.object({
-  currentPassword: z.string().optional(),
-  newPassword: z.string()
-    .min(8, t('profile.settings.password-min-length')),
-  confirmPassword: z.string(),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: t('profile.settings.passwords-not-match'),
-  path: ['confirmPassword'],
-});
+const passwordSchema = z
+  .object({
+    currentPassword: z.string().optional(),
+    newPassword: z.string().min(8, t('profile.settings.password-min-length')),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: t('profile.settings.passwords-not-match'),
+    path: ['confirmPassword'],
+  })
 
 const addressSchema = z.object({
   streetName: z.string().min(1, t('profile.settings.address-required')),
@@ -61,16 +74,14 @@ const addressSchema = z.object({
   city: z.string().min(1, t('profile.settings.address-required')),
   postalCode: z.string().min(1, t('profile.settings.address-required')),
   country: z.string().min(1, t('profile.settings.address-required')),
-});
+})
 
 const passwordFormRef = ref<InstanceType<typeof Form> | null>(null)
 const addressFormRef = ref<InstanceType<typeof Form> | null>(null)
 
-
-
 async function flyToAddress(params: Parameters<typeof searchGeocodeAdvanced>[0]) {
-  if (!mapRef.value) return;
-  const [location] = await searchGeocodeAdvanced(params) ?? [];
+  if (!mapRef.value) return
+  const [location] = (await searchGeocodeAdvanced(params)) ?? []
   if (location) {
     currentLocation.value = {
       lat: +location.lat,
@@ -79,27 +90,32 @@ async function flyToAddress(params: Parameters<typeof searchGeocodeAdvanced>[0])
     mapRef.value.flyTo({
       center: [+location.lon, +location.lat],
       zoom: 14,
-    });
+    })
   }
 }
 
-watchDebounced(locationData, async () => {
-  if (!locationData.value.street || !locationData.value.city || !locationData.value.postalcode) return;
-  flyToAddress({
-    ...locationData.value,
-    country: "Norway",
-  });
-}, {
-  debounce: 1000,
-});
+watchDebounced(
+  locationData,
+  async () => {
+    if (!locationData.value.street || !locationData.value.city || !locationData.value.postalcode)
+      return
+    flyToAddress({
+      ...locationData.value,
+      country: 'Norway',
+    })
+  },
+  {
+    debounce: 1000,
+  },
+)
 
 watch(mapRef, () => {
-  if (!mapRef.value) return;
+  if (!mapRef.value) return
   mapRef.value.once('load', () => {
     flyToAddress({
       ...locationData.value,
-      country: "Norway",
-    });
+      country: 'Norway',
+    })
   })
 })
 
@@ -138,7 +154,6 @@ async function uploadProfilePicture() {
       toast.error(t('profile.settings.profile-picture-upload-failed'))
       profilePicture.value = undefined
     },
-
   })
 }
 
@@ -153,23 +168,20 @@ async function handlePasswordUpdate(values: z.infer<typeof passwordSchema>) {
       onError: () => {
         toast.error(t('profile.settings.password-update-failed'))
       },
-    }
+    },
   )
 }
 
 async function handleAddressUpdate(values: z.infer<typeof addressSchema>) {
-  await updateAddress(
-    values,
-    {
-      onSuccess: () => {
-        toast.success(t('profile.settings.address-updated'))
-        userStore.fetchUser()
-      },
-      onError: () => {
-        toast.error(t('profile.settings.address-update-failed'))
-      },
-    }
-  )
+  await updateAddress(values, {
+    onSuccess: () => {
+      toast.success(t('profile.settings.address-updated'))
+      userStore.fetchUser()
+    },
+    onError: () => {
+      toast.error(t('profile.settings.address-update-failed'))
+    },
+  })
 }
 
 // Add watchers for form values
@@ -180,10 +192,10 @@ watch([street, streetNumber, city, postalCode, country], () => {
       streetNumber: streetNumber.value,
       city: city.value,
       postalCode: postalCode.value,
-      country: country.value
-    });
+      country: country.value,
+    })
   }
-});
+})
 
 // Initialize form values
 onMounted(() => {
@@ -193,10 +205,10 @@ onMounted(() => {
       streetNumber: streetNumber.value,
       city: city.value,
       postalCode: postalCode.value,
-      country: country.value
-    });
+      country: country.value,
+    })
   }
-});
+})
 </script>
 
 <template>
@@ -216,13 +228,19 @@ onMounted(() => {
     <div class="profile-container">
       <Avatar class="profile-avatar">
         <AvatarImage :src="userProfileImageUrl" />
-        <AvatarFallback class="profile-fallback">{{ formatNameInitials(user?.name ?? '') }}</AvatarFallback>
+        <AvatarFallback class="profile-fallback">{{
+          formatNameInitials(user?.name ?? '')
+        }}</AvatarFallback>
       </Avatar>
       <div class="profile-info">
-        <Label class="setting-label">{{ t('profile.settings.profile-picture') }}</Label>
         <div class="profile-actions">
-          <input @change="changeProfilePicture" style="display: none" id="profile-pic-input" accept=".jpg, .jpeg, .png"
-            type="file" />
+          <input
+            @change="changeProfilePicture"
+            style="display: none"
+            id="profile-pic-input"
+            accept=".jpg, .jpeg, .png"
+            type="file"
+          />
           <Button variant="outline" as="label" for="profile-pic-input">
             {{ t('profile.settings.changePicture') }}
           </Button>
@@ -250,10 +268,19 @@ onMounted(() => {
               <Input type="text" :default-value="user?.phoneNumber" autocomplete="tel" disabled />
             </div>
 
-            <Form v-slot="{ meta, values, validate }" as="" :validation-schema="toTypedSchema(passwordSchema)"
-              ref="passwordFormRef">
+            <Form
+              v-slot="{ meta, values, validate }"
+              as=""
+              :validation-schema="toTypedSchema(passwordSchema)"
+              ref="passwordFormRef"
+            >
               <form
-                @submit.prevent="validate().then(() => handlePasswordUpdate(values as z.infer<typeof passwordSchema>))">
+                @submit.prevent="
+                  validate().then(() =>
+                    handlePasswordUpdate(values as z.infer<typeof passwordSchema>),
+                  )
+                "
+              >
                 <FormField v-slot="{ componentField }" name="currentPassword">
                   <FormItem>
                     <FormLabel>{{ t('profile.settings.old-password') }}</FormLabel>
@@ -298,9 +325,17 @@ onMounted(() => {
           <CardTitle>{{ t('profile.settings.address.title') }}</CardTitle>
         </CardHeader>
         <CardContent>
-          <Form v-slot="{ meta, values, validate }" as="" :validation-schema="toTypedSchema(addressSchema)"
-            ref="addressFormRef">
-            <form @submit.prevent="validate().then(() => handleAddressUpdate(values as z.infer<typeof addressSchema>))">
+          <Form
+            v-slot="{ meta, values, validate }"
+            as=""
+            :validation-schema="toTypedSchema(addressSchema)"
+            ref="addressFormRef"
+          >
+            <form
+              @submit.prevent="
+                validate().then(() => handleAddressUpdate(values as z.infer<typeof addressSchema>))
+              "
+            >
               <div class="address-container">
                 <FormField v-slot="{ componentField }" name="streetName">
                   <FormItem>
@@ -365,10 +400,18 @@ onMounted(() => {
                 </Button>
 
                 <div class="map-container">
-                  <MapboxMap style="height: 400px;" :access-token="MAPBOX_API_TOKEN"
-                    map-style="mapbox://styles/mapbox/streets-v12" :center="[9.139, 60.687]" :zoom="5.0"
-                    @mb-created="(map: Map) => mapRef = map">
-                    <MapboxMarker v-if="currentLocation" :lng-lat="[currentLocation.lon, currentLocation.lat]">
+                  <MapboxMap
+                    style="height: 400px"
+                    :access-token="MAPBOX_API_TOKEN"
+                    map-style="mapbox://styles/mapbox/streets-v12"
+                    :center="[9.139, 60.687]"
+                    :zoom="5.0"
+                    @mb-created="(map: Map) => (mapRef = map)"
+                  >
+                    <MapboxMarker
+                      v-if="currentLocation"
+                      :lng-lat="[currentLocation.lon, currentLocation.lat]"
+                    >
                       <div class="map-marker">
                         <HouseIcon />
                       </div>

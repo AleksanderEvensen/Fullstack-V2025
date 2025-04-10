@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
-import { HeartIcon, MessageCircleIcon } from 'lucide-vue-next'
+import { HeartIcon } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { cn, formatAddress, formatPictureUrl } from '@/lib/utils'
@@ -70,9 +70,6 @@ const handleBookmark = () => {
         >
           <HeartIcon :class="cn('icon', product.isBookmarked ? 'icon-filled' : '')" />
         </Button>
-        <Button variant="ghost" size="icon" class="action-button">
-          <MessageCircleIcon class="icon" />
-        </Button>
       </div>
     </div>
   </div>
@@ -87,6 +84,9 @@ const handleBookmark = () => {
   transition:
     transform 0.2s,
     box-shadow 0.2s;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .product-card:hover {
@@ -113,6 +113,9 @@ const handleBookmark = () => {
 
 .product-info {
   padding: 12px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .product-title {
@@ -125,6 +128,8 @@ const handleBookmark = () => {
   -webkit-box-orient: vertical;
   overflow: hidden;
   margin-bottom: 4px;
+  line-height: 1.3;
+  height: 2.6em;
 }
 
 .product-title:hover {
@@ -140,30 +145,24 @@ const handleBookmark = () => {
 
 .product-meta {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 4px;
   margin-bottom: 8px;
   font-size: 0.875rem;
   color: var(--text-secondary);
-}
-
-@media (max-width: 1400px) {
-  .product-meta {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
 }
 
 .seller-info {
   display: flex;
   align-items: center;
   gap: 8px;
+  width: 100%;
 }
 
 .seller-avatar {
   width: 24px;
   height: 24px;
+  flex-shrink: 0;
 }
 
 .seller-name {
@@ -174,18 +173,23 @@ const handleBookmark = () => {
 }
 
 .product-location {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   color: var(--text-secondary);
 }
 
 .product-actions {
   display: flex;
-  gap: 8px;
+  justify-content: flex-end;
   padding-top: 8px;
   border-top: 1px solid var(--border);
+  margin-top: auto;
 }
 
 .action-button {
-  flex: 1;
+  padding: var(--spacing);
+  flex: 0;
   justify-content: center;
 }
 

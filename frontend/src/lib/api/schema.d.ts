@@ -100,6 +100,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/user/delete-profile-image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Delete profile image
+         * @description Deletes the profile image for the currently authenticated user
+         */
+        post: operations["deleteProfileImage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/listings": {
         parameters: {
             query?: never;
@@ -290,6 +310,46 @@ export interface paths {
          * @description Authenticates a user with email and password credentials and returns an authentication token
          */
         post: operations["login"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/listings/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get my listings
+         * @description Retrieves all listings created by the currently authenticated user
+         */
+        get: operations["getMyListings"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/listings/bookmarks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get bookmarked listings by user
+         * @description Retrieves all listings bookmarked by the currently authenticated user
+         */
+        get: operations["getBookmarkedListings"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -829,6 +889,11 @@ export interface components {
             size: number;
             sortBy: string;
             sortDirection: string;
+            /**
+             * @description Status of a listing
+             * @enum {string}
+             */
+            status: "ACTIVE" | "SOLD";
             /** Format: double */
             latitude?: number;
             /** Format: double */
@@ -837,10 +902,10 @@ export interface components {
             radiusKm: number;
         };
         PageListingDto: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            /** Format: int64 */
+            totalElements?: number;
             first?: boolean;
             last?: boolean;
             /** Format: int32 */
@@ -849,9 +914,9 @@ export interface components {
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
-            pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
         PageableObject: {
@@ -926,10 +991,10 @@ export interface components {
             timestamp: string;
         };
         PageConversationSummaryDto: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            /** Format: int64 */
+            totalElements?: number;
             first?: boolean;
             last?: boolean;
             /** Format: int32 */
@@ -938,16 +1003,16 @@ export interface components {
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
-            pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
         PageChatMessageDto: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            /** Format: int64 */
+            totalElements?: number;
             first?: boolean;
             last?: boolean;
             /** Format: int32 */
@@ -956,9 +1021,9 @@ export interface components {
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
-            pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
         /** @description Complete user profile information */
@@ -1331,6 +1396,42 @@ export interface operations {
                 };
             };
             /** @description Invalid file */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description User not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    deleteProfileImage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Profile image deleted successfully */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request */
             400: {
                 headers: {
                     [name: string]: unknown;
@@ -1946,6 +2047,96 @@ export interface operations {
                 };
             };
             /** @description Invalid credentials */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    getMyListings: {
+        parameters: {
+            query?: {
+                /**
+                 * @description Page number (0-based)
+                 * @example 0
+                 */
+                page?: number;
+                /**
+                 * @description Number of items per page
+                 * @example 10
+                 */
+                size?: number;
+                /**
+                 * @description Listing status field
+                 * @example ACTIVE
+                 */
+                status?: "ACTIVE" | "SOLD";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Get my listings successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageListingDto"];
+                };
+            };
+            /** @description User not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    getBookmarkedListings: {
+        parameters: {
+            query?: {
+                /**
+                 * @description Page number (0-based)
+                 * @example 0
+                 */
+                page?: number;
+                /**
+                 * @description Number of items per page
+                 * @example 10
+                 */
+                size?: number;
+                /**
+                 * @description Listing status field
+                 * @example ACTIVE
+                 */
+                status?: "ACTIVE" | "SOLD";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Get bookmarked listings successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageListingDto"];
+                };
+            };
+            /** @description User not authenticated */
             401: {
                 headers: {
                     [name: string]: unknown;
