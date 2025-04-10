@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 
 
-@RestControllerAdvice(basePackages = ["edu.ntnu.fullstack.amazoom"])
+@RestControllerAdvice(basePackages = ["edu.ntnu.fullstack.amazoom.listing"])
 class ListingExceptionHandler {
     private val logger = LoggerFactory.getLogger(ListingExceptionHandler::class.java)
 

@@ -7,14 +7,17 @@ import io.minio.MakeBucketArgs
 import io.minio.MinioClient
 import io.minio.PutObjectArgs
 import io.minio.StatObjectArgs
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.util.UUID
 
 @Service
+@Profile("!test")
 class MinioService(
     private val minIOProperties: MinIOProperties
-) {
+) : IMinIOService {
+
     private val minioClient: MinioClient = MinioClient.builder()
         .endpoint(minIOProperties.endpoint)
         .credentials(minIOProperties.accessKey, minIOProperties.secretKey)
@@ -27,8 +30,7 @@ class MinioService(
         }
     }
 
-    // Upload an image with a specific name
-    fun uploadImage(file: MultipartFile, fileNameBase: String): String {
+    override fun uploadImage(file: MultipartFile, fileNameBase: String): String {
         val extension = getFileExtension(file.originalFilename)
         val uuid = UUID.randomUUID().toString()
         val baseName = fileNameBase.substringBeforeLast(".", fileNameBase)
@@ -46,8 +48,7 @@ class MinioService(
         return fileName
     }
 
-    // Get image data for serving through the proxy
-    fun getImageData(fileName: String): ByteArray {
+    override fun getImageData(fileName: String): ByteArray {
         return minioClient.getObject(
             GetObjectArgs.builder()
                 .bucket(minIOProperties.bucketName)
@@ -56,7 +57,7 @@ class MinioService(
         ).use { it.readAllBytes() }
     }
 
-    fun getImageContentType(fileName: String): String {
+    override fun getImageContentType(fileName: String): String {
         return try {
             val stat = minioClient.statObject(
                 StatObjectArgs.builder()

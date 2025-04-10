@@ -3,17 +3,32 @@ import { RouterLink } from 'vue-router'
 import { HeartIcon, MessageCircleIcon } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { formatAddress, formatPictureUrl } from '@/lib/utils'
+import { cn, formatAddress, formatPictureUrl } from '@/lib/utils'
 import type { components } from '@/lib/api/schema'
 import { useTypedI18n } from '@/i18n'
+import { useBookmarkListing, useUnbookmarkListing } from '@/lib/api/queries/listings'
+import { computed } from 'vue'
 
 const { t } = useTypedI18n()
 
 type Product = components['schemas']['ListingDto']
 
-defineProps<{
+const props = defineProps<{
   product: Product
 }>()
+
+const { mutate: bookmarkListing, isPending: isBookmarking } = useBookmarkListing()
+const { mutate: unbookmarkListing, isPending: isUnbookmarking } = useUnbookmarkListing()
+
+const isBookmarked = computed(() => props.product.isBookmarked)
+
+const handleBookmark = () => {
+  if (isBookmarked.value) {
+    unbookmarkListing(props.product.id)
+  } else {
+    bookmarkListing(props.product.id)
+  }
+}
 </script>
 
 <template>
@@ -46,8 +61,14 @@ defineProps<{
         </div>
       </div>
       <div class="product-actions">
-        <Button variant="ghost" size="icon" class="action-button">
-          <HeartIcon class="icon" />
+        <Button
+          variant="ghost"
+          size="icon"
+          class="action-button"
+          @click="handleBookmark"
+          :disabled="isBookmarking || isUnbookmarking"
+        >
+          <HeartIcon :class="cn('icon', product.isBookmarked ? 'icon-filled' : '')" />
         </Button>
         <Button variant="ghost" size="icon" class="action-button">
           <MessageCircleIcon class="icon" />
@@ -171,5 +192,10 @@ defineProps<{
 .icon {
   width: 18px;
   height: 18px;
+}
+
+.icon-filled {
+  color: red;
+  fill: red;
 }
 </style>

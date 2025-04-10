@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/vue-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import type { paths } from '../schema'
 import { fetchClient } from '@/lib/api/client'
 
@@ -60,6 +60,44 @@ export function useCreateListing() {
         body: listing,
       })
       return response.data
+    },
+  })
+}
+
+export function useBookmarkListing() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (id: number) => {
+      const response = await fetchClient.POST('/api/bookmarks/{listingId}', {
+        params: {
+          path: {
+            listingId: id,
+          },
+        },
+      })
+      return response.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [LISTING_QUERY_KEY] })
+    },
+  })
+}
+
+export function useUnbookmarkListing() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (id: number) => {
+      const response = await fetchClient.DELETE('/api/bookmarks/{listingId}', {
+        params: {
+          path: {
+            listingId: id,
+          },
+        },
+      })
+      return response.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [LISTING_QUERY_KEY] })
     },
   })
 }

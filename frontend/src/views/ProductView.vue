@@ -4,10 +4,11 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { getListing } from '@/lib/api/queries/listings'
+import { getListing, useBookmarkListing, useUnbookmarkListing } from '@/lib/api/queries/listings'
 import { useRoute } from 'vue-router'
-import { formatAddress, formatPictureUrl } from '@/lib/utils'
+import { cn, formatAddress, formatPictureUrl } from '@/lib/utils'
 import { useTypedI18n } from '@/i18n'
+import { HeartIcon } from 'lucide-vue-next'
 
 const { t } = useTypedI18n()
 const id = useRoute().params.id as unknown as number
@@ -45,6 +46,18 @@ const getTranslatedCondition = (condition: string) => {
 const shouldDisplayOriginalPrice = computed(() => {
   return product.value?.originalPrice && product.value.originalPrice > product.value.price
 })
+
+const { mutate: bookmarkListing, isPending: isBookmarking } = useBookmarkListing()
+const { mutate: unbookmarkListing, isPending: isUnbookmarking } = useUnbookmarkListing()
+
+const handleBookmark = () => {
+  if (!product.value) return
+  if (product.value.isBookmarked) {
+    unbookmarkListing(product.value.id)
+  } else {
+    bookmarkListing(product.value.id)
+  }
+}
 </script>
 
 <template>
@@ -72,7 +85,20 @@ const shouldDisplayOriginalPrice = computed(() => {
       <div class="product-info">
         <Card>
           <CardHeader>
-            <CardTitle>{{ product.title }}</CardTitle>
+            <CardTitle>
+              <div class="title-container">
+                <span>{{ product.title }}</span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  class="action-button"
+                  @click="handleBookmark"
+                  :disabled="isBookmarking || isUnbookmarking"
+                >
+                  <HeartIcon :class="cn('icon', product.isBookmarked ? 'icon-filled' : '')" />
+                </Button>
+              </div>
+            </CardTitle>
             <div class="condition-badge">
               <Badge variant="outline">{{ getTranslatedCondition(product.condition) }}</Badge>
             </div>
@@ -304,6 +330,12 @@ const shouldDisplayOriginalPrice = computed(() => {
   object-fit: contain;
 }
 
+.title-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 /* Product Info */
 .product-info {
   display: flex;
@@ -508,6 +540,11 @@ const shouldDisplayOriginalPrice = computed(() => {
   font-size: var(--font-size-sm);
   color: var(--foreground);
   line-height: 1.5;
+}
+
+.icon-filled {
+  color: red;
+  fill: red;
 }
 
 /* Make certain sections span full width */

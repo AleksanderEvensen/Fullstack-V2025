@@ -1,5 +1,6 @@
 package edu.ntnu.fullstack.amazoom.listing.entity
 
+import edu.ntnu.fullstack.amazoom.bookmark.entity.ListingBookmark
 import edu.ntnu.fullstack.amazoom.common.entity.User
 import edu.ntnu.fullstack.amazoom.category.entity.Category
 import edu.ntnu.fullstack.amazoom.listing.dto.ListingDto
@@ -39,7 +40,8 @@ data class Listing(
 
     val originalPrice: Double? = null,
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(nullable = false)
+    @Lob
     val description: String,
 
     // Product Details
@@ -63,11 +65,17 @@ data class Listing(
 
     val reasonForSelling: String? = null,
 
+    @Column(name = "listing_status", nullable = false)
+    val status: ListingStatus = ListingStatus.ACTIVE,
+
     // Images
     @ElementCollection
     @CollectionTable(name = "listing_images", joinColumns = [JoinColumn(name = "listing_id")])
     @Column(name = "image_url")
     val images: List<String> = emptyList(),
+
+    @OneToMany(mappedBy = "listing", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val bookmarks: List<ListingBookmark> = mutableListOf(),
 
     // creation and update timestamps
     @Column(name = "created_at", updatable = false)
@@ -104,4 +112,17 @@ enum class ListingCondition {
 
     @Schema(description = "Used with significant wear but still functional")
     ACCEPTABLE
+}
+
+
+/**
+ * Listing status enum representing the state of a listing.
+ */
+@Schema(description = "Status of a listing")
+enum class ListingStatus {
+    @Schema(description = "Listing is active and available for sale")
+    ACTIVE,
+
+    @Schema(description = "Listing is sold and no longer available")
+    SOLD,
 }

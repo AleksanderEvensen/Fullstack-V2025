@@ -103,7 +103,9 @@ object ListingMapper {
             reasonForSelling = entity.reasonForSelling,
             seller = UserMapper.toDto(entity.seller),
             createdAt = entity.createdAt,
-            images = entity.images
+            images = entity.images,
+            status = entity.status,
+            isBookmarked = false
         )
     }
 }

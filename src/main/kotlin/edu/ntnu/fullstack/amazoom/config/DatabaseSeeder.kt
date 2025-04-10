@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
 import org.springframework.context.annotation.DependsOn
+import org.springframework.context.annotation.Profile
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -24,6 +25,7 @@ import java.util.*
 
 @Component
 @DependsOn("flywayInitializer")
+@Profile("!test")
 class DatabaseSeeder @Autowired constructor(
     private val categoryRepository: CategoryRepository,
     private val userRepository: UserRepository,

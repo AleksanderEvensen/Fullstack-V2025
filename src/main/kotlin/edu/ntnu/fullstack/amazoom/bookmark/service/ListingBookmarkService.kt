@@ -31,7 +31,7 @@ class ListingBookmarkService(
     private val logger = LoggerFactory.getLogger(ListingBookmarkService::class.java)
 
     /**
-     * Creates a new bookmark for a listing.
+     * Creates a new bookmark for a listing using the request DTO.
      *
      * @param request The request with the listing ID to bookmark
      * @return The created bookmark as a DTO
@@ -41,8 +41,22 @@ class ListingBookmarkService(
      */
     @Transactional
     fun createBookmark(request: CreateListingBookmarkRequestDto): ListingBookmarkResponseDto {
-        val listing: Listing = listingRepository.findById(request.listingId)
-            .orElseThrow { ListingNotFoundException("No listing found with id=${request.listingId}") }
+        return createBookmarkByListingId(request.listingId)
+    }
+
+    /**
+     * Creates a new bookmark for a listing using the listing ID directly.
+     *
+     * @param listingId The ID of the listing to bookmark
+     * @return The created bookmark as a DTO
+     * @throws ListingNotFoundException if the listing does not exist
+     * @throws BookmarkAlreadyExistsException if the bookmark already exists
+     * @throws BookmarkOwnListingException if trying to bookmark own listing
+     */
+    @Transactional
+    fun createBookmarkByListingId(listingId: Long): ListingBookmarkResponseDto {
+        val listing: Listing = listingRepository.findById(listingId)
+            .orElseThrow { ListingNotFoundException("No listing found with id=$listingId") }
 
         val currentUser = userService.getCurrentUser()
 
@@ -90,6 +104,24 @@ class ListingBookmarkService(
     }
 
     /**
+     * Deletes a bookmark by listing id.
+     * Users can only delete their own bookmarks.
+     *
+     * @param listingId The ID of the related listing to delete the bookmark for
+     * @throws ListingNotFoundException if the bookmark does not exist
+     */
+    @Transactional
+    fun deleteBookmarkByListingId(listingId: Long) {
+        val currentUser = userService.getCurrentUser()
+
+        val bookmark = listingBookmarkRepository.findByUserIdAndListingId(currentUser.id, listingId)
+            ?: throw ListingNotFoundException("No bookmark found with listing id=$listingId for current user")
+
+        listingBookmarkRepository.deleteById(bookmark.id)
+        logger.info("Deleted bookmark with ID: {} for listing: {}", bookmark.id, listingId)
+    }
+
+    /**
      * Lists all bookmarks for the current user.
      *
      * @return A list of all the user's bookmarks
@@ -100,5 +132,16 @@ class ListingBookmarkService(
 
         val allBookmarks = listingBookmarkRepository.findAllForUser(currentUser.id)
         return allBookmarks.map { ListingBookmarkMapper.toResponseDto(it) }
+    }
+    
+    /**
+     * Checks if a listing is bookmarked by the current user.
+     *
+     * @param listingId The ID of the listing to check
+     * @return true if the listing is bookmarked by the current user, false otherwise
+     */
+    fun isListingBookmarkedByUser(listingId: Long): Boolean {
+        val currentUser = userService.getCurrentUser()
+        return listingBookmarkRepository.existsByUserIdAndListingId(currentUser.id, listingId)
     }
 }

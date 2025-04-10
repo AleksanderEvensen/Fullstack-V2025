@@ -1,5 +1,6 @@
 package edu.ntnu.fullstack.amazoom.listing.service
 
+import edu.ntnu.fullstack.amazoom.bookmark.repository.ListingBookmarkRepository
 import edu.ntnu.fullstack.amazoom.category.exception.CategoryNotFoundException
 import edu.ntnu.fullstack.amazoom.category.repository.CategoryRepository
 import edu.ntnu.fullstack.amazoom.common.service.UserService
@@ -9,9 +10,9 @@ import edu.ntnu.fullstack.amazoom.listing.dto.ListingSearchRequestDto
 import edu.ntnu.fullstack.amazoom.listing.exception.ListingNotFoundException
 import edu.ntnu.fullstack.amazoom.listing.mapper.ListingMapper
 import edu.ntnu.fullstack.amazoom.listing.repository.ListingRepository
+import edu.ntnu.fullstack.amazoom.listing.repository.ListingSpecification
 import jakarta.transaction.Transactional
 import org.slf4j.LoggerFactory
-import edu.ntnu.fullstack.amazoom.listing.repository.ListingSpecification
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service
 class ListingService(
     private val listingRepository: ListingRepository,
     private val categoryRepository: CategoryRepository,
+    private val bookmarksRepository: ListingBookmarkRepository,
     private val userService: UserService
 ) {
     private val logger = LoggerFactory.getLogger(ListingService::class.java)
@@ -63,7 +65,19 @@ class ListingService(
             .orElseThrow { ListingNotFoundException("Listing with id $id not found") }
 
         logger.info("Retrieved listing with ID: {}", id)
-        return ListingMapper.toResponseDto(listing)
+        val currentUser = try {
+            userService.getCurrentUser()
+        } catch (e: Exception) {
+            null
+        }
+
+        val listingDto = ListingMapper.toResponseDto(listing)
+        if (currentUser != null) {
+            listingDto.isBookmarked =
+                bookmarksRepository.existsByUserIdAndListingId(currentUser.id, listing.id)
+        }
+        return listingDto
+
     }
 
     /**
@@ -127,7 +141,19 @@ class ListingService(
     ): Page<ListingDto> {
         val pageable = PageRequest.of(page, size, Sort.by(direction, sortBy))
         val listingsPage = listingRepository.findAll(pageable)
-        return listingsPage.map { ListingMapper.toResponseDto(it) }
+        val currentUser = try {
+            userService.getCurrentUser()
+        } catch (e: Exception) {
+            null
+        }
+        return listingsPage.map {
+            val listingDto = ListingMapper.toResponseDto(it)
+            if (currentUser != null) {
+                listingDto.isBookmarked =
+                    bookmarksRepository.existsByUserIdAndListingId(currentUser.id, it.id)
+            }
+            listingDto
+        }
     }
 
     /**
@@ -177,6 +203,18 @@ class ListingService(
         )
 
         val listingsPage = listingRepository.findAll(specification, pageable)
-        return listingsPage.map { ListingMapper.toResponseDto(it) }
+        val currentUser = try {
+            userService.getCurrentUser()
+        } catch (e: Exception) {
+            null
+        }
+        return listingsPage.map {
+            val listingDto = ListingMapper.toResponseDto(it)
+            if (currentUser != null) {
+                listingDto.isBookmarked =
+                    bookmarksRepository.existsByUserIdAndListingId(currentUser.id, it.id)
+            }
+            listingDto
+        }
     }
 }

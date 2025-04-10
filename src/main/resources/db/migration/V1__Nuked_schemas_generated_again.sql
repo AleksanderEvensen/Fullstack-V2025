@@ -67,7 +67,7 @@ CREATE TABLE listings
     seller_id          BIGINT                NOT NULL,
     price              DOUBLE                NOT NULL,
     original_price     DOUBLE                NULL,
-    `description`      TEXT                  NOT NULL,
+    `description`      LONGTEXT              NOT NULL,
     model_year         INT                   NULL,
     manufacturer       VARCHAR(255)          NULL,
     model              VARCHAR(255)          NULL,
@@ -75,6 +75,7 @@ CREATE TABLE listings
     purchase_date      VARCHAR(255)          NULL,
     usage_duration     VARCHAR(255)          NULL,
     reason_for_selling VARCHAR(255)          NULL,
+    listing_status     SMALLINT              NOT NULL,
     created_at         datetime              NULL,
     updated_at         datetime              NULL,
     CONSTRAINT pk_listings PRIMARY KEY (id)
@@ -97,10 +98,9 @@ CREATE TABLE user_roles
 CREATE TABLE users
 (
     id                BIGINT AUTO_INCREMENT NOT NULL,
-    first_name        VARCHAR(255)          NOT NULL,
-    last_name         VARCHAR(255)          NOT NULL,
+    name              VARCHAR(255)          NOT NULL,
     email             VARCHAR(255)          NOT NULL,
-    password          VARCHAR(255)          NOT NULL,
+    password          VARCHAR(255)          NULL,
     phone_number      VARCHAR(255)          NOT NULL,
     nin               VARCHAR(255)          NULL,
     profile_image_url VARCHAR(255)          NULL,

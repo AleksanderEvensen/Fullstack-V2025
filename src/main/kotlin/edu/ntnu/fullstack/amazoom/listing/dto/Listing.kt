@@ -2,6 +2,7 @@ package edu.ntnu.fullstack.amazoom.listing.dto
 
 import edu.ntnu.fullstack.amazoom.common.dto.UserDto
 import edu.ntnu.fullstack.amazoom.listing.entity.ListingCondition
+import edu.ntnu.fullstack.amazoom.listing.entity.ListingStatus
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDateTime
 
@@ -64,6 +65,12 @@ data class ListingDto(
 
     @field:Schema(description = "When the listing was created")
     val createdAt: LocalDateTime,
+
+    @field:Schema(description = "Is the listing bookmarked by the user", example = "true")
+    var isBookmarked: Boolean,
+
+    @field:Schema(description = "Listing status", example = "ACTIVE")
+    val status: ListingStatus,
 
     @field:Schema(description = "List of image URLs for this listing", example = "[\"macbook-12345.jpg\", \"macbook2-12345.jpg\"]")
     val images: List<String>
