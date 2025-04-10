@@ -3,7 +3,8 @@
     "messages": "Meldinger",
     "createListing": "Opprett annonse",
     "profile": "Profil",
-    "language": "Språk"
+    "language": "Språk",
+    "categories": "Kategorier"
   },
   "common": {
     "loading": "Laster...",
@@ -377,5 +378,32 @@
     "title": "Meldinger",
     "sendSuccess": "Meldingen ble sendt",
     "sendError": "Meldingen ble ikke sendt"
+  },
+  "categories": {
+    "management": "Kategoriadministrasjon",
+    "existing": "Eksisterende kategorier",
+    "add": "Legg til kategori",
+    "new": "Ny kategori",
+    "name": "Navn",
+    "icon": "Ikon",
+    "translationKey": "Oversettelsesnøkkel",
+    "description": "Beskrivelse",
+    "noCategories": "Ingen kategorier tilgjengelig",
+    "confirmDelete": "Er du sikker på at du vil slette denne kategorien?",
+    "deleted": "Kategori slettet",
+    "deleteSuccess": "Kategorien ble slettet",
+    "deleteError": "Kunne ikke slette kategorien",
+    "added": "Kategori lagt til",
+    "addSuccess": "Kategorien ble lagt til",
+    "addError": "Kunne ikke legge til kategorien",
+    "loadError": "Kunne ikke laste kategorier"
+  },
+  "errors": {
+    "loadFailed": "Lasting mislyktes",
+    "deleteFailed": "Sletting mislyktes",
+    "addFailed": "Tillegging mislyktes"
+  },
+  "validation": {
+    "required": "Dette feltet er påkrevd"
   }
 }

@@ -1,5 +1,13 @@
 <script setup lang="ts">
-import { CogIcon, LogOutIcon, MailIcon, MenuIcon, PlusIcon, UserIcon } from 'lucide-vue-next'
+import {
+  CogIcon,
+  LibraryIcon,
+  LogOutIcon,
+  MailIcon,
+  MenuIcon,
+  PlusIcon,
+  UserIcon,
+} from 'lucide-vue-next'
 import { RouterLink } from 'vue-router'
 import Button from './ui/button/Button.vue'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet'
@@ -30,12 +38,13 @@ const locales: Record<Locales, { flag: string; name: string }> = {
   },
 }
 
+const authStore = useAuthStore()
+
 const user = computed(() => {
   return useAuthStore().user
 })
 
 function logout() {
-  const authStore = useAuthStore()
   authStore.logout()
   window.location.href = '/'
 }
@@ -79,8 +88,15 @@ function logout() {
         <PlusIcon class="icon" /> {{ t('nav.createListing') }}
       </RouterLink>
 
-      <!-- Profile Avatar -->
+      <!-- Categories -->
+      <template v-if="authStore.isAdmin">
+        <RouterLink to="/categories" class="nav-item">
+          <LibraryIcon class="icon" />
+          {{ t('nav.categories') }}
+        </RouterLink>
+      </template>
 
+      <!-- Profile Avatar -->
       <DropdownMenu>
         <DropdownMenuTrigger as-child>
           <Avatar :class="cn('avatar-button', !user && 'logged-out')">
@@ -95,14 +111,18 @@ function logout() {
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuItem as-child>
-            <RouterLink to="/profile" class="profile-menu-item"> <UserIcon />Profile </RouterLink>
+            <RouterLink to="/profile" class="profile-menu-item">
+              <UserIcon class="user-menu-icon" />Profile
+            </RouterLink>
           </DropdownMenuItem>
           <DropdownMenuItem as-child>
             <RouterLink to="/profile/settings" class="profile-menu-item">
-              <CogIcon />Settings
+              <CogIcon class="user-menu-icon" />Settings
             </RouterLink>
           </DropdownMenuItem>
-          <DropdownMenuItem @click="logout"><LogOutIcon />Logout</DropdownMenuItem>
+          <DropdownMenuItem @click="logout"
+            ><LogOutIcon class="user-menu-icon" />Logout</DropdownMenuItem
+          >
         </DropdownMenuContent>
       </DropdownMenu>
       <RouterLink to="/login">
@@ -320,6 +340,10 @@ function logout() {
 
 .mobile-only {
   display: none;
+}
+
+.user-menu-icon {
+  margin-right: calc(var(--spacing) * 2);
 }
 
 /* Responsive styles */
