@@ -3,6 +3,7 @@ import { useChatMessages } from '@/lib/composables/useChatMessages'
 import ConversationList from './components/ConversationList.vue'
 import ChatConversation from './components/ChatConversation.vue'
 import { Card } from '@/components/ui/card'
+import { watch } from 'vue'
 
 const {
   conversations,
@@ -12,9 +13,27 @@ const {
   isLoadingConversations,
   isLoadingMessages,
   isSendingMessage,
+  hasMoreConversations,
+  hasMoreMessages,
+  isFetchingNextConversations,
+  isFetchingNextMessages,
   setConversation,
   sendMessage,
+  fetchNextConversationsPage,
+  fetchNextMessagesPage,
 } = useChatMessages()
+
+// We auto-select the first conversation when data loads
+watch(
+  conversations,
+  (newConversations) => {
+    if (newConversations.length > 0 && !currentConversation.value) {
+      const firstConversation = newConversations[0]
+      setConversation(firstConversation.user.id, firstConversation.listingId)
+    }
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
@@ -24,7 +43,10 @@ const {
         :conversations="conversations"
         :current-conversation="currentConversation"
         :is-loading="isLoadingConversations"
+        :is-fetching-more="isFetchingNextConversations"
+        :has-more="hasMoreConversations"
         @select-conversation="setConversation"
+        @load-more="fetchNextConversationsPage"
       />
     </Card>
 
@@ -33,10 +55,13 @@ const {
         :messages="messages"
         :is-loading="isLoadingMessages"
         :is-sending="isSendingMessage"
+        :is-fetching-more="isFetchingNextMessages"
+        :has-more="hasMoreMessages"
         :current-conversation="currentConversation"
         :conversations="conversations"
         v-model:message="newMessage"
         @send-message="sendMessage"
+        @load-more="fetchNextMessagesPage"
       />
     </Card>
   </div>
@@ -46,7 +71,7 @@ const {
 .chat-page {
   display: flex;
   height: 100%;
-  min-height: calc(100vh - 64px); /* Adjust based on your app's header height */
+  height: calc(100vh - 65px);
   gap: var(--spacing);
   padding: var(--spacing);
   width: 100%;
@@ -63,7 +88,6 @@ const {
   flex-direction: column;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .chat-page {
     flex-direction: column;

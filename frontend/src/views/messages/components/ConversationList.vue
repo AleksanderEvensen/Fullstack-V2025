@@ -2,17 +2,25 @@
 import type { components } from '@/lib/api/schema'
 import { CardHeader, CardContent } from '@/components/ui/card'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
+import { useTypedI18n } from '@/i18n'
+const { t } = useTypedI18n()
 
 type ConversationSummary = components['schemas']['ConversationSummaryDto']
 
+// Props
 const props = defineProps<{
   conversations: ConversationSummary[]
   currentConversation: { otherUserId: number; listingId: number } | null
   isLoading: boolean
+  isFetchingMore: boolean
+  hasMore: boolean
 }>()
 
+// Emits
 const emit = defineEmits<{
   (e: 'select-conversation', otherUserId: number, listingId: number): void
+  (e: 'load-more'): void
 }>()
 
 const isSelectedConversation = (conversation: ConversationSummary) => {
@@ -26,6 +34,10 @@ const isSelectedConversation = (conversation: ConversationSummary) => {
 
 const selectConversation = (conversation: ConversationSummary) => {
   emit('select-conversation', conversation.user.id, conversation.listingId)
+}
+
+const loadMoreConversations = () => {
+  emit('load-more')
 }
 
 const formatTime = (timestamp: string) => {
@@ -57,12 +69,12 @@ const getInitial = (name: string) => {
 <template>
   <div class="conversation-list">
     <CardHeader class="header">
-      <h2>Conversations</h2>
+      <h2>{{ t('messages.title') }}</h2>
     </CardHeader>
 
     <CardContent class="conversations-content">
       <!-- Loading state -->
-      <div v-if="isLoading" class="loading-state">
+      <div v-if="isLoading && conversations.length === 0" class="loading-state">
         <div class="spinner"></div>
         <p>Loading conversations...</p>
       </div>
@@ -91,7 +103,7 @@ const getInitial = (name: string) => {
               alt="Profile"
             />
             <AvatarFallback>
-              {{ getInitial(conversation.user.firstName) }}
+              {{ getInitial(conversation.user.name) }}
             </AvatarFallback>
           </Avatar>
 
@@ -99,7 +111,7 @@ const getInitial = (name: string) => {
           <div class="conversation-info">
             <div class="conversation-header">
               <span class="user-name">
-                {{ conversation.user.firstName }} {{ conversation.user.lastName }}
+                {{ conversation.user.name }}
               </span>
               <span v-if="conversation.lastMessage" class="timestamp">
                 {{ formatTime(conversation.lastMessage.timestamp) }}
@@ -113,6 +125,20 @@ const getInitial = (name: string) => {
             </div>
             <div v-else class="no-messages">No messages yet</div>
           </div>
+        </div>
+
+        <!-- Load more button -->
+        <div v-if="hasMore" class="load-more-container">
+          <Button
+            variant="outline"
+            size="sm"
+            @click="loadMoreConversations"
+            :disabled="isFetchingMore"
+            class="load-more-button"
+          >
+            <span v-if="isFetchingMore">Loading more...</span>
+            <span v-else>Load more conversations</span>
+          </Button>
         </div>
       </div>
     </CardContent>
@@ -173,9 +199,22 @@ const getInitial = (name: string) => {
 .conversation-item {
   display: flex;
   padding: calc(var(--spacing) * 2);
-  border-bottom: 1px solid var(--border);
+  /* border-bottom: 1px solid var(--border); */
   cursor: pointer;
   transition: background-color 0.2s ease;
+  position: relative;
+}
+
+.conversation-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: var(--border);
+  transform: scaleX(1);
+  transition: transform 0.2s ease;
 }
 
 .conversation-item:hover {
@@ -235,5 +274,15 @@ const getInitial = (name: string) => {
   font-size: var(--font-size-sm);
   color: var(--muted-foreground);
   font-style: italic;
+}
+
+.load-more-container {
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.load-more-button {
+  width: 100%;
 }
 </style>

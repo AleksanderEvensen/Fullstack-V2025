@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onMounted } from 'vue'
+import { computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import type { components } from '@/lib/api/schema'
 import { CardHeader, CardContent, CardFooter } from '@/components/ui/card'
@@ -14,6 +14,8 @@ const props = defineProps<{
   messages: ChatMessage[]
   isLoading: boolean
   isSending: boolean
+  isFetchingMore: boolean
+  hasMore: boolean
   currentConversation: { otherUserId: number; listingId: number } | null
   conversations: ConversationSummary[]
   message: string
@@ -23,20 +25,17 @@ const props = defineProps<{
 const emit = defineEmits<{
   'update:message': [value: string]
   'send-message': []
+  'load-more': []
 }>()
 
-// Local state
-const messagesContainer = ref<HTMLElement | null>(null)
 const messageInput = computed({
   get: () => props.message,
   set: (value) => emit('update:message', value),
 })
 
-// Get user store
 const userStore = useAuthStore()
 const currentUserId = computed(() => userStore.user?.id)
 
-// Find active conversation details
 const activeConversation = computed(() => {
   if (!props.currentConversation) return null
 
@@ -47,53 +46,35 @@ const activeConversation = computed(() => {
   )
 })
 
-// Check if message is from current user
 const isOwnMessage = (message: ChatMessage) => {
   return message.sender.id === currentUserId.value
 }
 
-// Format timestamp for messages
 const formatTime = (timestamp: string) => {
   const date = new Date(timestamp)
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
-// Handle send message
 const handleSendMessage = () => {
   if (!messageInput.value.trim() || !props.currentConversation) return
   emit('send-message')
 }
 
-// Auto scroll to bottom when messages change
-watch(
-  () => props.messages,
-  () => {
-    scrollToBottom()
-  },
-  { deep: true },
-)
-
-// Scroll to bottom of messages
-const scrollToBottom = () => {
-  nextTick(() => {
-    if (messagesContainer.value) {
-      messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
-    }
-  })
+const handleLoadMore = () => {
+  emit('load-more')
 }
-
-// Initial scroll when component mounts
-onMounted(() => {
-  scrollToBottom()
-})
 </script>
 
 <template>
   <div class="chat-conversation">
     <!-- Header with user and listing info -->
     <CardHeader v-if="activeConversation" class="conversation-header">
-      <h2>{{ activeConversation.user.firstName }} {{ activeConversation.user.lastName }}</h2>
-      <div class="listing-title">{{ activeConversation.listingTitle }}</div>
+      <h2>{{ activeConversation.user.name }}</h2>
+      <RouterLink
+        :to="`/marketplace/product/${activeConversation.listingId}`"
+        class="listing-title"
+        >{{ activeConversation.listingTitle }}</RouterLink
+      >
     </CardHeader>
 
     <CardHeader v-else class="conversation-header empty">
@@ -101,9 +82,9 @@ onMounted(() => {
     </CardHeader>
 
     <!-- Messages area -->
-    <CardContent class="messages-container" ref="messagesContainer">
+    <CardContent class="messages-container">
       <!-- Loading state -->
-      <div v-if="isLoading" class="loading-state">
+      <div v-if="isLoading && !messages.length" class="loading-state">
         <div class="spinner"></div>
         <p>Loading messages...</p>
       </div>
@@ -121,16 +102,27 @@ onMounted(() => {
 
       <!-- Messages -->
       <div v-else class="messages-list">
-        <div
-          v-for="(message, index) in messages"
-          :key="index"
-          :class="['message', isOwnMessage(message) ? 'sent' : 'received']"
-        >
-          <div class="message-content">
-            {{ message.content }}
-          </div>
-          <div class="message-meta">
-            {{ formatTime(message.timestamp) }}
+        <!-- Load more button at the top -->
+        <div v-if="hasMore" class="load-more-container">
+          <Button variant="outline" size="sm" @click="handleLoadMore" :disabled="isFetchingMore">
+            <span v-if="isFetchingMore">Loading earlier messages...</span>
+            <span v-else>Load earlier messages</span>
+          </Button>
+        </div>
+
+        <!-- Message list -->
+        <div class="messages-chats">
+          <div
+            v-for="(message, index) in messages"
+            :key="index"
+            :class="['message', isOwnMessage(message) ? 'sent' : 'received']"
+          >
+            <div class="message-content">
+              {{ message.content }}
+            </div>
+            <div class="message-meta">
+              {{ formatTime(message.timestamp) }}
+            </div>
           </div>
         </div>
       </div>
@@ -151,7 +143,8 @@ onMounted(() => {
         :disabled="!messageInput.trim() || isSending"
         class="send-button"
       >
-        Send
+        <span v-if="isSending">Sending...</span>
+        <span v-else>Send</span>
       </Button>
     </CardFooter>
   </div>
@@ -164,6 +157,10 @@ onMounted(() => {
   height: 100%;
 }
 
+.conversation-header {
+  border-bottom: 1px solid var(--border);
+}
+
 .conversation-header h2 {
   margin: 0 0 4px 0;
   font-size: var(--font-size-xl);
@@ -173,6 +170,11 @@ onMounted(() => {
 .conversation-header .listing-title {
   color: var(--muted-foreground);
   font-size: var(--font-size-sm);
+  text-decoration: underline;
+}
+
+.conversation-header .listing-title:hover {
+  color: var(--foreground);
 }
 
 .conversation-header.empty {
@@ -217,6 +219,17 @@ onMounted(() => {
 .messages-list {
   display: flex;
   flex-direction: column;
+}
+
+.messages-chats {
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.load-more-container {
+  display: flex;
+  justify-content: center;
+  margin: 10px 0;
 }
 
 .message {
