@@ -15,9 +15,12 @@ export function useChatMessages() {
   const conversationsQuery = useQuery({
     queryKey: ['conversations'],
     queryFn: async () => {
-      return await fetchClient.GET('/api/chat/conversations', {}).then((res) => res.data)
+      return await fetchClient.GET('/api/chat/conversations', {}).then((res) => {
+        console.log('conversations', res.data)
+        return res.data
+      })
     },
-    refetchInterval: 10000,
+    // refetchInterval: 10000,
   })
 
   const messagesQuery = useQuery({
@@ -55,7 +58,7 @@ export function useChatMessages() {
       const { otherUserId, listingId } = currentConversation.value
       try {
         const response = await fetchClient
-          .GET('/api/chat/poll/{otherUserId}/{listingId}', {
+          .GET('/api/chat/poll/{listingId}/{otherUserId}', {
             params: {
               path: {
                 listingId,

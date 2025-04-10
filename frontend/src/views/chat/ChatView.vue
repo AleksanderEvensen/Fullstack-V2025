@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useChatMessages } from '@/lib/composables/useChat'
+import { useChatMessages } from '@/lib/composables/useChatMessages'
 import ConversationList from './components/ConversationList.vue'
 import ChatConversation from './components/ChatConversation.vue'
 import { Card } from '@/components/ui/card'

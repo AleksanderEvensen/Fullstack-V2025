@@ -109,7 +109,7 @@ class DatabaseSeeder @Autowired constructor(
             return
         }
 
-        logger.info("Creating conversation between admin users...")
+        logger.info("Creating conversation between x    s...")
 
         val conversation = listOf(
             ChatMessage(

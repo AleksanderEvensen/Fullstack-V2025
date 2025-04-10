@@ -4,6 +4,7 @@
  */
 
 export interface paths {
+<<<<<<< HEAD
   '/api/user/address': {
     parameters: {
       query?: never
@@ -452,9 +453,460 @@ export interface paths {
     patch?: never
     trace?: never
   }
+=======
+    "/api/user/address": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update address
+         * @description Updates the address information for the currently authenticated user
+         */
+        put: operations["updateAddress"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/listings/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a listing by ID
+         * @description Retrieves a product listing by its unique identifier
+         */
+        get: operations["getListing"];
+        /**
+         * Update a listing
+         * @description Updates an existing product listing. User must be the owner of the listing or an admin.
+         */
+        put: operations["updateListing"];
+        post?: never;
+        /**
+         * Delete a listing
+         * @description Deletes a product listing by its ID. User must be the owner of the listing or an admin.
+         */
+        delete: operations["deleteListing"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/categories/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a category by ID
+         * @description Retrieves a category by its unique identifier
+         */
+        get: operations["getCategory"];
+        /**
+         * Update a category
+         * @description Updates an existing category by its ID. Only accessible to administrators.
+         */
+        put: operations["updateCategory"];
+        post?: never;
+        /**
+         * Delete a category
+         * @description Deletes a category by its ID. Only accessible to administrators.
+         */
+        delete: operations["deleteCategory"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/user/profile-image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Update profile image
+         * @description Updates the profile image for the currently authenticated user
+         */
+        post: operations["updateProfileImage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/listings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get paginated and sorted listings
+         * @description Retrieves a paginated and sorted list of all listings
+         */
+        get: operations["getPaginatedAndSortedListings"];
+        put?: never;
+        /**
+         * Create a listing
+         * @description Creates a new product listing for the currently authenticated user
+         */
+        post: operations["createListing"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/listings/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Search listings
+         * @description Searches for listings with advanced filters
+         */
+        get: operations["searchListings"];
+        put?: never;
+        /**
+         * Advanced search listings
+         * @description Advanced search for listings using request body for complex filters
+         */
+        post: operations["advancedSearchListings"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/images/upload": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload image
+         * @description Uploads a new image and returns the generated filename
+         */
+        post: operations["uploadImage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/chat/send": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["sendMessage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List all categories
+         * @description Retrieves a list of all product categories
+         */
+        get: operations["listAllCategories"];
+        put?: never;
+        /**
+         * Create a category
+         * @description Creates a new product category. Only accessible to administrators.
+         */
+        post: operations["createCategory"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/bookmarks/{listingId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create a bookmark
+         * @description Creates a new bookmark for a listing. Users cannot bookmark their own listings.
+         */
+        post: operations["createBookmark"];
+        /**
+         * Delete a bookmark
+         * @description Deletes a bookmark by its listing ID. Users can only delete their own bookmarks.
+         */
+        delete: operations["deleteBookmark"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/update-password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Update password
+         * @description Updates the password for the currently authenticated user
+         */
+        post: operations["updatePassword"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Register a new user
+         * @description Creates a new user account with the provided registration details and returns an authentication token
+         */
+        post: operations["register"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Authenticate user
+         * @description Authenticates a user with email and password credentials and returns an authentication token
+         */
+        post: operations["login"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/images/{fileName}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get image
+         * @description Serves an image by its filename
+         */
+        get: operations["serveImage"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/chat/poll/{listingId}/{otherUserId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["pollForMessages"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/chat/conversations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getConversations"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/chat/conversation/{listingId}/{otherUserId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getConversation"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/bookmarks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List user bookmarks
+         * @description Lists all bookmarks for the currently authenticated user
+         */
+        get: operations["listAllBookmarksForUser"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/vipps/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["initiate"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/vipps/callback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["register_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/ping": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Authentication test endpoint
+         * @description Simple endpoint to test if authentication is working. Only accessible to admin users.
+         */
+        get: operations["ping"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get current user profile
+         * @description Retrieves the profile information of the currently authenticated user
+         */
+        get: operations["me"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+>>>>>>> 9f065dd (wip: need to fix send message error)
 }
 export type webhooks = Record<string, never>
 export interface components {
+<<<<<<< HEAD
   schemas: {
     UpdateAddressRequestDto: {
       streetName: string
@@ -995,9 +1447,493 @@ export interface components {
   requestBodies: never
   headers: never
   pathItems: never
+=======
+    schemas: {
+        UpdateAddressRequestDto: {
+            streetName: string;
+            streetNumber: string;
+            postalCode: string;
+            city: string;
+            country: string;
+        };
+        UpdateProfileResponseDto: {
+            message: string;
+        };
+        ErrorResponseDto: {
+            message: string;
+            /** Format: int32 */
+            status: number;
+            errors?: string[];
+        };
+        /** @description Request for creating or updating a listing */
+        CreateOrUpdateListingRequestDto: {
+            /**
+             * @description Title of the listing
+             * @example MacBook Pro 2022
+             */
+            title: string;
+            /**
+             * Format: int64
+             * @description Category ID
+             * @example 1
+             */
+            categoryId: number;
+            /**
+             * @description Condition of the item
+             * @example VERY_GOOD
+             * @enum {string}
+             */
+            condition: "NEW" | "LIKE_NEW" | "VERY_GOOD" | "GOOD" | "ACCEPTABLE";
+            /**
+             * Format: double
+             * @description Current price in local currency
+             * @example 8500
+             */
+            price: number;
+            /**
+             * Format: double
+             * @description Original price if discounted
+             * @example 10000
+             */
+            originalPrice?: number;
+            /**
+             * @description Detailed description of the item
+             * @example MacBook Pro 2022: In excellent condition. Barely used.
+             */
+            description: string;
+            /**
+             * Format: int32
+             * @description Year the product was manufactured
+             * @example 2022
+             */
+            modelYear?: number;
+            /**
+             * @description Manufacturer/brand name
+             * @example Apple
+             */
+            manufacturer?: string;
+            /**
+             * @description Product model
+             * @example MacBook Pro
+             */
+            model?: string;
+            /**
+             * @description Product serial number
+             * @example C02G7RZRMD6M
+             */
+            serialNumber?: string;
+            /**
+             * @description Date of purchase in format YYYY-MM-DD
+             * @example 2022-06-15
+             */
+            purchaseDate?: string;
+            /**
+             * @description Duration the item has been used
+             * @example 6
+             */
+            usageDuration?: string;
+            /**
+             * @description List of any defects the item has
+             * @example [
+             *       "Minor scratch on bottom"
+             *     ]
+             */
+            defects?: string[];
+            /**
+             * @description List of any modifications made to the item
+             * @example [
+             *       "Upgraded RAM to 16GB"
+             *     ]
+             */
+            modifications?: string[];
+            /**
+             * @description Reason why the item is being sold
+             * @example Upgrading to a newer model
+             */
+            reasonForSelling?: string;
+            /**
+             * @description List of image URLs for this listing
+             * @example [
+             *       "macbook-12345.jpg",
+             *       "macbook2-12345.jpg"
+             *     ]
+             */
+            images?: string[];
+            /**
+             * @description Listing status
+             * @example ACTIVE
+             * @enum {string}
+             */
+            status?: "ACTIVE" | "SOLD";
+        };
+        /** @description User address information */
+        AddressDto: {
+            /**
+             * @description Street name
+             * @example Main Street
+             */
+            streetName: string;
+            /**
+             * @description Street number
+             * @example 123
+             */
+            streetNumber: string;
+            /**
+             * @description Postal code
+             * @example 12345
+             */
+            postalCode: string;
+            /**
+             * @description City name
+             * @example Oslo
+             */
+            city: string;
+            /**
+             * @description Country name
+             * @example Norway
+             */
+            country: string;
+        };
+        /** @description Product listing information */
+        ListingDto: {
+            /**
+             * Format: int64
+             * @description Unique identifier of the listing
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description Title of the listing
+             * @example MacBook Pro 2022
+             */
+            title: string;
+            /**
+             * Format: int64
+             * @description Category ID
+             * @example 1
+             */
+            categoryId: number;
+            /**
+             * @description Condition of the item
+             * @example VERY_GOOD
+             * @enum {string}
+             */
+            condition: "NEW" | "LIKE_NEW" | "VERY_GOOD" | "GOOD" | "ACCEPTABLE";
+            /**
+             * Format: double
+             * @description Current price in local currency
+             * @example 8500
+             */
+            price: number;
+            /**
+             * Format: double
+             * @description Original price if discounted
+             * @example 10000
+             */
+            originalPrice?: number;
+            /**
+             * @description Detailed description of the item
+             * @example MacBook Pro 2022: In excellent condition. Barely used.
+             */
+            description: string;
+            /** @description Information about the seller */
+            seller: components["schemas"]["UserDto"];
+            /**
+             * Format: int32
+             * @description Year the product was manufactured
+             * @example 2022
+             */
+            modelYear?: number;
+            /**
+             * @description Manufacturer/brand name
+             * @example Apple
+             */
+            manufacturer?: string;
+            /**
+             * @description Product model
+             * @example MacBook Pro
+             */
+            model?: string;
+            /**
+             * @description Product serial number
+             * @example C02G7RZRMD6M
+             */
+            serialNumber?: string;
+            /**
+             * @description Date of purchase in format YYYY-MM-DD
+             * @example 2022-06-15
+             */
+            purchaseDate?: string;
+            /**
+             * @description Duration the item has been used
+             * @example 6
+             */
+            usageDuration?: string;
+            /**
+             * @description List of any defects the item has
+             * @example [
+             *       "Minor scratch on bottom"
+             *     ]
+             */
+            defects: string[];
+            /**
+             * @description List of any modifications made to the item
+             * @example [
+             *       "Upgraded RAM to 16GB"
+             *     ]
+             */
+            modifications: string[];
+            /**
+             * @description Reason why the item is being sold
+             * @example Upgrading to a newer model
+             */
+            reasonForSelling?: string;
+            /**
+             * Format: date-time
+             * @description When the listing was created
+             */
+            createdAt: string;
+            /**
+             * @description Is the listing bookmarked by the user
+             * @example true
+             */
+            isBookmarked: boolean;
+            /**
+             * @description Listing status
+             * @example ACTIVE
+             * @enum {string}
+             */
+            status: "ACTIVE" | "SOLD";
+            /**
+             * @description List of image URLs for this listing
+             * @example [
+             *       "macbook-12345.jpg",
+             *       "macbook2-12345.jpg"
+             *     ]
+             */
+            images: string[];
+            bookmarked?: boolean;
+        };
+        /** @description Basic user information for public display */
+        UserDto: {
+            /**
+             * Format: int64
+             * @description Unique identifier of the user
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description User's full name
+             * @example John Doe
+             */
+            name: string;
+            /**
+             * @description URL to user's profile image
+             * @example profile-1234-abcd.jpg
+             */
+            profileImageUrl?: string;
+            /** @description User's address information */
+            address?: components["schemas"]["AddressDto"];
+        };
+        CreateOrUpdateCategoryRequestDto: {
+            name: string;
+            description: string;
+            translationString: string;
+            icon: string;
+        };
+        /** @description Product category information */
+        CategoryDto: {
+            /**
+             * Format: int64
+             * @description Unique identifier of the category
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description Name of the category
+             * @example Electronics
+             */
+            name: string;
+            /**
+             * @description Description of the category
+             * @example Electronic devices and equipment
+             */
+            description: string;
+            /**
+             * @description Translation key for i18n
+             * @example categories.electronics
+             */
+            translationString: string;
+            /**
+             * @description Icon identifier for the category
+             * @example Laptop
+             */
+            icon: string;
+        };
+        ListingSearchRequestDto: {
+            q?: string;
+            /** Format: int64 */
+            categoryId?: number;
+            categoryName?: string;
+            /**
+             * @description Condition of a listed item
+             * @enum {string}
+             */
+            condition?: "NEW" | "LIKE_NEW" | "VERY_GOOD" | "GOOD" | "ACCEPTABLE";
+            /** Format: double */
+            minPrice?: number;
+            /** Format: double */
+            maxPrice?: number;
+            /** Format: int32 */
+            minModelYear?: number;
+            /** Format: int32 */
+            maxModelYear?: number;
+            manufacturer?: string;
+            model?: string;
+            /** Format: int64 */
+            sellerId?: number;
+            /** Format: int32 */
+            defectsCount?: number;
+            /** Format: int32 */
+            modificationsCount?: number;
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            size: number;
+            sortBy: string;
+            sortDirection: string;
+        };
+        PageListingDto: {
+            /** Format: int32 */
+            totalPages?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            size?: number;
+            content?: components["schemas"]["ListingDto"][];
+            /** Format: int32 */
+            number?: number;
+            sort?: components["schemas"]["SortObject"];
+            pageable?: components["schemas"]["PageableObject"];
+            /** Format: int32 */
+            numberOfElements?: number;
+            empty?: boolean;
+        };
+        PageableObject: {
+            /** Format: int64 */
+            offset?: number;
+            sort?: components["schemas"]["SortObject"];
+            unpaged?: boolean;
+            paged?: boolean;
+            /** Format: int32 */
+            pageNumber?: number;
+            /** Format: int32 */
+            pageSize?: number;
+        };
+        SortObject: {
+            empty?: boolean;
+            unsorted?: boolean;
+            sorted?: boolean;
+        };
+        ChatMessageRequestDto: {
+            /** Format: int64 */
+            listingId: number;
+            /** Format: int64 */
+            recipientId: number;
+            content: string;
+        };
+        ChatMessageDto: {
+            sender: components["schemas"]["UserDto"];
+            recipient: components["schemas"]["UserDto"];
+            /** Format: int64 */
+            listingId: number;
+            content: string;
+            /** Format: date-time */
+            timestamp: string;
+        };
+        ListingBookmarkResponseDto: {
+            /** Format: int64 */
+            id: number;
+            listing: components["schemas"]["ListingDto"];
+        };
+        UpdatePasswordRequestDto: {
+            currentPassword: string;
+            newPassword: string;
+        };
+        AuthResponseDto: {
+            accessToken: string;
+            message: string;
+        };
+        RegisterRequestDto: {
+            name: string;
+            email: string;
+            password: string;
+            phoneNumber: string;
+            street: string;
+            city: string;
+            postalCode: string;
+        };
+        LoginRequestDto: {
+            email: string;
+            password: string;
+            redirectUrl?: string;
+        };
+        ConversationSummaryDto: {
+            user: components["schemas"]["UserDto"];
+            /** Format: int64 */
+            listingId: number;
+            listingTitle: string;
+            lastMessage?: components["schemas"]["LastMessageDto"];
+        };
+        LastMessageDto: {
+            content: string;
+            /** Format: date-time */
+            timestamp: string;
+        };
+        /** @description Complete user profile information */
+        FullUserDto: {
+            /**
+             * Format: int64
+             * @description Unique identifier of the user
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description User's full name
+             * @example John Doe
+             */
+            name: string;
+            /**
+             * @description User's email address
+             * @example john.doe@example.com
+             */
+            email: string;
+            /**
+             * @description User's phone number
+             * @example +4712345678
+             */
+            phoneNumber: string;
+            /**
+             * @description URL to user's profile image
+             * @example profile-1234-abcd.jpg
+             */
+            profileImageUrl?: string;
+            /** @description User's address information */
+            address?: components["schemas"]["AddressDto"];
+        };
+    };
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
+>>>>>>> 9f065dd (wip: need to fix send message error)
 }
 export type $defs = Record<string, never>
 export interface operations {
+<<<<<<< HEAD
   updateAddress: {
     parameters: {
       query?: never
@@ -2201,4 +3137,1154 @@ export interface operations {
       }
     }
   }
+=======
+    updateAddress: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateAddressRequestDto"];
+            };
+        };
+        responses: {
+            /** @description Address updated successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["UpdateProfileResponseDto"];
+                };
+            };
+            /** @description Invalid input */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description User not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    getListing: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Listing found */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ListingDto"];
+                };
+            };
+            /** @description Listing not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    updateListing: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateOrUpdateListingRequestDto"];
+            };
+        };
+        responses: {
+            /** @description Listing updated successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ListingDto"];
+                };
+            };
+            /** @description Invalid input */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description User not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description User not authorized to update this listing */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Listing or category not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    deleteListing: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Listing deleted successfully */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description User not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description User not authorized to delete this listing */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Listing not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    getCategory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Category found */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["CategoryDto"];
+                };
+            };
+            /** @description Category not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    updateCategory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateOrUpdateCategoryRequestDto"];
+            };
+        };
+        responses: {
+            /** @description Category updated successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["CategoryDto"];
+                };
+            };
+            /** @description Invalid input */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Access denied - requires admin role */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Category not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    deleteCategory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Category deleted successfully */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Access denied - requires admin role */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Category not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    updateProfileImage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Profile image updated successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["UpdateProfileResponseDto"];
+                };
+            };
+            /** @description Invalid file */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description User not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    getPaginatedAndSortedListings: {
+        parameters: {
+            query?: {
+                /**
+                 * @description Page number (0-based)
+                 * @example 0
+                 */
+                page?: number;
+                /**
+                 * @description Number of items per page
+                 * @example 10
+                 */
+                size?: number;
+                /**
+                 * @description Field to sort by
+                 * @example price
+                 */
+                sortBy?: string;
+                /**
+                 * @description Sort direction
+                 * @example ASC
+                 */
+                direction?: "ASC" | "DESC";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Listings retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageListingDto"];
+                };
+            };
+        };
+    };
+    createListing: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateOrUpdateListingRequestDto"];
+            };
+        };
+        responses: {
+            /** @description Listing created successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ListingDto"];
+                };
+            };
+            /** @description Invalid input */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description User not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Category not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    searchListings: {
+        parameters: {
+            query?: {
+                /**
+                 * @description Search query for title and description
+                 * @example Macbook
+                 */
+                q?: string;
+                /**
+                 * @description Title filter
+                 * @example Macbook Pro
+                 */
+                title?: string;
+                /**
+                 * @description Description filter
+                 * @example Excellent condition
+                 */
+                description?: string;
+                /**
+                 * @description Category ID filter
+                 * @example 1
+                 */
+                categoryId?: number;
+                /** @description Condition filter */
+                condition?: "NEW" | "LIKE_NEW" | "VERY_GOOD" | "GOOD" | "ACCEPTABLE";
+                /**
+                 * @description Minimum price filter
+                 * @example 500
+                 */
+                minPrice?: number;
+                /**
+                 * @description Maximum price filter
+                 * @example 2000
+                 */
+                maxPrice?: number;
+                /**
+                 * @description Minimum model year filter
+                 * @example 2020
+                 */
+                minModelYear?: number;
+                /**
+                 * @description Maximum model year filter
+                 * @example 2023
+                 */
+                maxModelYear?: number;
+                /**
+                 * @description Manufacturer filter
+                 * @example Apple
+                 */
+                manufacturer?: string;
+                /**
+                 * @description Model filter
+                 * @example Pro
+                 */
+                model?: string;
+                /**
+                 * @description Seller ID filter
+                 * @example 1
+                 */
+                sellerId?: number;
+                /**
+                 * @description Defects count filter
+                 * @example 0
+                 */
+                defectsCount?: number;
+                /**
+                 * @description Modifications count filter
+                 * @example 1
+                 */
+                modificationsCount?: number;
+                /**
+                 * @description Category name filter
+                 * @example Electronics
+                 */
+                categoryName?: string;
+                /**
+                 * @description Page number (0-based)
+                 * @example 0
+                 */
+                page?: number;
+                /**
+                 * @description Number of items per page
+                 * @example 20
+                 */
+                size?: number;
+                /**
+                 * @description Field to sort by
+                 * @example createdAt
+                 */
+                sortBy?: string;
+                /**
+                 * @description Sort direction
+                 * @example DESC
+                 */
+                sortDirection?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Search results retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageListingDto"];
+                };
+            };
+        };
+    };
+    advancedSearchListings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ListingSearchRequestDto"];
+            };
+        };
+        responses: {
+            /** @description Advanced search results retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageListingDto"];
+                };
+            };
+        };
+    };
+    uploadImage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Image uploaded successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": unknown;
+                };
+            };
+            /** @description Invalid file */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description User not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    sendMessage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChatMessageRequestDto"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ChatMessageDto"];
+                };
+            };
+        };
+    };
+    listAllCategories: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of categories retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["CategoryDto"][];
+                };
+            };
+        };
+    };
+    createCategory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateOrUpdateCategoryRequestDto"];
+            };
+        };
+        responses: {
+            /** @description Category created successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["CategoryDto"];
+                };
+            };
+            /** @description Invalid input */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Access denied - requires admin role */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    createBookmark: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                listingId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Bookmark created successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ListingBookmarkResponseDto"];
+                };
+            };
+            /** @description Cannot bookmark own listing */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Listing not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Bookmark already exists */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    deleteBookmark: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                listingId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Bookmark deleted successfully */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized to delete this bookmark */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Bookmark not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    updatePassword: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdatePasswordRequestDto"];
+            };
+        };
+        responses: {
+            /** @description Password updated successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["AuthResponseDto"];
+                };
+            };
+            /** @description Invalid input or validation error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Current password is incorrect */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    register: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterRequestDto"];
+            };
+        };
+        responses: {
+            /** @description User registered successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["AuthResponseDto"];
+                };
+            };
+            /** @description Invalid input or validation error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description User already exists with the provided email or phone number */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    login: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginRequestDto"];
+            };
+        };
+        responses: {
+            /** @description Authentication successful */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["AuthResponseDto"];
+                };
+            };
+            /** @description Invalid credentials */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    serveImage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                fileName: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Image retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "image/*": unknown;
+                };
+            };
+            /** @description Image not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": string;
+                };
+            };
+        };
+    };
+    pollForMessages: {
+        parameters: {
+            query: {
+                lastTimestamp: number;
+            };
+            header?: never;
+            path: {
+                otherUserId: number;
+                listingId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ChatMessageDto"][];
+                };
+            };
+        };
+    };
+    getConversations: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ConversationSummaryDto"][];
+                };
+            };
+        };
+    };
+    getConversation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                listingId: number;
+                otherUserId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ChatMessageDto"][];
+                };
+            };
+        };
+    };
+    listAllBookmarksForUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of bookmarks retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ListingBookmarkResponseDto"];
+                };
+            };
+            /** @description User not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    initiate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    register_1: {
+        parameters: {
+            query: {
+                params: {
+                    [key: string]: string;
+                };
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ping: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Authentication successful (admin access) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": string;
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Forbidden - requires admin role */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    me: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Profile retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["FullUserDto"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+>>>>>>> 9f065dd (wip: need to fix send message error)
 }

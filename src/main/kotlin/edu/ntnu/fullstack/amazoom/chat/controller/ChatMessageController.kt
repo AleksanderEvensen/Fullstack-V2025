@@ -18,6 +18,8 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.concurrent.DelegatingSecurityContextRunnable
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.context.request.async.DeferredResult
 import java.time.Instant
@@ -37,7 +39,9 @@ class ChatController(
      */
     @GetMapping("/conversations")
     fun getConversations(): ResponseEntity<List<ConversationSummaryDto>> {
-        return ResponseEntity.ok(chatMessageService.getUniqueConversations())
+        val conversations = chatMessageService.getUniqueConversations()
+
+        return ResponseEntity.ok(conversations)
     }
 
     /**
@@ -68,7 +72,7 @@ class ChatController(
     /**
      * Long polling endpoint to receive new messages for a specific conversation.
      */
-    @GetMapping("/poll/{otherUserId}/{listingId}")
+    @GetMapping("/poll/{listingId}/{otherUserId}")
     fun pollForMessages(
         @PathVariable otherUserId: Long,
         @PathVariable listingId: Long,
@@ -77,13 +81,12 @@ class ChatController(
         val result = DeferredResult<ResponseEntity<List<ChatMessageDto>>>(LONG_POLL_TIMEOUT + 1000L)
         val lastMessageTime = Instant.ofEpochMilli(lastTimestamp)
 
-        // Complete with empty result on timeout
         result.onTimeout {
             result.setResult(ResponseEntity.ok(emptyList()))
         }
 
-        // Use CompletableFuture to handle the polling in a non-blocking way
-        CompletableFuture.runAsync {
+        val securityContext = SecurityContextHolder.getContext()
+        val runnable = DelegatingSecurityContextRunnable(Runnable {
             try {
                 val messages = chatMessageService.pollForMessages(
                     lastMessageTime,
@@ -98,7 +101,9 @@ class ChatController(
                         .body(emptyList<ChatMessageDto>())
                 )
             }
-        }
+        }, securityContext)
+
+        CompletableFuture.runAsync(runnable)
 
         return result
     }
