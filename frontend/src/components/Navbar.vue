@@ -203,7 +203,7 @@ function logout() {
   top: 0;
   z-index: 100;
   margin: 0;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid var(--border);
 }
 
 .avatar-button {
