@@ -356,6 +356,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/auth/vipps/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["initiate"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/vipps/callback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["register_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/ping": {
         parameters: {
             query?: never;
@@ -676,15 +708,10 @@ export interface components {
              */
             id: number;
             /**
-             * @description User's first name
-             * @example John
+             * @description User's full name
+             * @example John Doe
              */
-            firstName: string;
-            /**
-             * @description User's last name
-             * @example Doe
-             */
-            lastName: string;
+            name: string;
             /**
              * @description URL to user's profile image
              * @example profile-1234-abcd.jpg
@@ -783,12 +810,12 @@ export interface components {
             /** Format: int64 */
             offset?: number;
             sort?: components["schemas"]["SortObject"];
+            unpaged?: boolean;
             paged?: boolean;
             /** Format: int32 */
             pageNumber?: number;
             /** Format: int32 */
             pageSize?: number;
-            unpaged?: boolean;
         };
         SortObject: {
             empty?: boolean;
@@ -813,15 +840,18 @@ export interface components {
             message: string;
         };
         RegisterRequestDto: {
-            firstName: string;
-            lastName: string;
+            name: string;
             email: string;
             password: string;
             phoneNumber: string;
+            street: string;
+            city: string;
+            postalCode: string;
         };
         LoginRequestDto: {
             email: string;
             password: string;
+            redirectUrl?: string;
         };
         ConversationSummaryDto: {
             user: components["schemas"]["UserDto"];
@@ -875,15 +905,10 @@ export interface components {
              */
             id: number;
             /**
-             * @description User's first name
-             * @example John
+             * @description User's full name
+             * @example John Doe
              */
-            firstName: string;
-            /**
-             * @description User's last name
-             * @example Doe
-             */
-            lastName: string;
+            name: string;
             /**
              * @description User's email address
              * @example john.doe@example.com
@@ -1927,6 +1952,46 @@ export interface operations {
                 content: {
                     "*/*": components["schemas"]["ErrorResponseDto"];
                 };
+            };
+        };
+    };
+    initiate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    register_1: {
+        parameters: {
+            query: {
+                params: {
+                    [key: string]: string;
+                };
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

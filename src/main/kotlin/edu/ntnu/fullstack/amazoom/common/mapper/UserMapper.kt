@@ -9,8 +9,7 @@ object UserMapper {
     fun toDto(user: User): UserDto {
         return UserDto(
             id = user.id,
-            firstName = user.firstName,
-            lastName = user.lastName,
+            name = user.name,
             profileImageUrl = user.profileImageUrl,
             address = user.address?.let { AddressMapper.toDto(it) },
         )
@@ -19,8 +18,7 @@ object UserMapper {
     fun toFullDto(user: User): FullUserDto {
         return FullUserDto(
             id = user.id,
-            firstName = user.firstName,
-            lastName = user.lastName,
+            name = user.name,
             email = user.email,
             phoneNumber = user.phoneNumber,
             profileImageUrl = user.profileImageUrl,

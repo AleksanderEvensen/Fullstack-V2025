@@ -11,11 +11,8 @@ data class UserDto (
     @field:Schema(description = "Unique identifier of the user", example = "1")
     val id: Long,
 
-    @field:Schema(description = "User's first name", example = "John")
-    val firstName: String,
-
-    @field:Schema(description = "User's last name", example = "Doe")
-    val lastName: String,
+    @field:Schema(description = "User's full name", example = "John Doe")
+    val name: String,
 
     @field:Schema(description = "URL to user's profile image", example = "profile-1234-abcd.jpg", nullable = true)
     val profileImageUrl: String?,
@@ -33,11 +30,8 @@ data class FullUserDto (
     @field:Schema(description = "Unique identifier of the user", example = "1")
     val id: Long,
 
-    @field:Schema(description = "User's first name", example = "John")
-    val firstName: String,
-
-    @field:Schema(description = "User's last name", example = "Doe")
-    val lastName: String,
+    @field:Schema(description = "User's full name", example = "John Doe")
+    val name: String,
 
     @field:Schema(description = "User's email address", example = "john.doe@example.com")
     val email: String,
@@ -57,8 +51,7 @@ data class FullUserDto (
  * Contains all required fields to create a user.
  */
 data class CreateUserDto(
-    val firstName: String,
-    val lastName: String,
+    val name: String,
     val email: String,
     val phoneNumber: String,
     val password: String? = null,

@@ -1,64 +1,38 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { RouterLink, useRouter } from 'vue-router'
 import { Button } from '@/components/ui/button'
-import { Form } from '@/components/ui/form'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import {
-  Stepper,
-  StepperItem,
-  StepperTrigger,
-  StepperTitle,
-  StepperDescription,
-  StepperSeparator,
-} from '@/components/ui/stepper'
-import { User, Mail, Lock, Check } from 'lucide-vue-next'
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Mail, Lock, UserIcon, MapPin, PhoneIcon } from 'lucide-vue-next'
 import { toTypedSchema } from '@vee-validate/zod'
-import type { GenericObject } from 'vee-validate'
+import type { SubmissionHandler } from 'vee-validate'
 import * as z from 'zod'
 import { useTypedI18n } from '@/i18n'
-import ProfileStep from './steps/ProfileStep.vue'
-import ContactInfoStep from './steps/ContactInfoStep.vue'
-import SecurityStep from './steps/SecurityStep.vue'
+import { useUrlSearchParams } from '@vueuse/core'
+import { useAuthStore } from '@/stores/auth'
+import { toast } from 'vue-sonner'
 
 const { t } = useTypedI18n()
 
-const stepIndex = ref(1)
-const steps = [
-  {
-    step: 1,
-    title: t('auth.steps.profile.title'),
-    description: t('auth.steps.profile.description'),
-    icon: User,
-  },
-  {
-    step: 2,
-    title: t('auth.steps.contact.title'),
-    description: t('auth.steps.contact.description'),
-    icon: Mail,
-  },
-  {
-    step: 3,
-    title: t('auth.steps.security.title'),
-    description: t('auth.steps.security.description'),
-    icon: Lock,
-  },
-]
-
-const norwegianPhoneRegex = /^(\d{3})\s(\d{2})\s(\d{3})$/
-
-const formSchema = [
-  z.object({
-    fullName: z.string().min(2, t('auth.validation.nameMin')),
-    profilePicture: z.any().optional(),
+const registerZodSchema = z.object({
+  name: z.string().min(2, t('auth.validation.nameRequired')),
+  email: z.string().email(t('auth.validation.emailInvalid')),
+  phone: z.string().regex(/^\d{8}$/, t('auth.validation.phoneInvalid')),
+  address: z.object({
+    street: z.string().min(1, t('auth.validation.streetAddress')),
+    postalCode: z.string().regex(/^\d+$/).min(1, t('auth.validation.postalCode')),
+    city: z.string().min(1, t('auth.validation.city')),
   }),
-  z.object({
-    email: z.string().email(t('auth.validation.emailInvalid')),
-    phoneNumber: z.string().regex(norwegianPhoneRegex, t('auth.validation.phoneInvalid')),
-    streetAddress: z.string().min(5, t('auth.validation.streetAddressMin')),
-    postalCode: z.string().regex(/^\d{4}$/, t('auth.validation.postalCodeInvalid')),
-    city: z.string().min(2, t('auth.validation.cityMin')),
-  }),
-  z
+
+  secret: z
     .object({
       password: z
         .string()
@@ -66,142 +40,205 @@ const formSchema = [
         .regex(/[A-Z]/, t('auth.validation.passwordUpper'))
         .regex(/[a-z]/, t('auth.validation.passwordLower'))
         .regex(/[0-9]/, t('auth.validation.passwordNumber')),
-      confirmPassword: z.string().min(8, t('auth.validation.passwordMin')),
+      confirm: z.string(),
     })
-    .refine((data) => data.password === data.confirmPassword, {
+    .refine((v) => v.password === v.confirm, {
       message: t('auth.validation.passwordsNotMatch'),
-      path: ['confirmPassword'],
+      path: ['confirm'],
     }),
-]
+})
 
-function onSubmit(values: GenericObject) {
-  console.log('Form submitted:', values)
+const searchParams = useUrlSearchParams('history')
+const registerSchema = toTypedSchema(registerZodSchema)
+const authStore = useAuthStore()
+const router = useRouter()
+
+const onRegisterSubmit: SubmissionHandler = async (values) => {
+  const info = registerZodSchema.parse(values);
+  const redirectUrl = searchParams.redirect as string | undefined
+  console.log(values);
+
+  const result = await authStore.register({
+    name: info.name,
+    email: info.email,
+    password: info.secret.password,
+    phoneNumber: info.phone,
+    street: info.address.street,
+    postalCode: info.address.postalCode,
+    city: info.address.city
+  })
+
+  if (!result.success) {
+    toast.error(t('auth.register.error'))
+    return
+  }
+
+  toast.success("Registration successful", {
+    description: "Welcome to Amazoom!",
+  });
+  router.push(redirectUrl ?? "/")
 }
 </script>
 
 <template>
-  <div class="container">
-    <Card>
+  <div class="container center-content">
+    <Card class="form-card">
       <CardHeader>
-        <CardTitle>{{ t('auth.createAccount') }}</CardTitle>
-        <CardDescription>{{ t('auth.fillOutForm') }}</CardDescription>
+        <CardTitle>{{ t('auth.register.title') }}</CardTitle>
+        <CardDescription>{{ t('auth.register.description') }}</CardDescription>
       </CardHeader>
       <CardContent>
+        <Button as="a" href="/api/auth/vipps/login" class="login-vipps">
+          {{ t('auth.register.vipps') }}
+        </Button>
         <Form
-          v-slot="{ meta, values, validate }"
-          as=""
-          keep-values
-          :validation-schema="toTypedSchema(formSchema[stepIndex - 1])"
+          v-slot="{ meta }"
+          :validation-schema="registerSchema"
+          @submit="onRegisterSubmit"
+          class="register-form"
         >
-          <Stepper
-            v-slot="{ isNextDisabled, isPrevDisabled, nextStep, prevStep }"
-            v-model="stepIndex"
-            class="stepper-block"
-          >
-            <form
-              @submit="
-                (e) => {
-                  e.preventDefault()
-                  validate()
-
-                  if (stepIndex === steps.length && meta.valid) {
-                    onSubmit(values)
-                  }
-                }
-              "
-            >
-              <div class="stepper-nav-container">
-                <StepperItem
-                  v-for="step in steps"
-                  :key="step.step"
-                  v-slot="{ state }"
-                  class="stepper-item"
-                  :step="step.step"
-                >
-                  <StepperSeparator
-                    v-if="step.step !== steps[steps.length - 1].step"
-                    class="stepper-separator"
-                    :class="{ 'separator-completed': state === 'completed' }"
+          <FormField v-slot="{ componentField }" name="name">
+            <FormItem class="form-item">
+              <FormLabel>{{ t('auth.fullName') }}</FormLabel>
+              <FormControl>
+                <div class="input-with-icon">
+                  <UserIcon />
+                  <Input
+                    type="text"
+                    v-bind="componentField"
+                    :placeholder="t('auth.fullNamePlaceholder')"
                   />
-
-                  <StepperTrigger as-child>
-                    <Button
-                      :variant="state === 'completed' || state === 'active' ? 'default' : 'outline'"
-                      size="icon"
-                      class="stepper-button"
-                      :class="[
-                        state === 'active' && 'active-button',
-                        state === 'completed' && 'completed-button',
-                      ]"
-                      :disabled="state !== 'completed' && !meta.valid"
-                    >
-                      <Check v-if="state === 'completed'" class="step-icon" />
-                      <span v-else class="step-number">{{ step.step }}</span>
-                    </Button>
-                  </StepperTrigger>
-
-                  <div class="stepper-title-container">
-                    <StepperTitle
-                      :class="[
-                        state === 'active' && 'active-text',
-                        state === 'completed' && 'completed-text',
-                      ]"
-                      class="stepper-title"
-                    >
-                      {{ step.title }}
-                    </StepperTitle>
-                    <StepperDescription
-                      :class="[
-                        state === 'active' && 'active-text-muted',
-                        state === 'completed' && 'completed-text-muted',
-                      ]"
-                      class="stepper-description"
-                    >
-                      {{ step.description }}
-                    </StepperDescription>
-                  </div>
-                </StepperItem>
-              </div>
-
-              <div class="form-fields-container">
-                <ProfileStep v-if="stepIndex === 1" />
-                <ContactInfoStep v-if="stepIndex === 2" />
-                <SecurityStep v-if="stepIndex === 3" />
-              </div>
-
-              <div class="form-actions">
-                <Button
-                  :disabled="isPrevDisabled"
-                  variant="outline"
-                  size="lg"
-                  class="action-button back-button"
-                  @click="prevStep()"
-                >
-                  {{ t('common.back') }}
-                </Button>
-                <div class="button-group">
-                  <Button
-                    v-if="stepIndex !== steps.length"
-                    :type="meta.valid ? 'button' : 'submit'"
-                    :disabled="isNextDisabled"
-                    size="lg"
-                    class="action-button next-button"
-                    @click="meta.valid && nextStep()"
-                  >
-                    {{ t('common.next') }}
-                  </Button>
-                  <Button
-                    v-if="stepIndex === steps.length"
-                    size="lg"
-                    type="submit"
-                    class="action-button submit-button"
-                  >
-                    {{ t('auth.submitButton') }}
-                  </Button>
                 </div>
-              </div>
-            </form>
-          </Stepper>
+              </FormControl>
+              <FormMessage class="form-message" />
+            </FormItem>
+          </FormField>
+
+          <FormField v-slot="{ componentField }" name="email">
+            <FormItem class="form-item">
+              <FormLabel>{{ t('auth.email') }}</FormLabel>
+              <FormControl>
+                <div class="input-with-icon">
+                  <Mail />
+                  <Input
+                    type="email"
+                    v-bind="componentField"
+                    :placeholder="t('auth.emailPlaceholder')"
+                  />
+                </div>
+              </FormControl>
+              <FormMessage class="form-message" />
+            </FormItem>
+          </FormField>
+          
+          <FormField v-slot="{ componentField }" name="phone">
+            <FormItem class="form-item">
+              <FormLabel>{{ t('auth.phoneNumber') }}</FormLabel>
+              <FormControl>
+                <div class="input-with-icon">
+                  <PhoneIcon />
+                  <Input
+                    type="email"
+                    v-bind="componentField"
+                    :placeholder="t('auth.phoneNumberPlaceholder')"
+                  />
+                </div>
+              </FormControl>
+              <FormMessage class="form-message" />
+            </FormItem>
+          </FormField>
+
+          <FormField v-slot="{ componentField }" name="address.street">
+            <FormItem class="form-item">
+              <FormLabel>{{ t('auth.streetAddress') }}</FormLabel>
+              <FormControl>
+                <div class="input-with-icon">
+                  <MapPin />
+                  <Input
+                    type="text"
+                    v-bind="componentField"
+                    :placeholder="t('auth.streetAddressPlaceholder')"
+                  />
+                </div>
+              </FormControl>
+              <FormMessage class="form-message" />
+            </FormItem>
+          </FormField>
+
+          <div class="split-input">
+            <FormField v-slot="{ componentField }" name="address.city">
+              <FormItem class="form-item">
+                <FormLabel>{{ t('auth.city') }}</FormLabel>
+                <FormControl>
+                  <Input
+                    type="text"
+                    v-bind="componentField"
+                    :placeholder="t('auth.cityPlaceholder')"
+                  />
+                </FormControl>
+                <FormMessage class="form-message" />
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ componentField }" name="address.postalCode">
+              <FormItem class="form-item">
+                <FormLabel>{{ t('auth.postalCode') }}</FormLabel>
+                <FormControl>
+                  <Input
+                    type="text"
+                    v-bind="componentField"
+                    :placeholder="t('auth.postalCodePlaceholder')"
+                  />
+                </FormControl>
+                <FormMessage class="form-message" />
+              </FormItem>
+            </FormField>
+          </div>
+
+          <FormField v-slot="{ componentField }" name="secret.password">
+            <FormItem>
+              <FormLabel>{{ t('auth.password') }}</FormLabel>
+              <FormControl>
+                <div class="input-with-icon">
+                  <Lock />
+                  <Input
+                    type="password"
+                    v-bind="componentField"
+                    :placeholder="t('auth.login.passwordPlaceholder')"
+                  />
+                </div>
+              </FormControl>
+              <FormMessage class="form-message" />
+            </FormItem>
+          </FormField>
+
+          <FormField v-slot="{ componentField }" name="secret.confirm">
+            <FormItem>
+              <FormLabel>{{ t('auth.confirmPassword') }}</FormLabel>
+              <FormControl>
+                <div class="input-with-icon">
+                  <Lock />
+                  <Input
+                    type="password"
+                    v-bind="componentField"
+                    :placeholder="t('auth.confirmPasswordPlaceholder')"
+                  />
+                </div>
+              </FormControl>
+              <FormMessage class="form-message" />
+            </FormItem>
+          </FormField>
+
+          <Button type="submit" size="lg" class="login-button" :disabled="!meta.valid || meta.pending">
+            {{ t('auth.register.button') }}
+          </Button>
+
+
+          <div class="center-text">
+            {{ t('auth.register.haveAccount') }}
+            <RouterLink :to="{ name: 'login' }" class="login-text">
+              {{ t('auth.register.loginLink') }}
+            </RouterLink>
+          </div>
         </Form>
       </CardContent>
     </Card>
@@ -209,199 +246,79 @@ function onSubmit(values: GenericObject) {
 </template>
 
 <style scoped>
-.container {
-  width: 900px;
-  margin: 2rem auto;
-  padding: 1.5rem;
-}
-
-.stepper-block {
-  display: block;
-  width: 100%;
-}
-
-.stepper-nav-container {
+.center-content {
   display: flex;
-  width: 100%;
-  align-items: flex-start;
-  gap: 0.5rem;
-  margin-bottom: 2.5rem;
-  padding: 0.75rem 0.5rem;
-}
-
-.stepper-item {
-  position: relative;
-  display: flex;
-  width: 100%;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
 }
 
-.stepper-separator {
-  position: absolute;
-  left: calc(50% + 20px);
-  right: calc(-50% + 10px);
-  top: 1.25rem;
-  display: block;
-  height: 0.125rem;
-  flex-shrink: 0;
-  border-radius: 9999px;
-  background-color: hsl(var(--muted));
-  transition: background-color 0.3s ease;
+.form-card {
+  width: 100%;
+  max-width: 600px;
+  margin-top: calc(var(--spacing) * 20);
+  margin-bottom: calc(var(--spacing) * 20);
 }
 
-.separator-completed {
-  background-color: hsl(var(--primary));
+.login-vipps {
+  background-color: #ff5c24 !important;
+  color: white !important;
+  cursor: pointer !important;
+  margin-bottom: calc(var(--spacing) * 4);
+  width: 100%;
 }
 
-.stepper-button {
-  z-index: 10;
-  border-radius: 9999px;
-  flex-shrink: 0;
-  transition: all 0.3s ease;
-  width: 2.5rem;
-  height: 2.5rem;
-}
-
-.step-icon {
-  width: 1.25rem;
-  height: 1.25rem;
-}
-
-.step-number {
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-.active-button {
-  border: 2px solid hsl(var(--primary));
-  box-shadow: 0 0 0 4px hsla(var(--primary), 0.2);
-}
-
-.completed-button {
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-}
-
-.stepper-title-container {
-  margin-top: 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.center-text {
   text-align: center;
 }
 
-.stepper-title {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: hsl(var(--foreground));
-  transition: color 0.3s ease;
+.login-text {
+  font-weight: var(--font-weight-bold);
 }
 
-.stepper-description {
-  font-size: 0.75rem;
-  color: hsl(var(--muted-foreground));
-  transition: color 0.3s ease;
-  margin-top: 0.25rem;
-}
-
-.active-text {
-  color: hsl(var(--primary));
-  font-weight: 600;
-}
-
-.completed-text {
-  color: hsl(var(--primary));
-  font-weight: 500;
-}
-
-.active-text-muted {
-  color: hsl(var(--primary) / 0.8);
-}
-
-.completed-text-muted {
-  color: hsl(var(--primary) / 0.7);
-}
-
-.form-fields-container {
+.register-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  margin-top: 2rem;
-  padding: 0.5rem 0.25rem;
+  gap: calc(var(--spacing) * 4);
 }
 
-.form-actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 2.5rem;
-}
+.input-with-icon {
+  position: relative;
+  width: 100%;
 
-.action-button {
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
-  height: 2.75rem;
-  font-weight: 500;
-}
-
-.button-group {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-@media (min-width: 768px) {
-  .container {
-    padding: 2rem;
+  svg {
+    position: absolute;
+    top: 50%;
+    left: var(--spacing);
+    transform: translateY(-50%);
+    color: var(--muted-foreground);
+    height: 60%;
   }
 
-  .stepper-title {
-    font-size: 1rem;
-  }
-
-  .stepper-description {
-    display: block;
-  }
-
-  .form-fields-container {
-    padding: 0.5rem 1rem;
-  }
-}
-
-@media (max-width: 640px) {
-  .container {
-    padding: 1rem;
-  }
-
-  .stepper-description {
-    display: none;
-  }
-
-  .form-actions {
-    flex-direction: column-reverse;
-    gap: 1rem;
-  }
-
-  .button-group {
+  input {
+    padding-left: calc(var(--spacing) * 8);
     width: 100%;
   }
+}
 
-  .button-group button {
+.form-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing);
+}
+
+.split-input {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 4);
+  width: 100%;
+  * {
     flex: 1;
   }
+}
 
-  .form-actions button:first-child {
-    width: 100%;
-  }
-
-  .container {
-    width: 100%;
-  }
-
-  .form-fields-container {
-    width: 100%;
+@media (min-width: 350px) {
+  .split-input {
+    align-items: start;
+    flex-direction: row;
   }
 }
 </style>

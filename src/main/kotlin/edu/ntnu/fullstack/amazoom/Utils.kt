@@ -20,8 +20,22 @@ object Utils {
         message: String,
         description: String? = null,
         duration: Int? = null
-    ) {
+    ) = response.addCookie(
+        createToastCookie(
+            type = type,
+            message = message,
+            description = description,
+            duration = duration
+        )
+    )
 
+
+    fun createToastCookie(
+        type: ToastType,
+        message: String,
+        description: String? = null,
+        duration: Int? = null
+    ): Cookie {
         val options = mutableMapOf(
             "type" to type.toString(),
             "message" to message
@@ -36,7 +50,7 @@ object Utils {
             path = "/"
             setAttribute("SameSite", "Lax")
         }
-        response.addCookie(toastCookie)
+        return toastCookie;
     }
 }
 
@@ -46,6 +60,7 @@ enum class ToastType {
     Info,
 
     ;
+
     override fun toString(): String {
         return name.lowercase()
     }

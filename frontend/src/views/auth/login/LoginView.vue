@@ -1,6 +1,61 @@
+<script setup lang="ts">
+import { RouterLink, useRouter } from 'vue-router'
+import { Button } from '@/components/ui/button'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Mail, Lock } from 'lucide-vue-next'
+import { toTypedSchema } from '@vee-validate/zod'
+import type { SubmissionHandler } from 'vee-validate'
+import * as z from 'zod'
+import { useTypedI18n } from '@/i18n'
+import { useUrlSearchParams } from '@vueuse/core'
+import { useAuthStore } from '@/stores/auth'
+import { toast } from 'vue-sonner'
+
+const { t } = useTypedI18n()
+
+const loginZodSchema = z.object({
+  email: z.string().email(t('auth.validation.emailInvalid')),
+  password: z.string().min(1, t('auth.login.validation.passwordRequired')),
+})
+
+const searchParams = useUrlSearchParams('history')
+
+const loginSchema = toTypedSchema(loginZodSchema)
+const authStore = useAuthStore()
+const router = useRouter()
+
+const onLoginSubmit: SubmissionHandler = async (values) => {
+  const redirectUrl = searchParams.redirect as string | undefined
+  const result = await authStore.login({
+    email: values.email,
+    password: values.password,
+  })
+
+  if (result.success) {
+    router.push(redirectUrl || '/')
+    toast.success('Login successful', {
+      description: 'Welcome back!',
+    })
+  } else {
+    toast.error('Failed to login', {
+      description: 'Check your credentials and try again.',
+    })
+  }
+}
+</script>
+
 <template>
-  <div class="container">
-    <Card>
+  <div class="container center-content">
+    <Card class="form-card">
       <CardHeader>
         <CardTitle>{{ t('auth.login.title') }}</CardTitle>
         <CardDescription>{{ t('auth.login.description') }}</CardDescription>
@@ -52,7 +107,13 @@
             {{ t('auth.login.button') }}
           </Button>
 
-          <div class="register-link">
+          <span class="center-text">or login with</span>
+
+          <Button as="a" href="/api/auth/vipps/login" class="login-vipps">
+            {{ t('auth.login.vipps') }}
+          </Button>
+
+          <div class="center-text">
             {{ t('auth.login.noAccount') }}
             <RouterLink :to="{ name: 'register' }" class="register-text">
               {{ t('auth.login.registerLink') }}
@@ -64,44 +125,26 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { RouterLink } from 'vue-router'
-import { Button } from '@/components/ui/button'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Mail, Lock } from 'lucide-vue-next'
-import { toTypedSchema } from '@vee-validate/zod'
-import type { SubmissionHandler } from 'vee-validate'
-import * as z from 'zod'
-import { useTypedI18n } from '@/i18n'
-
-const { t } = useTypedI18n();
-
-const loginZodSchema = z.object({
-  email: z.string().email(t('auth.validation.emailInvalid')),
-  password: z.string().min(1, t('auth.login.validation.passwordRequired')),
-})
-
-const loginSchema = toTypedSchema(loginZodSchema)
-
-const onLoginSubmit: SubmissionHandler = (values) => {
-  console.log('Login form submitted:', values)
-}
-</script>
-
 <style scoped>
-.container {
-  width: 500px;
-  margin: 2rem auto;
-  padding: 1.5rem;
+.center-content {
+  display: flex;
+  justify-content: center;
+}
+
+.form-card {
+  width: 100%;
+  max-width: 600px;
+  margin-top: calc(var(--spacing) * 20);
+}
+
+.login-vipps {
+  background-color: #ff5c24 !important;
+  color: white !important;
+  cursor: pointer !important;
+}
+
+.center-text {
+  text-align: center;
 }
 
 .login-form {
@@ -143,12 +186,5 @@ const onLoginSubmit: SubmissionHandler = (values) => {
 
 .register-text:hover {
   text-decoration: underline;
-}
-
-@media (max-width: 640px) {
-  .container {
-    width: 100%;
-    padding: 1rem;
-  }
 }
 </style>

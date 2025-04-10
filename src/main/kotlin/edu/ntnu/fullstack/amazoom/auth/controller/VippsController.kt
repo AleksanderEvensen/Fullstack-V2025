@@ -37,78 +37,78 @@ class VippsController(
     @GetMapping("/callback")
     fun register(
         @RequestParam params: Map<String, String>,
-        response: HttpServletResponse
+        response: HttpServletResponse,
+        request: HttpServletRequest
     ) {
-        val code = params.get("code");
-        val error = params.get("error");
+        // Handle if the callback is not successful
+        params.get("error")?.let {
+            logger.error("Error during vipps authentication: $it | ${params["error_description"]}");
+            Utils.addToastToResponse(
+                response,
+                ToastType.Error,
+                "Failed to authenticate with vipps",
+                "Vipps sent an error: ${params["error_description"]}"
+            )
+            return response.sendRedirect("/register");
+        };
 
-        if (error != null) {
-            logger.error("Error during vipps authentication: $error");
-            val errorDescription =
-                params.getOrDefault("description", "Faild to authenticate with vipps");
-
-            Utils.addToastToResponse(response, ToastType.Error, errorDescription)
-            return response.sendRedirect("/register")
-        }
-
-        if (code == null) {
-            // This should not in theory happen, but if it does, we should log it and redirect the user to the register page
+        val code = params.getOrElse("code") {
             logger.error("Missing code parameter in vipps authentication");
             Utils.addToastToResponse(
                 response,
                 ToastType.Error,
-                "Missing code parameter in vipps authentication"
-            );
-            return response.sendRedirect("/register")
-        }
+                "Failed to authenticate with vipps",
+            )
+            return response.sendRedirect("/register");
+        };
 
-        val tokenResult = vippsService.getToken(code);
-        val tokenData = tokenResult.getOrNull()
-        if (tokenData == null) {
+        val vippsToken = vippsService.getToken(code, vippsService.createVippsCallbackUrl(request)).getOrElse {
+            logger.error("Error during vipps token retrieval: ${it.message}");
             Utils.addToastToResponse(
                 response,
                 ToastType.Error,
-                "Vipps authentication failed: ${tokenResult.exceptionOrNull()?.message}"
+                "Failed to authenticate with vipps",
+            )
+            return response.sendRedirect("/register");
+        }.access_token;
+
+        val userResult = vippsService.getUserInfo(vippsToken);
+
+        if (userResult.isFailure) {
+            logger.error("Error during vipps user info retrieval: ${userResult.exceptionOrNull().toString()}");
+            Utils.addToastToResponse(
+                response,
+                ToastType.Error,
+                "Vipps authentication failed",
+                "Failed to get user info from the Vipps API"
             )
             return response.sendRedirect("/register");
         }
+        val vippsUser = userResult.getOrNull()!!;
 
-        val userResult = vippsService.getUserInfo(tokenData.access_token);
-
-        val userData = userResult.getOrNull();
-        if (userData == null) {
-            logger.error("Error during vipps authentication: ${userResult.exceptionOrNull().toString()}");
-            Utils.addToastToResponse(response, ToastType.Error, "Failed to get user info from vipps");
-            return response.sendRedirect("/register");
-        }
-
-        val dbUserResult = kotlin.runCatching { userService.getUserByNin(userData.nin) };
-        val user = dbUserResult.fold(
-            onFailure = {
-                kotlin.runCatching {
-                    userService.createUser(
-                        CreateUserDto(
-                            firstName = userData.given_name,
-                            lastName = userData.family_name,
-                            email = userData.email,
-                            phoneNumber = userData.phone_number.substring(
-                                2,
-                                userData.phone_number.length
-                            ),
-                            nin = userData.nin,
-                        )
-                    )
-                }.fold(
-                    onFailure = {
-                        logger.error("Failed to create vipps user: ${it.message}");
-                        Utils.addToastToResponse(response, ToastType.Error, "Failed to register using vipps");
-                        return response.sendRedirect("/register");
-                    },
-                    onSuccess = { it }
+        var user = runCatching {
+            userService.getUserByNin(vippsUser.nin)
+        }.getOrElse {
+            // If the user is not found, we create a new user in the database
+            logger.info("Vipps user not found in database, creating new user for ${vippsUser.email}");
+            runCatching {
+                userService.createUser(CreateUserDto(
+                    name = vippsUser.name,
+                    email = vippsUser.email,
+                    phoneNumber = vippsUser.phone_number.substring(2),
+                    nin = vippsUser.nin
+                ))
+            }.getOrElse {
+                logger.error("Error during vipps user creation: ${it.message}");
+                Utils.addToastToResponse(
+                    response,
+                    ToastType.Error,
+                    "Failed to register using vipps",
+                    it.message
                 )
-            },
-            onSuccess = { it }
-        );
+                return response.sendRedirect("/register");
+            }
+        };
 
         val accessToken = authService.generateAccessTokenForUser(user.email);
         val authCookie = authService.createAuthCookie(accessToken);
@@ -123,24 +123,12 @@ class VippsController(
         request: HttpServletRequest,
         response: HttpServletResponse,
     ) {
+        logger.info("Starting vipps authentication flow");
+        val callbackUrl = vippsService.createVippsCallbackUrl(request);
+        logger.info("Callback URL created: $callbackUrl");
 
-        val requestUrl = request.requestURL.toString();
-        logger.info("Starting Vipps authentication: $requestUrl");
-
-        val url = URI(requestUrl).toURL();
-        logger.info("URL authentication: ${url.host} | ${url.path} | ${url.port} | ${url.protocol}",);
-
-        val sb = StringBuilder("${url.protocol}://${url.host}");
-
-        if (url.port != -1) {
-            sb.append(":${url.port}");
-        }
-        sb.append("/api/auth/vipps/callback");
-
-        val callbackUrl = sb.toString();
-        logger.debug("Setting callback URL to: $callbackUrl");
         val authEndpoint = vippsService.createVippsAuthUrl(callbackUrl);
-        logger.debug("Redirecting user to vipps authentication: $authEndpoint");
+        logger.debug("Redirecting user to vipps: $authEndpoint");
 
         response.sendRedirect(authEndpoint);
     }
