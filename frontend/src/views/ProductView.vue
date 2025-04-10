@@ -4,16 +4,26 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { getListing, LISTING_QUERY_KEY, useBookmarkListing, useDeleteListing, useUnbookmarkListing, useUpdateListing } from '@/lib/api/queries/listings'
+import {
+  getListing,
+  LISTING_QUERY_KEY,
+  useBookmarkListing,
+  useDeleteListing,
+  useUnbookmarkListing,
+  useUpdateListing,
+} from '@/lib/api/queries/listings'
 import { useRoute } from 'vue-router'
 import { cn, formatAddress, formatPictureUrl, MAPBOX_API_TOKEN } from '@/lib/utils'
 import { useTypedI18n } from '@/i18n'
 import { EllipsisIcon, HeartIcon, TrashIcon, PinIcon } from 'lucide-vue-next'
-import { Map } from "mapbox-gl";
+import { Map } from 'mapbox-gl'
 import { MapboxMap, MapboxMarker, MapboxNavigationControl } from '@studiometa/vue-mapbox-gl'
-import { searchGeocodeAdvanced } from '@/lib/api/geocoding'
-import { watchDebounced } from '@vueuse/core'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { useAuthStore } from '@/stores/auth'
 import { toast } from 'vue-sonner'
 import { CheckIcon } from 'lucide-vue-next'
@@ -71,52 +81,6 @@ const handleBookmark = () => {
 
 const mapRef = ref<Map>()
 
-
-const locationData = computed(() => ({
-  street: product.value?.seller.address?.streetName,
-  postalcode: product.value?.seller.address?.postalCode,
-  city: product.value?.seller.address?.city,
-}));
-
-
-const currentLocation = ref<{ lat: number, lon: number } | null>(null);
-
-
-async function flyToAddress(params: Parameters<typeof searchGeocodeAdvanced>[0]) {
-  if (!mapRef.value) return;
-  const [location] = await searchGeocodeAdvanced(params) ?? [];
-  if (location) {
-    currentLocation.value = {
-      lat: +location.lat,
-      lon: +location.lon,
-    }
-    mapRef.value.flyTo({
-      center: [+location.lon, +location.lat],
-      zoom: 14,
-    });
-  }
-}
-
-watchDebounced(locationData, async () => {
-  if (!product.value?.seller.address?.streetName || !product.value?.seller.address?.city || !product.value?.seller.address?.postalCode) return;
-  flyToAddress({
-    ...locationData.value,
-    country: "Norway",
-  });
-}, {
-  debounce: 1000,
-});
-
-watch(mapRef, () => {
-  if (!mapRef.value) return;
-  mapRef.value.once('load', () => {
-    flyToAddress({
-      ...locationData.value,
-      country: "Norway",
-    });
-  })
-})
-
 const { user, isAuthenticated } = useAuthStore()
 const canDelete = computed(() => {
   return product.value?.seller.id === user?.id
@@ -131,29 +95,32 @@ const handleDelete = () => {
   deleteListing(product.value.id, {
     onSuccess: () => {
       toast.success(t('product.deleteSuccess'))
-    }
+    },
   })
 }
 
 const handleToggleSold = () => {
   if (!product.value?.id) return
-  toggleSold({
-    id: product.value.id,
-    status: product.value.status === 'ACTIVE' ? 'SOLD' : 'ACTIVE',
-    title: product.value.title,
-    categoryId: product.value.categoryId,
-    condition: product.value.condition,
-    price: product.value.price,
-    originalPrice: product.value.originalPrice,
-    description: product.value.description,
-    latitude: 0,
-    longitude: 0,
-  }, {
-    onSuccess: () => {
-      toast.success(t('product.toggleSoldSuccess'))
-      queryClient.invalidateQueries({ queryKey: [LISTING_QUERY_KEY] })
-    }
-  })
+  toggleSold(
+    {
+      id: product.value.id,
+      status: product.value.status === 'ACTIVE' ? 'SOLD' : 'ACTIVE',
+      title: product.value.title,
+      categoryId: product.value.categoryId,
+      condition: product.value.condition,
+      price: product.value.price,
+      originalPrice: product.value.originalPrice,
+      description: product.value.description,
+      latitude: product.value.latitude,
+      longitude: product.value.longitude,
+    },
+    {
+      onSuccess: () => {
+        toast.success(t('product.toggleSoldSuccess'))
+        queryClient.invalidateQueries({ queryKey: [LISTING_QUERY_KEY] })
+      },
+    },
+  )
 }
 </script>
 
@@ -165,8 +132,13 @@ const handleToggleSold = () => {
           <img :src="formatPictureUrl(product.images[currentImageIndex])" :alt="product.title" />
         </div>
         <div class="image-thumbnails">
-          <button v-for="(image, index) in product.images" :key="index" @click="currentImageIndex = index"
-            class="thumbnail-button" :class="{ active: currentImageIndex === index }">
+          <button
+            v-for="(image, index) in product.images"
+            :key="index"
+            @click="currentImageIndex = index"
+            class="thumbnail-button"
+            :class="{ active: currentImageIndex === index }"
+          >
             <img :src="formatPictureUrl(image)" :alt="`${t('product.imageAlt')} ${index + 1}`" />
           </button>
         </div>
@@ -180,8 +152,14 @@ const handleToggleSold = () => {
               <div class="title-container">
                 <span>{{ product.title }}</span>
                 <div class="product-action-buttons">
-                  <Button v-if="canBookmark" variant="ghost" size="icon" class="action-button" @click="handleBookmark"
-                    :disabled="isBookmarking || isUnbookmarking">
+                  <Button
+                    v-if="canBookmark"
+                    variant="ghost"
+                    size="icon"
+                    class="action-button"
+                    @click="handleBookmark"
+                    :disabled="isBookmarking || isUnbookmarking"
+                  >
                     <HeartIcon :class="cn('icon', product.isBookmarked ? 'icon-filled' : '')" />
                   </Button>
                   <DropdownMenu v-if="canDelete">
@@ -189,12 +167,23 @@ const handleToggleSold = () => {
                       <EllipsisIcon />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
-
-                      <DropdownMenuItem class="dropdown-menu-item" @click="handleToggleSold" :disabled="isTogglingSold">
+                      <DropdownMenuItem
+                        class="dropdown-menu-item"
+                        @click="handleToggleSold"
+                        :disabled="isTogglingSold"
+                      >
                         <CheckIcon />
-                        {{ product.status === 'ACTIVE' ? t('product.toggleSold') : t('product.toggleActive') }}
+                        {{
+                          product.status === 'ACTIVE'
+                            ? t('product.toggleSold')
+                            : t('product.toggleActive')
+                        }}
                       </DropdownMenuItem>
-                      <DropdownMenuItem class="dropdown-menu-item danger" @click="handleDelete" :disabled="isDeleting">
+                      <DropdownMenuItem
+                        class="dropdown-menu-item danger"
+                        @click="handleDelete"
+                        :disabled="isDeleting"
+                      >
                         <TrashIcon />
                         {{ t('product.delete') }}
                       </DropdownMenuItem>
@@ -207,8 +196,15 @@ const handleToggleSold = () => {
               <Badge variant="outline" class="condition-badge">
                 {{ getTranslatedCondition(product.condition) }}
               </Badge>
-              <Badge :variant="product.status === 'ACTIVE' ? 'default' : 'secondary'" class="status-badge">
-                {{ product.status === 'ACTIVE' ? t('product.status.active') : t('product.status.sold') }}
+              <Badge
+                :variant="product.status === 'ACTIVE' ? 'default' : 'secondary'"
+                class="status-badge"
+              >
+                {{
+                  product.status === 'ACTIVE'
+                    ? t('product.status.active')
+                    : t('product.status.sold')
+                }}
               </Badge>
             </div>
           </CardHeader>
@@ -219,7 +215,7 @@ const handleToggleSold = () => {
                 <span class="current-price">{{ formatPrice(product.price) }}</span>
                 <span class="original-price" v-if="shouldDisplayOriginalPrice">{{
                   formatPrice(product.originalPrice!)
-                  }}</span>
+                }}</span>
                 <span class="discount" v-if="shouldDisplayOriginalPrice && product.originalPrice">
                   {{ formatPrice(product.originalPrice - product.price) }}
                   {{ t('product.pricing.save') }}
@@ -232,7 +228,7 @@ const handleToggleSold = () => {
             <div class="action-buttons">
               <Button variant="outline" class="message-button" size="lg">{{
                 t('product.messageButton')
-                }}</Button>
+              }}</Button>
             </div>
           </CardContent>
         </Card>
@@ -245,10 +241,14 @@ const handleToggleSold = () => {
           <CardContent>
             <div class="seller-info">
               <Avatar class="seller-avatar">
-                <AvatarImage :src="product.seller.profileImageUrl
-                  ? formatPictureUrl(product.seller.profileImageUrl)
-                  : ''
-                  " :alt="product.seller.name" />
+                <AvatarImage
+                  :src="
+                    product.seller.profileImageUrl
+                      ? formatPictureUrl(product.seller.profileImageUrl)
+                      : ''
+                  "
+                  :alt="product.seller.name"
+                />
                 <AvatarFallback>{{ product.seller.name[0] }}</AvatarFallback>
               </Avatar>
               <div class="seller-details">
@@ -271,17 +271,20 @@ const handleToggleSold = () => {
       </div>
     </div>
 
-
-
     <!-- Product Details Below -->
     <div class="product-details">
       <div class="details-grid">
-
         <Card>
-          <MapboxMap class="product-map rounded" style="height: 400px;" :access-token="MAPBOX_API_TOKEN"
-            map-style="mapbox://styles/mapbox/streets-v12" :center="[9.139, 60.687]" :zoom="5.0"
-            @mb-created="(map: Map) => mapRef = map">
-            <MapboxMarker v-if="currentLocation" :lng-lat="[currentLocation.lon, currentLocation.lat]">
+          <MapboxMap
+            class="product-map rounded"
+            style="height: 400px"
+            :access-token="MAPBOX_API_TOKEN"
+            map-style="mapbox://styles/mapbox/streets-v12"
+            :center="[product.longitude, product.latitude]"
+            :zoom="12.0"
+            @mb-created="(map: Map) => (mapRef = map)"
+          >
+            <MapboxMarker :lng-lat="[product.longitude, product.latitude]">
               <div class="map-marker">
                 <PinIcon />
               </div>
@@ -291,7 +294,9 @@ const handleToggleSold = () => {
         </Card>
 
         <!-- Basic Info -->
-        <Card v-if="product.modelYear || product.manufacturer || product.model || product.serialNumber">
+        <Card
+          v-if="product.modelYear || product.manufacturer || product.model || product.serialNumber"
+        >
           <CardHeader>
             <CardTitle>{{ t('product.details.basicInfo') }}</CardTitle>
           </CardHeader>
@@ -357,7 +362,11 @@ const handleToggleSold = () => {
           </CardHeader>
           <CardContent>
             <ul class="details-list">
-              <li v-for="(mod, index) in product.modifications" :key="index" class="detail-list-item">
+              <li
+                v-for="(mod, index) in product.modifications"
+                :key="index"
+                class="detail-list-item"
+              >
                 {{ mod }}
               </li>
             </ul>
@@ -682,7 +691,7 @@ const handleToggleSold = () => {
 }
 
 /* Make certain sections span full width */
-.details-grid> :nth-child(n + 3) {
+.details-grid > :nth-child(n + 3) {
   grid-column: 1 / -1;
 }
 
@@ -782,12 +791,12 @@ const handleToggleSold = () => {
   padding: calc(var(--spacing) * 1) calc(var(--spacing) * 2);
 }
 
-.status-badge[data-variant="default"] {
+.status-badge[data-variant='default'] {
   background-color: var(--primary);
   color: var(--primary-foreground);
 }
 
-.status-badge[data-variant="secondary"] {
+.status-badge[data-variant='secondary'] {
   background-color: var(--secondary);
   color: var(--secondary-foreground);
 }
