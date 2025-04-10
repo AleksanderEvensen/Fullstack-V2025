@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { MailIcon, MenuIcon, PlusIcon, UserIcon } from 'lucide-vue-next'
+import { CogIcon, LogOutIcon, MailIcon, MenuIcon, PlusIcon, UserIcon } from 'lucide-vue-next'
 import { RouterLink } from 'vue-router'
 import Button from './ui/button/Button.vue'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet'
@@ -9,6 +9,14 @@ import FlagComponent from '@/components/ui/country-flag/CountryFlag.vue'
 import { computed, ref } from 'vue'
 import { type Locales, AvailableLocales, useTypedI18n } from '@/i18n'
 import { useAuthStore } from '@/stores/auth'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu'
+import { cn } from '@/lib/utils'
+
 const isOpen = ref(false)
 const { t, locale } = useTypedI18n()
 const locales: Record<Locales, { flag: string; name: string }> = {
@@ -30,6 +38,11 @@ const user = computed(() => {
   return useAuthStore().user
 })
 
+function logout() {
+  const authStore = useAuthStore()
+  authStore.logout()
+  window.location.href = '/'
+}
 </script>
 
 <template>
@@ -71,14 +84,29 @@ const user = computed(() => {
       </RouterLink>
 
       <!-- Profile Avatar -->
-      <RouterLink to="/profile" class="nav-item">
-        <Avatar>
-
-          <AvatarImage :src="profilePicture" :alt="user?.firstName ?? 'Guest'" />
-          <AvatarFallback>
-            <UserIcon v-if="!user" />
-          </AvatarFallback>
-        </Avatar>
+      <DropdownMenu>
+        <DropdownMenuTrigger as-child>
+          <Avatar :class="cn('avatar-button', !user && 'logged-out')">
+            <AvatarImage :src="profilePicture" :alt="user?.name ?? 'Guest'" />
+            <AvatarFallback>
+              <UserIcon />
+            </AvatarFallback>
+          </Avatar>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem as-child>
+            <RouterLink to="/profile" class="profile-menu-item"> <UserIcon />Profile </RouterLink>
+          </DropdownMenuItem>
+          <DropdownMenuItem as-child>
+            <RouterLink to="/profile/settings" class="profile-menu-item">
+              <CogIcon />Settings
+            </RouterLink>
+          </DropdownMenuItem>
+          <DropdownMenuItem @click="logout"><LogOutIcon />Logout</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <RouterLink to="/login">
+        <Button :class="cn('nav-login-button', !user && 'logged-out')"> Login </Button>
       </RouterLink>
     </div>
 
@@ -117,25 +145,45 @@ const user = computed(() => {
               </div>
 
               <!-- Messages -->
-              <RouterLink to="/marketplace/messages" class="mobile-nav-item">
+              <RouterLink @click="isOpen = false" to="/marketplace/messages" class="mobile-nav-item">
                 <MailIcon class="icon" />
                 <span>{{ t('nav.messages') }}</span>
               </RouterLink>
 
               <!-- Create Listing -->
-              <RouterLink to="/marketplace/product/create" class="mobile-nav-item">
+              <RouterLink @click="isOpen = false" to="/marketplace/product/create" class="mobile-nav-item">
                 <PlusIcon class="icon" />
                 <span>{{ t('nav.createListing') }}</span>
               </RouterLink>
             </div>
 
             <!-- Profile -->
-            <RouterLink to="/profile" class="mobile-nav-item">
-              <Avatar>
-                <AvatarImage :src="profilePicture" :alt="user?.firstName ?? 'Guest'" />
-                <AvatarFallback>{{ user?.firstName ?? 'Guest' }}</AvatarFallback>
-              </Avatar>
-              <span class="ml-3">{{ t('nav.profile') }}</span>
+            <DropdownMenu>
+              <DropdownMenuTrigger :class="cn('mobile-nav-item', !user && 'logged-out')">
+                <Avatar class="avatar-button">
+                  <AvatarImage :src="profilePicture" :alt="user?.name ?? 'Guest'" />
+                  <AvatarFallback>
+                    <UserIcon />
+                  </AvatarFallback>
+                </Avatar>
+                <span class="ml-3">{{ user?.name }}</span>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent style="width: 100%;">
+                <DropdownMenuItem as-child>
+                  <RouterLink @click="isOpen = false" to="/profile" class="profile-menu-item">
+                    <UserIcon />Profile
+                  </RouterLink>
+                </DropdownMenuItem>
+                <DropdownMenuItem as-child>
+                  <RouterLink @click="isOpen = false" to="/profile/settings" class="profile-menu-item">
+                    <CogIcon />Settings
+                  </RouterLink>
+                </DropdownMenuItem>
+                <DropdownMenuItem @click="logout"><LogOutIcon />Logout</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <RouterLink @click="isOpen = false" to="/login" :class="cn('nav-login-button', !user && 'logged-out')">
+              <Button> Login </Button>
             </RouterLink>
           </div>
         </SheetContent>
@@ -156,6 +204,29 @@ const user = computed(() => {
   z-index: 100;
   margin: 0;
   border-bottom: 1px solid #333;
+}
+
+.avatar-button {
+  cursor: pointer;
+}
+
+.avatar-button.logged-out {
+  display: none !important;
+}
+
+.nav-login-button {
+  display: none;
+  button {
+    width: 100%;
+  }
+}
+
+.nav-login-button.logged-out {
+  display: block;
+}
+
+.mobile-nav-item.logged-out {
+  display: none !important;
 }
 
 .navbar .logo img {
@@ -211,6 +282,7 @@ const user = computed(() => {
 .mobile-nav-item {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   padding: 12px;
   cursor: pointer;
   border-radius: 4px;
@@ -224,6 +296,10 @@ const user = computed(() => {
 
 .mobile-nav-item .icon {
   margin-right: 12px;
+}
+
+.mobile-only {
+  display: none;
 }
 
 /* Responsive styles */
