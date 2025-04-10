@@ -302,8 +302,10 @@ class ListingController(
             page = page,
             size = size,
             sortBy = sortBy,
-            sortDirection = sortDirection
-
+            sortDirection = sortDirection,
+            latitude = latitude,
+            longitude = longitude,
+            radiusKm = radiusKm,
         )
         
         val searchResults = listingService.searchListings(searchRequest)

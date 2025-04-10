@@ -89,8 +89,30 @@ function mapCreated(map: Map) {
   map.once('load', updateCircle);
 }
 
-watch(currentLocation, updateCircle, { immediate: true })
-watch(locationRangeKm, updateCircle, { immediate: true })
+watch(currentLocation, () => {
+  
+  if (currentLocation.value) {
+    localFilters.latitude = currentLocation.value.lat
+    localFilters.longitude = currentLocation.value.lon
+  } else {
+    localFilters.latitude = undefined
+    localFilters.longitude = undefined
+  }
+
+  updateCircle()
+}, { immediate: true });
+
+watch(locationRangeKm, () => {
+  if (locationRangeKm.value[0]) {
+    if (locationRangeKm.value[0] === 5) {
+      localFilters.radiusKm = undefined
+    } else {
+      localFilters.radiusKm = locationRangeKm.value[0]
+    }
+    
+  }
+  updateCircle()
+}, { immediate: true })
 
 function updateCircle() {
   if (!mapRef.value) return
@@ -228,6 +250,9 @@ const clearAllFilters = (): void => {
   localFilters.minModelYear = undefined
   localFilters.maxModelYear = undefined
   localFilters.categoryName = undefined
+  localFilters.latitude = undefined
+  localFilters.longitude = undefined
+  localFilters.radiusKm = undefined
   updateUrlParams()
 }
 
