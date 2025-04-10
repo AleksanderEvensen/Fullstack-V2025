@@ -10,18 +10,14 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { MapPin, FunnelIcon, X, House } from 'lucide-vue-next'
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useUrlSearchParams, watchDebounced } from '@vueuse/core'
 import SearchFilter from './components/SearchFilter.vue'
 import type { paths } from '@/lib/api/schema'
 import ProductCard from '../home/components/ProductCard.vue'
-import { searchListings } from '@/lib/api/queries/listings'
+import { useInfiniteListings } from '@/lib/api/queries/listings'
 import { useTypedI18n } from '@/i18n'
-import {
-  MapboxMap,
-  MapboxMarker,
-  MapboxNavigationControl,
-} from '@studiometa/vue-mapbox-gl'
+import { MapboxMap, MapboxMarker, MapboxNavigationControl } from '@studiometa/vue-mapbox-gl'
 import type { Map } from 'mapbox-gl'
 import { MAPBOX_API_TOKEN } from '@/lib/utils'
 import mapboxgl from 'mapbox-gl'
@@ -29,7 +25,7 @@ import mapboxgl from 'mapbox-gl'
 const { t } = useTypedI18n()
 
 type ListingSearchParams = paths['/api/listings/search']['get']['parameters']['query']
-const queryParams = useUrlSearchParams<NonNullable<ListingSearchParams>>('history', {
+const queryParams = useUrlSearchParams<Omit<NonNullable<ListingSearchParams>, 'page'>>('history', {
   removeFalsyValues: true,
   removeNullishValues: true,
   initialValue: {
@@ -55,7 +51,7 @@ watch(sortBy, (newSortBy) => {
   const [field, direction] = newSortBy.split(',')
   queryParams['sortBy'] = field
   queryParams['sortDirection'] = direction
-  queryParams.page = 0
+  // Don't set page anymore
 })
 
 watchDebounced(
@@ -81,37 +77,31 @@ watchDebounced(
   },
 )
 
-const { data, isLoading, isError } = searchListings(debouncedQueryParams.value)
+// Replace regular query with infinite query
+const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError } =
+  useInfiniteListings(debouncedQueryParams.value)
+
+// Combine all pages of data into a single array for display
+const allListings = computed(() => {
+  if (!data.value) return []
+  return data.value.pages.flatMap((page) => page?.content ?? [])
+})
+
+// Get total count from first page
+const totalElements = computed(() => data.value?.pages[0]?.totalElements || 0)
 
 const totalCountMessage = computed(() => {
   return t('search.resultsCount', {
-    count: data.value?.totalElements || 0,
+    count: totalElements.value,
   })
-})
-
-const goToPage = (page: number) => {
-  queryParams.page = page
-}
-
-const goToPreviousPage = computed(() => {
-  return () => {
-    if (!data.value?.first) {
-      goToPage((data.value?.pageable?.pageNumber || 0) - 1)
-    }
-  }
-})
-
-const goToNextPage = computed(() => {
-  return () => {
-    if (!data.value?.last) {
-      goToPage((data.value?.pageable?.pageNumber || 0) + 1)
-    }
-  }
 })
 
 const handleFilterChange = (filters: NonNullable<ListingSearchParams>) => {
   Object.entries(filters).forEach(([key, value]) => {
-    ;(queryParams as Record<string, unknown>)[key] = value
+    if (key !== 'page') {
+      // Skip page parameter
+      ;(queryParams as Record<string, unknown>)[key] = value
+    }
   })
 }
 
@@ -127,12 +117,11 @@ function toggleMapView(forced?: boolean) {
   }
 }
 
-
 watch(mapViewOpen, (v) => {
-  const dialogElem = document.querySelector('#mapDialog') as HTMLDialogElement;
+  const dialogElem = document.querySelector('#mapDialog') as HTMLDialogElement
   if (v) {
     dialogElem.showModal()
-    
+
     if (mapViewOpen.value) {
       // Calculate bounds on next tick after map is loaded
       setTimeout(fitMapBounds, 20)
@@ -144,16 +133,16 @@ watch(mapViewOpen, (v) => {
 
 // Fit map to show all markers
 function fitMapBounds() {
-  if (!mapRef.value || !data.value?.content) return
+  if (!mapRef.value || !allListings.value.length) return
 
-  const bounds = new mapboxgl.LngLatBounds();
-  let hasValidCoordinates = false;
-  data.value.content.forEach(item => {
+  const bounds = new mapboxgl.LngLatBounds()
+  let hasValidCoordinates = false
+  allListings.value.forEach((item) => {
     if (item.longitude && item.latitude) {
       bounds.extend([item.longitude, item.latitude])
-      hasValidCoordinates = true;
+      hasValidCoordinates = true
     }
-  });
+  })
 
   if (hasValidCoordinates) {
     mapRef.value.fitBounds(bounds, {
@@ -170,9 +159,9 @@ function handleMapCreated(map: Map) {
 
 // Get listing coordinates for markers
 const listingMarkers = computed(() => {
-  if (!data.value?.content) return []
+  if (!allListings.value.length) return []
 
-  return data.value.content
+  return allListings.value
     .filter((item) => item.longitude && item.latitude)
     .map((item) => ({
       id: item.id,
@@ -238,7 +227,7 @@ const listingMarkers = computed(() => {
           </div>
         </div>
 
-        <div v-if="isLoading" class="loading-state">
+        <div v-if="isLoading && !allListings.length" class="loading-state">
           <p>{{ t('common.loading') }}</p>
         </div>
 
@@ -246,30 +235,26 @@ const listingMarkers = computed(() => {
           <p>{{ t('search.errorLoading') }}</p>
         </div>
 
-        <div v-else-if="data?.content?.length === 0" class="empty-state">
+        <div v-else-if="allListings.length === 0" class="empty-state">
           <p>{{ t('search.noResults') }}</p>
         </div>
 
         <div v-else class="search-results-list">
-          <ProductCard v-for="(item, index) in data?.content" :key="index" :product="item" />
+          <ProductCard
+            v-for="(item, index) in allListings"
+            :key="item.id || index"
+            :product="item"
+          />
         </div>
 
-        <div v-if="data?.totalPages && data?.totalPages > 1" class="pagination">
-          <Button variant="outline" size="sm" :disabled="data?.first" @click="goToPreviousPage">
-            {{ t('common.previous') }}
-          </Button>
-
-          <span class="page-info">
-            {{
-              t('search.pagination', {
-                current: (data?.pageable?.pageNumber || 0) + 1,
-                total: data?.totalPages,
-              })
-            }}
-          </span>
-
-          <Button variant="outline" size="sm" :disabled="data?.last" @click="goToNextPage">
-            {{ t('common.next') }}
+        <div v-if="hasNextPage" class="load-more-container">
+          <Button
+            variant="outline"
+            :disabled="isFetchingNextPage"
+            @click="fetchNextPage"
+            class="load-more-button"
+          >
+            {{ isFetchingNextPage ? t('common.loadingMore') : t('common.loadMore') }}
           </Button>
         </div>
       </div>
@@ -283,10 +268,10 @@ const listingMarkers = computed(() => {
             <X :size="20" />
           </Button>
         </div>
-  
+
         <div class="map-container">
           <MapboxMap
-            style="height: 60vh; max-height: 500px;"
+            style="height: 60vh; max-height: 500px"
             :access-token="MAPBOX_API_TOKEN"
             map-style="mapbox://styles/mapbox/streets-v12"
             @mb-created="handleMapCreated"
@@ -300,11 +285,11 @@ const listingMarkers = computed(() => {
                 <House />
               </div>
             </MapboxMarker>
-  
+
             <MapboxNavigationControl position="top-right" />
           </MapboxMap>
         </div>
-  
+
         <div class="map-footer">
           <span>{{ totalCountMessage }}</span>
         </div>
@@ -314,7 +299,6 @@ const listingMarkers = computed(() => {
 </template>
 
 <style scoped>
-
 #mapDialog {
   position: fixed;
   top: 50%;
@@ -336,8 +320,6 @@ const listingMarkers = computed(() => {
   display: flex;
   flex-direction: column;
 }
-
-
 
 .map-header {
   display: flex;
@@ -508,16 +490,15 @@ const listingMarkers = computed(() => {
   grid-template-columns: 1fr;
 }
 
-.pagination {
+.load-more-container {
   display: flex;
   justify-content: center;
-  align-items: center;
-  gap: 1rem;
   margin-top: 2rem;
+  margin-bottom: 1rem;
 }
 
-.page-info {
-  font-size: 0.875rem;
+.load-more-button {
+  min-width: 120px;
 }
 
 /* Media queries for responsive design */

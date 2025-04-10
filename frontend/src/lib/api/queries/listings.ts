@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import type { paths } from '../schema'
 import { fetchClient } from '@/lib/api/client'
 
@@ -49,6 +49,31 @@ export function searchListings(input: ListingSearchInput) {
       })
       return response.data
     },
+  })
+}
+
+export function useInfiniteListings(input: Omit<ListingSearchInput, 'page'>) {
+  return useInfiniteQuery({
+    queryKey: [LISTING_QUERY_KEY, 'infinite-search', input],
+    queryFn: async ({ pageParam = 0 }) => {
+      const response = await fetchClient.GET('/api/listings/search', {
+        params: {
+          query: {
+            ...input,
+            page: pageParam,
+          },
+        },
+      })
+      return response.data
+    },
+    getNextPageParam: (lastPage) => {
+      if (!lastPage) return undefined
+      // If we're on the last page, return undefined to signal we're done
+      if (lastPage.last) return undefined
+      // Otherwise return the next page number
+      return (lastPage.pageable?.pageNumber ?? 0) + 1
+    },
+    initialPageParam: 0,
   })
 }
 
