@@ -244,6 +244,7 @@
     "aboutThisItem": "About this item",
     "buyNow": "Buy Now",
     "messageButton": "Message Seller",
+    "messagePlaceholder": "Send a message to the seller",
     "sellerInfo": {
       "title": "Seller Information",
       "memberSince": "Member since",
@@ -350,5 +351,10 @@
     "title": "404 - Page Not Found",
     "message": "Sorry, the page you are looking for does not exist.",
     "backToHome": "Back to Home"
+  },
+  "messages": {
+    "title": "Messages",
+    "sendSuccess": "Message sent",
+    "sendError": "Failed to send message"
   }
 }

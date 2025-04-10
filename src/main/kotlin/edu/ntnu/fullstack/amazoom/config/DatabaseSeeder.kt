@@ -4,7 +4,10 @@ import edu.ntnu.fullstack.amazoom.bookmark.entity.ListingBookmark
 import edu.ntnu.fullstack.amazoom.bookmark.repository.ListingBookmarkRepository
 import edu.ntnu.fullstack.amazoom.category.entity.Category
 import edu.ntnu.fullstack.amazoom.category.repository.CategoryRepository
+import edu.ntnu.fullstack.amazoom.chat.entity.ChatMessage
+import edu.ntnu.fullstack.amazoom.chat.repository.ChatMessageRepository
 import edu.ntnu.fullstack.amazoom.common.entity.Address
+import edu.ntnu.fullstack.amazoom.common.entity.Role
 import edu.ntnu.fullstack.amazoom.common.entity.RoleName
 import edu.ntnu.fullstack.amazoom.common.entity.User
 import edu.ntnu.fullstack.amazoom.common.repository.RoleRepository
@@ -19,9 +22,12 @@ import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
 import org.springframework.context.annotation.DependsOn
 import org.springframework.context.annotation.Profile
+import org.springframework.data.domain.Pageable
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.*
 import javax.xml.stream.Location
 
@@ -34,32 +40,169 @@ class DatabaseSeeder @Autowired constructor(
     private val roleRepository: RoleRepository,
     private val listingRepository: ListingRepository,
     private val listingBookmarkRepository: ListingBookmarkRepository,
-    private val passwordEncoder: PasswordEncoder
+    private val passwordEncoder: PasswordEncoder,
+    private val chatMessageRepository: ChatMessageRepository
 ) : ApplicationRunner {
 
     private val logger = LoggerFactory.getLogger(DatabaseSeeder::class.java)
     
     @Transactional
     override fun run(args: ApplicationArguments) {
-        logger.info("Checking if database schema is ready for seeding...")
-        
-        // Check if roles exist (which should be created by Flyway migrations)
-        val roleCount = roleRepository.count()
-        if (roleCount == 0L) {
-            logger.warn("No roles found in database. Flyway migrations may not have completed yet. Skipping seeding.")
-            return
-        }
-        
         logger.info("Database schema is ready. Starting database seeding...")
+        createRoles()
         val categories = createCategories()
         val users = createUsers()
         val listings = createListings(users, categories)
+        val adminListing = createAdminListing(users[0], categories[0])
         createBookmarks(users, listings)
-        
+        createConversation(users[0], users[1], adminListing)
+        createConversation(users[0], users[3], adminListing)
+
+
         logger.info("Database seeding completed!")
     }
-    
 
+    private fun createRoles() {
+        val adminRole = Role(
+            name = RoleName.ROLE_ADMIN
+        )
+        val userRole = Role(
+            name = RoleName.ROLE_USER
+        )
+
+        if (roleRepository.count() == 0L) {
+            logger.info("Creating roles...")
+            roleRepository.saveAll(listOf(adminRole, userRole))
+        } else {
+            logger.info("Roles already exist in the database.")
+        }
+    }
+
+    private fun createAdminListing(adminUser: User, category: Category): Listing {
+        if (listingRepository.count() > 0) {
+            val adminListings = listingRepository.findAll().filter { it.seller.id == adminUser.id }
+            if (adminListings.isNotEmpty()) {
+                return adminListings.first()
+            }
+            return listingRepository.findAll().first()
+        }
+
+        logger.info("Creating admin listing...");
+        val (latitude, longitude) = randomLatLon();
+        val adminListing = Listing(
+            title = "MacBook Pro M1 Max 16-inch",
+            category = category,
+            condition = ListingCondition.VERY_GOOD,
+            seller = adminUser,
+            price = 15000.0,
+            originalPrice = 25000.0,
+            description = "This is an excellent condition MacBook Pro with M1 Max chip, 32GB RAM, and 1TB SSD. " +
+                    "Used for about 1 year for software development. Comes with original box and charger.",
+            modelYear = 2022,
+            manufacturer = "Apple",
+            model = "MacBook Pro 16-inch",
+            serialNumber = "C02G7RZRMD6M",
+            purchaseDate = "2022-05-15",
+            usageDuration = "12 months",
+            defects = listOf("Minor scratch on bottom case"),
+            modifications = listOf("Applied screen protector"),
+            reasonForSelling = "Upgrading to newer model",
+            images = listOf("https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=1000&auto=format&fit=crop"),
+            latitude = latitude,
+            longitude = longitude
+        )
+        return listingRepository.save(adminListing)
+    }
+
+    private fun createConversation(seller: User, buyer: User, listing: Listing) {
+        val pageable = Pageable.unpaged()
+        val existingMessages = chatMessageRepository.findMessagesBetweenUsersForListing(
+            seller.id, buyer.id, listing.id, pageable
+        )
+
+        if (!existingMessages.isEmpty) {
+            logger.info("Chat messages already exist between users. Skipping conversation creation.")
+            return
+        }
+
+        logger.info("Creating conversation between x    s...")
+
+        val conversation = listOf(
+            ChatMessage(
+                sender = buyer,
+                recipient = seller,
+                listing = listing,
+                content = "Hi there! Is this MacBook Pro still available?",
+                timestamp = Instant.now().minus(5, ChronoUnit.DAYS)
+            ),
+            ChatMessage(
+                sender = seller,
+                recipient = buyer,
+                listing = listing,
+                content = "Yes, it's still available! Are you interested?",
+                timestamp = Instant.now().minus(5, ChronoUnit.DAYS).plus(2, ChronoUnit.HOURS)
+            ),
+            ChatMessage(
+                sender = buyer,
+                recipient = seller,
+                listing = listing,
+                content = "Definitely! Does it have any issues I should know about?",
+                timestamp = Instant.now().minus(4, ChronoUnit.DAYS)
+            ),
+            ChatMessage(
+                sender = seller,
+                recipient = buyer,
+                listing = listing,
+                content = "No major issues. There's a small scratch on the bottom case as mentioned in the listing, but it doesn't affect functionality at all.",
+                timestamp = Instant.now().minus(4, ChronoUnit.DAYS).plus(1, ChronoUnit.HOURS)
+            ),
+            ChatMessage(
+                sender = buyer,
+                recipient = seller,
+                listing = listing,
+                content = "That's fine. What about the battery health?",
+                timestamp = Instant.now().minus(3, ChronoUnit.DAYS)
+            ),
+            ChatMessage(
+                sender = seller,
+                recipient = buyer,
+                listing = listing,
+                content = "Battery health is at 92%, which is excellent for a year-old laptop. I've mainly used it connected to power.",
+                timestamp = Instant.now().minus(3, ChronoUnit.DAYS).plus(3, ChronoUnit.HOURS)
+            ),
+            ChatMessage(
+                sender = buyer,
+                recipient = seller,
+                listing = listing,
+                content = "Great! Would you consider 14,000 for it?",
+                timestamp = Instant.now().minus(2, ChronoUnit.DAYS)
+            ),
+            ChatMessage(
+                sender = seller,
+                recipient = buyer,
+                listing = listing,
+                content = "I could go down to 14,500. It's really in excellent condition and comes with the original packaging.",
+                timestamp = Instant.now().minus(2, ChronoUnit.DAYS).plus(4, ChronoUnit.HOURS)
+            ),
+            ChatMessage(
+                sender = buyer,
+                recipient = seller,
+                listing = listing,
+                content = "Deal! When can I pick it up?",
+                timestamp = Instant.now().minus(1, ChronoUnit.DAYS)
+            ),
+            ChatMessage(
+                sender = seller,
+                recipient = buyer,
+                listing = listing,
+                content = "Great! How about tomorrow afternoon at the university campus?",
+                timestamp = Instant.now().minus(12, ChronoUnit.HOURS)
+            )
+        )
+
+        chatMessageRepository.saveAll(conversation)
+        logger.info("Created conversation with ${conversation.size} messages")
+    }
     
     private fun createCategories(): List<Category> {
         if (categoryRepository.count() == 0L) {
@@ -157,7 +300,7 @@ class DatabaseSeeder @Autowired constructor(
                     name = "Admin Admin",
                     email = "admin@example.com",
                     password = passwordEncoder.encode("admin123"),
-                    phoneNumber = "+4734567890",
+                    phoneNumber = "34567890",
                     address = createAddress("Karl Johans gate", "1", "0154", "Oslo", "Norway"),
                     roles = mutableSetOf(userRole, adminRole)
                 ),
@@ -165,10 +308,19 @@ class DatabaseSeeder @Autowired constructor(
                     name = "Super Admin",
                     email = "super.admin@example.com",
                     password = passwordEncoder.encode("admin123"),
-                    phoneNumber = "+4734567891",
+                    phoneNumber = "34567891",
                     address = createAddress("Storgata", "7", "0155", "Oslo", "Norway"),
                     roles = mutableSetOf(userRole, adminRole)
                 )
+            )
+
+            val defaultUser = User(
+                name = "default default",
+                email = "default@example.com",
+                password = passwordEncoder.encode("password123"),
+                phoneNumber = "34567892",
+                address = createAddress("Default Street", "1", "0000", "Oslo", "Norway"),
+                roles = mutableSetOf(userRole)
             )
             
             // Create regular users
@@ -202,7 +354,7 @@ class DatabaseSeeder @Autowired constructor(
                     name = "$firstName $lastName",
                     email = "${firstName.lowercase()}.${lastName.lowercase()}${index}@example.com",
                     password = passwordEncoder.encode("password"),
-                    phoneNumber = "+47${(10000000..99999999).random()}",
+                    phoneNumber = "${(10000000..99999999).random()}",
                     address = createAddress(
                         "Gateveien",
                         streetNumber,
@@ -214,7 +366,7 @@ class DatabaseSeeder @Autowired constructor(
                 )
             }
             
-            val allUsers = adminUsers + regularUsers
+            val allUsers = adminUsers + defaultUser + regularUsers
             return userRepository.saveAll(allUsers)
         }
         return userRepository.findAll()

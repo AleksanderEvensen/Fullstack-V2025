@@ -83,9 +83,10 @@ const router = createRouter({
           component: () => import('../views/profile/settings/SettingsView.vue'),
         },
         {
-          path: '/:pathMatch(.*)*',
-          name: 'not-found',
-          component: () => import('../views/not-found/NotFoundView.vue'),
+          path: '/messages',
+          name: 'messages',
+          component: () => import('../views/messages/MessagesView.vue'),
+          meta: { requiresAuth: true },
         },
       ],
     },

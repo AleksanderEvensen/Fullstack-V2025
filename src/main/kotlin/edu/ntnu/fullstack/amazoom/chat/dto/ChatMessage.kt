@@ -13,7 +13,6 @@ data class ChatMessageDto(
     val listingId: Long,
     val content: String,
     val timestamp: Instant,
-    val read: Boolean
 )
 
 /**
@@ -23,18 +22,6 @@ data class ChatMessageDto(
 data class LastMessageDto (
     val content: String,
     val timestamp: Instant,
-    val isFromCurrentUser: Boolean
-)
-
-/**
- * Data Transfer Object (DTO) for a read receipt.
- * Indicates that messages have been read by a user.
- */
-data class ReadReceiptDto(
-    val senderId: Long,
-    val recipientId: Long,
-    val timestamp: Instant,
-    val listingId: Long
 )
 
 /**

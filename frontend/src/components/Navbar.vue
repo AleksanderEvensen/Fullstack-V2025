@@ -30,7 +30,6 @@ const locales: Record<Locales, { flag: string; name: string }> = {
   },
 }
 
-
 const user = computed(() => {
   return useAuthStore().user
 })
@@ -77,7 +76,7 @@ function logout() {
       </div>
 
       <!-- Messages -->
-      <RouterLink to="/marketplace/messages" class="nav-item">
+      <RouterLink to="/messages" class="nav-item">
         <MailIcon class="icon" /> {{ t('nav.messages') }}
       </RouterLink>
 
@@ -91,7 +90,10 @@ function logout() {
       <DropdownMenu>
         <DropdownMenuTrigger as-child>
           <Avatar :class="cn('avatar-button', !user && 'logged-out')">
-            <AvatarImage :src="profilePicture" :alt="user?.name ?? 'Guest'" />
+            <AvatarImage
+              :src="formatPictureUrl(user?.profileImageUrl ?? null)"
+              :alt="user?.name ?? 'Guest'"
+            />
             <AvatarFallback>
               <UserIcon />
             </AvatarFallback>
@@ -149,13 +151,21 @@ function logout() {
               </div>
 
               <!-- Messages -->
-              <RouterLink @click="isOpen = false" to="/marketplace/messages" class="mobile-nav-item">
+              <RouterLink
+                @click="isOpen = false"
+                to="/marketplace/messages"
+                class="mobile-nav-item"
+              >
                 <MailIcon class="icon" />
                 <span>{{ t('nav.messages') }}</span>
               </RouterLink>
 
               <!-- Create Listing -->
-              <RouterLink @click="isOpen = false" to="/marketplace/product/create" class="mobile-nav-item">
+              <RouterLink
+                @click="isOpen = false"
+                to="/marketplace/product/create"
+                class="mobile-nav-item"
+              >
                 <PlusIcon class="icon" />
                 <span>{{ t('nav.createListing') }}</span>
               </RouterLink>
@@ -166,28 +176,39 @@ function logout() {
             <DropdownMenu>
               <DropdownMenuTrigger :class="cn('mobile-nav-item', !user && 'logged-out')">
                 <Avatar class="avatar-button">
-                  <AvatarImage :src="profilePicture" :alt="user?.name ?? 'Guest'" />
+                  <AvatarImage
+                    :src="formatPictureUrl(user?.profileImageUrl ?? null)"
+                    :alt="user?.name ?? 'Guest'"
+                  />
                   <AvatarFallback>
                     <UserIcon />
                   </AvatarFallback>
                 </Avatar>
                 <span class="ml-3">{{ user?.name }}</span>
               </DropdownMenuTrigger>
-              <DropdownMenuContent style="width: 100%;">
+              <DropdownMenuContent style="width: 100%">
                 <DropdownMenuItem as-child>
                   <RouterLink @click="isOpen = false" to="/profile" class="profile-menu-item">
                     <UserIcon />Profile
                   </RouterLink>
                 </DropdownMenuItem>
                 <DropdownMenuItem as-child>
-                  <RouterLink @click="isOpen = false" to="/profile/settings" class="profile-menu-item">
+                  <RouterLink
+                    @click="isOpen = false"
+                    to="/profile/settings"
+                    class="profile-menu-item"
+                  >
                     <CogIcon />Settings
                   </RouterLink>
                 </DropdownMenuItem>
                 <DropdownMenuItem @click="logout"><LogOutIcon />Logout</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <RouterLink @click="isOpen = false" to="/login" :class="cn('nav-login-button', !user && 'logged-out')">
+            <RouterLink
+              @click="isOpen = false"
+              to="/login"
+              :class="cn('nav-login-button', !user && 'logged-out')"
+            >
               <Button> Login </Button>
             </RouterLink>
           </div>
@@ -208,7 +229,7 @@ function logout() {
   top: 0;
   z-index: 100;
   margin: 0;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid var(--border);
 }
 
 .avatar-button {

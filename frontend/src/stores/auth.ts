@@ -4,6 +4,7 @@ import { computed, ref } from 'vue'
 import createFetchClient from 'openapi-fetch'
 import ky from 'ky'
 import Cookies from 'universal-cookie'
+import router from '@/router'
 
 type LoginRequest = paths['/api/auth/login']['post']['requestBody']['content']['application/json']
 type RegisterRequest =
@@ -35,6 +36,8 @@ export const useAuthStore = defineStore('auth', () => {
             async (req, _, res) => {
               if (res.status === 401 && token.value) {
                 logout()
+                const path = router.currentRoute.value.fullPath
+                router.push(`/login?redirect=${path}`)
               }
 
               return res

@@ -265,6 +265,7 @@
     "aboutThisItem": "Om denne varen",
     "buyNow": "Kjøp nå",
     "messageButton": "Send melding til selger",
+    "messagePlaceholder": "Skriv en melding til selgeren",
     "sellerInfo": {
       "title": "Selgerinformasjon",
       "memberSince": "Medlem siden",
@@ -371,5 +372,10 @@
     "title": "404 - Siden ble ikke funnet",
     "message": "Beklager, siden du leter etter eksisterer ikke.",
     "backToHome": "Tilbake til hjemmesiden"
+  },
+  "messages": {
+    "title": "Meldinger",
+    "sendSuccess": "Meldingen ble sendt",
+    "sendError": "Meldingen ble ikke sendt"
   }
 }

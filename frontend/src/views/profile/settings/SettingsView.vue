@@ -12,9 +12,21 @@ import { Label } from '@/components/ui/label'
 import CardContent from '@/components/ui/card/CardContent.vue'
 import CardHeader from '@/components/ui/card/CardHeader.vue'
 import { useAuthStore } from '@/stores/auth'
-import { useMutateUserProfilePicture, useRemoveUserProfilePicture, useUpdateUserPassword, useUpdateUserAddress } from '@/lib/api/queries/user'
+import {
+  useMutateUserProfilePicture,
+  useRemoveUserProfilePicture,
+  useUpdateUserPassword,
+  useUpdateUserAddress,
+} from '@/lib/api/queries/user'
 import { toast } from 'vue-sonner'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 
@@ -29,15 +41,16 @@ const { mutate: updatePassword } = useUpdateUserPassword()
 const { mutate: updateAddress } = useUpdateUserAddress()
 
 // Form schemas
-const passwordSchema = z.object({
-  currentPassword: z.string().optional(),
-  newPassword: z.string()
-    .min(8, t('profile.settings.password-min-length')),
-  confirmPassword: z.string(),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: t('profile.settings.passwords-not-match'),
-  path: ['confirmPassword'],
-});
+const passwordSchema = z
+  .object({
+    currentPassword: z.string().optional(),
+    newPassword: z.string().min(8, t('profile.settings.password-min-length')),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: t('profile.settings.passwords-not-match'),
+    path: ['confirmPassword'],
+  })
 
 const addressSchema = z.object({
   streetName: z.string().min(1, t('profile.settings.address-required')),
@@ -47,7 +60,7 @@ const addressSchema = z.object({
   country: z.string().min(1, t('profile.settings.address-required')),
   latitude: z.number().optional(),
   longitude: z.number().optional(),
-});
+})
 
 const passwordFormRef = ref<InstanceType<typeof Form> | null>(null)
 const addressFormRef = ref<InstanceType<typeof Form> | null>(null)
@@ -109,45 +122,46 @@ async function handlePasswordUpdate(values: z.infer<typeof passwordSchema>) {
       onError: () => {
         toast.error(t('profile.settings.password-update-failed'))
       },
-    }
+    },
   )
 }
 
 async function handleAddressUpdate(values: z.infer<typeof addressSchema>) {
   addressIsLoading.value = true
-  
+
   try {
-    await updateAddress(
-      values,
-      {
-        onSuccess: () => {
-          toast.success(t('profile.settings.address.address-updated'))
-          userStore.fetchUser()
-        },
-        onError: () => {
-          toast.error(t('profile.settings.address.address-update-failed'))
-        },
-      }
-    )
+    await updateAddress(values, {
+      onSuccess: () => {
+        toast.success(t('profile.settings.address.address-updated'))
+        userStore.fetchUser()
+      },
+      onError: () => {
+        toast.error(t('profile.settings.address.address-update-failed'))
+      },
+    })
   } finally {
     addressIsLoading.value = false
   }
 }
 
 // Initialize form values when user data changes
-watch(() => userStore.user, (newUser) => {
-  if (newUser && addressFormRef.value) {
-    initialAddressValues.value = {
-      streetName: newUser.address?.streetName || '',
-      city: newUser.address?.city || '',
-      postalCode: newUser.address?.postalCode || '',
-      country: newUser.address?.country || 'Norway',
+watch(
+  () => userStore.user,
+  (newUser) => {
+    if (newUser && addressFormRef.value) {
+      initialAddressValues.value = {
+        streetName: newUser.address?.streetName || '',
+        city: newUser.address?.city || '',
+        postalCode: newUser.address?.postalCode || '',
+        country: newUser.address?.country || 'Norway',
+      }
+
+      // Set form values
+      addressFormRef.value.setValues(initialAddressValues.value)
     }
-    
-    // Set form values
-    addressFormRef.value.setValues(initialAddressValues.value)
-  }
-}, { immediate: true })
+  },
+  { immediate: true },
+)
 
 // Initialize form on mount
 onMounted(() => {
@@ -174,13 +188,20 @@ onMounted(() => {
     <div class="profile-container">
       <Avatar class="profile-avatar">
         <AvatarImage :src="userProfileImageUrl" />
-        <AvatarFallback class="profile-fallback">{{ formatNameInitials(user?.name ?? '') }}</AvatarFallback>
+        <AvatarFallback class="profile-fallback">{{
+          formatNameInitials(user?.name ?? '')
+        }}</AvatarFallback>
       </Avatar>
       <div class="profile-info">
         <Label class="setting-label">{{ t('profile.settings.profile-picture') }}</Label>
         <div class="profile-actions">
-          <input @change="changeProfilePicture" style="display: none" id="profile-pic-input" accept=".jpg, .jpeg, .png"
-            type="file" />
+          <input
+            @change="changeProfilePicture"
+            style="display: none"
+            id="profile-pic-input"
+            accept=".jpg, .jpeg, .png"
+            type="file"
+          />
           <Button variant="outline" as="label" for="profile-pic-input">
             {{ t('profile.settings.changePicture') }}
           </Button>
@@ -208,10 +229,19 @@ onMounted(() => {
               <Input type="text" :default-value="user?.phoneNumber" autocomplete="tel" disabled />
             </div>
 
-            <Form v-slot="{ meta, values, validate }" as="" :validation-schema="toTypedSchema(passwordSchema)"
-              ref="passwordFormRef">
+            <Form
+              v-slot="{ meta, values, validate }"
+              as=""
+              :validation-schema="toTypedSchema(passwordSchema)"
+              ref="passwordFormRef"
+            >
               <form
-                @submit.prevent="validate().then(() => handlePasswordUpdate(values as z.infer<typeof passwordSchema>))">
+                @submit.prevent="
+                  validate().then(() =>
+                    handlePasswordUpdate(values as z.infer<typeof passwordSchema>),
+                  )
+                "
+              >
                 <FormField v-slot="{ componentField }" name="currentPassword">
                   <FormItem>
                     <FormLabel>{{ t('profile.settings.old-password') }}</FormLabel>
@@ -256,23 +286,33 @@ onMounted(() => {
           <CardTitle>{{ t('profile.settings.address.title') }}</CardTitle>
         </CardHeader>
         <CardContent>
-          <Form v-slot="{ meta, values, validate }" as="" :validation-schema="toTypedSchema(addressSchema)"
-            ref="addressFormRef" class="address-form">
-            <form @submit.prevent="validate().then(() => handleAddressUpdate(values as z.infer<typeof addressSchema>))">
+          <Form
+            v-slot="{ meta, values, validate }"
+            as=""
+            :validation-schema="toTypedSchema(addressSchema)"
+            ref="addressFormRef"
+            class="address-form"
+          >
+            <form
+              @submit.prevent="
+                validate().then(() => handleAddressUpdate(values as z.infer<typeof addressSchema>))
+              "
+            >
               <div class="address-container">
                 <!-- Using the integrated LocationInfoForm component -->
                 <LocationInfoForm :initial-values="initialAddressValues" />
 
                 <!-- Save Address Button -->
                 <div class="save-address-container">
-                  <Button 
-                    type="submit" 
-                    class="save-address-button" 
+                  <Button
+                    type="submit"
+                    class="save-address-button"
                     :disabled="!meta.valid || addressIsLoading"
                   >
-                    {{ addressIsLoading 
-                      ? t('common.submitting') 
-                      : t('profile.settings.address.save-address') 
+                    {{
+                      addressIsLoading
+                        ? t('common.submitting')
+                        : t('profile.settings.address.save-address')
                     }}
                   </Button>
                 </div>
