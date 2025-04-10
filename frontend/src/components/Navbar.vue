@@ -9,6 +9,7 @@ import FlagComponent from '@/components/ui/country-flag/CountryFlag.vue'
 import { computed, ref } from 'vue'
 import { type Locales, AvailableLocales, useTypedI18n } from '@/i18n'
 import { useAuthStore } from '@/stores/auth'
+import { formatNameInitials, formatPictureUrl } from '@/lib/utils'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,7 +17,6 @@ import {
   DropdownMenuTrigger,
 } from './ui/dropdown-menu'
 import { cn } from '@/lib/utils'
-
 const isOpen = ref(false)
 const { t, locale } = useTypedI18n()
 const locales: Record<Locales, { flag: string; name: string }> = {
@@ -30,9 +30,6 @@ const locales: Record<Locales, { flag: string; name: string }> = {
   },
 }
 
-const profilePicture = computed(() => {
-  return useAuthStore().user?.profileImageUrl ?? ''
-})
 
 const user = computed(() => {
   return useAuthStore().user
@@ -84,6 +81,7 @@ function logout() {
       </RouterLink>
 
       <!-- Profile Avatar -->
+
       <DropdownMenu>
         <DropdownMenuTrigger as-child>
           <Avatar :class="cn('avatar-button', !user && 'logged-out')">
@@ -158,6 +156,7 @@ function logout() {
             </div>
 
             <!-- Profile -->
+
             <DropdownMenu>
               <DropdownMenuTrigger :class="cn('mobile-nav-item', !user && 'logged-out')">
                 <Avatar class="avatar-button">

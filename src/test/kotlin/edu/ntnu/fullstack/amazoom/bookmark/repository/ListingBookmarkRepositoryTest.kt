@@ -38,8 +38,7 @@ class ListingBookmarkRepositoryTest {
     fun setup() {
         // Create and persist a user
         user = User(
-            firstName = "Test",
-            lastName = "User",
+            name = "Test User",
             email = "test.user@example.com",
             phoneNumber = "1234567890",
             address = Address(
@@ -68,7 +67,9 @@ class ListingBookmarkRepositoryTest {
             condition = ListingCondition.NEW,
             seller = user,
             price = 100.0,
-            description = "A test listing"
+            description = "A test listing",
+            latitude = 20.0,
+            longitude = 30.0
         )
         entityManager.persist(listing)
         entityManager.flush()
@@ -148,7 +149,9 @@ class ListingBookmarkRepositoryTest {
             condition = ListingCondition.GOOD,
             seller = user,
             price = 200.0,
-            description = "Another test listing"
+            description = "Another test listing",
+            latitude = 25.0,
+            longitude = 35.0
         )
         entityManager.persist(listing2)
         

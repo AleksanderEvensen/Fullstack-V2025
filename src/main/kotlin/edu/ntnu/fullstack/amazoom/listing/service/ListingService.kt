@@ -7,6 +7,7 @@ import edu.ntnu.fullstack.amazoom.common.service.UserService
 import edu.ntnu.fullstack.amazoom.listing.dto.CreateOrUpdateListingRequestDto
 import edu.ntnu.fullstack.amazoom.listing.dto.ListingDto
 import edu.ntnu.fullstack.amazoom.listing.dto.ListingSearchRequestDto
+import edu.ntnu.fullstack.amazoom.listing.dto.MyListingRequest
 import edu.ntnu.fullstack.amazoom.listing.exception.ListingNotFoundException
 import edu.ntnu.fullstack.amazoom.listing.mapper.ListingMapper
 import edu.ntnu.fullstack.amazoom.listing.repository.ListingRepository
@@ -170,6 +171,44 @@ class ListingService(
             listingEntity.seller.email == userEmail
         } else {
             false
+        }
+    }
+
+
+    /**
+     * Retrieves a list of listings created by the current user.
+     *
+     * @param myListingRequest The request DTO containing pagination and sorting details
+     * @return A list of listing DTOs
+     */
+    fun getMyListings(myListingRequest: MyListingRequest): Page<ListingDto> {
+        val currentUser = userService.getCurrentUser()
+        val pageable = PageRequest.of(myListingRequest.page, myListingRequest.size, Sort.by(myListingRequest.sortBy))
+        val listingSpecification = ListingSpecification.buildSpecification(
+            sellerId = currentUser.id,
+            status = myListingRequest.status
+        )
+        val listings = listingRepository.findAll(listingSpecification, pageable)
+        return listings.map {
+            ListingMapper.toResponseDto(it)
+        }
+    }
+
+    /**
+     * Retrieves a list of bookmarked listings for the current user.
+     *
+     * @param myListingRequest The request DTO containing pagination and sorting details
+     * @return A list of listing DTOs
+     */
+    fun getBookmarkedListings(myListingRequest: MyListingRequest): Page<ListingDto> {
+        val currentUser = userService.getCurrentUser()
+        val pageable = PageRequest.of(myListingRequest.page, myListingRequest.size, Sort.by(myListingRequest.sortBy))
+        val listingPage = listingRepository.findBookmarkedListingsByUserId(
+            userId = currentUser.id,
+            pageable = pageable
+        )
+        return listingPage.map {
+            ListingMapper.toResponseDto(it)
         }
     }
 

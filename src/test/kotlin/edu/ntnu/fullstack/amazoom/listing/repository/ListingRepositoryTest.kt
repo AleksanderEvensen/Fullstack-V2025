@@ -46,8 +46,7 @@ class ListingRepositoryTest {
 
         // Create and persist a user
         user = User(
-            firstName = "Test",
-            lastName = "User",
+            name = "Test User",
             email = "test.user@example.com",
             password = "password",
             phoneNumber = "1234567890",
@@ -78,7 +77,9 @@ class ListingRepositoryTest {
             condition = ListingCondition.NEW,
             seller = user,
             price = 100.0,
-            description = "A test listing"
+            description = "A test listing",
+            latitude = 20.0,
+            longitude = 30.0,
         )
         entityManager.persist(listing)
         entityManager.flush()
@@ -93,7 +94,9 @@ class ListingRepositoryTest {
             condition = ListingCondition.GOOD,
             seller = user,
             price = 200.0,
-            description = "Another test listing description"
+            description = "Another test listing description",
+            latitude = 25.0,
+            longitude = 35.0,
         )
 
         val savedListing = repository.save(newListing)
@@ -114,7 +117,9 @@ class ListingRepositoryTest {
             condition = ListingCondition.GOOD,
             seller = user,
             price = 300.0,
-            description = "A listing to delete"
+            description = "A listing to delete",
+            latitude = 40.0,
+            longitude = 50.0,
         )
         val savedListing = repository.save(newListing)
 
@@ -135,7 +140,9 @@ class ListingRepositoryTest {
             condition = ListingCondition.NEW,
             seller = user,
             price = 100.0,
-            description = "Original description"
+            description = "Original description",
+            latitude = 10.0,
+            longitude = 20.0,
         )
         val savedListing = repository.save(originalListing)
 
@@ -164,7 +171,9 @@ class ListingRepositoryTest {
             condition = ListingCondition.GOOD,
             seller = user,
             price = 50.0,
-            description = "A cheap listing"
+            description = "A cheap listing",
+            latitude = 15.0,
+            longitude = 25.0,
         )
         entityManager.persist(listing2)
 
@@ -174,7 +183,9 @@ class ListingRepositoryTest {
             condition = ListingCondition.LIKE_NEW,
             seller = user,
             price = 500.0,
-            description = "An expensive listing"
+            description = "An expensive listing",
+            latitude = 30.0,
+            longitude = 40.0,
         )
         entityManager.persist(listing3)
         entityManager.flush()
@@ -201,8 +212,7 @@ class ListingRepositoryTest {
     fun `test find listings by seller`() {
         // Create additional user and listing
         val otherUser = User(
-            firstName = "Other",
-            lastName = "User",
+            name = "Other User",
             email = "other.user@example.com",
             password = "password",
             phoneNumber = "9876543210",
@@ -223,7 +233,9 @@ class ListingRepositoryTest {
             condition = ListingCondition.GOOD,
             seller = otherUser,
             price = 150.0,
-            description = "A listing from other user"
+            description = "A listing from other user",
+            latitude = 35.0,
+            longitude = 45.0,
         )
         entityManager.persist(otherListing)
 

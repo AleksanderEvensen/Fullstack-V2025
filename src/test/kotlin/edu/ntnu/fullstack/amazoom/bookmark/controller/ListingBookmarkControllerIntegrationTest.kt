@@ -72,8 +72,7 @@ class ListingBookmarkControllerIntegrationTest {
         closeable = MockitoAnnotations.openMocks(this)
 
         sellerUser = User(
-            firstName = "Seller",
-            lastName = "User",
+            name = "Seller User",
             email = "seller@example.com",
             password = "password",
             phoneNumber = "1234567890",
@@ -104,14 +103,15 @@ class ListingBookmarkControllerIntegrationTest {
             condition = ListingCondition.NEW,
             seller = sellerUser,
             price = 100.0,
-            description = "A test listing description"
+            description = "A test listing description",
+            latitude = 20.0,
+            longitude = 30.0,
         )
         listing = listingRepository.save(listing)
 
         // Create buyer user
         user = User(
-            firstName = "Buyer",
-            lastName = "User",
+            name = "Buyer User",
             email = "buyer@example.com",
             password = "password",
             phoneNumber = "0987654321",
@@ -216,7 +216,9 @@ class ListingBookmarkControllerIntegrationTest {
             condition = ListingCondition.NEW,
             seller = user, // Same as authenticated user
             price = 200.0,
-            description = "My own listing that I can't bookmark"
+            description = "My own listing that I can't bookmark",
+            latitude = 10.0,
+            longitude = 20.0,
         )
         listingRepository.save(ownListing)
 

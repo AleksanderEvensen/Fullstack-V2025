@@ -40,7 +40,7 @@ const basicInfoSchema = z.object({
 });
 
 const productDetailsSchema = z.object({
-  modelYear: z.string().optional(),
+  modelYear: z.number().optional(),
   manufacturer: z.string().optional(),
   model: z.string().optional(),
   serialNumber: z.string().optional(),

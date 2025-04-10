@@ -4,7 +4,9 @@ import edu.ntnu.fullstack.amazoom.common.dto.ErrorResponseDto
 import edu.ntnu.fullstack.amazoom.listing.dto.CreateOrUpdateListingRequestDto
 import edu.ntnu.fullstack.amazoom.listing.dto.ListingDto
 import edu.ntnu.fullstack.amazoom.listing.dto.ListingSearchRequestDto
+import edu.ntnu.fullstack.amazoom.listing.dto.MyListingRequest
 import edu.ntnu.fullstack.amazoom.listing.entity.ListingCondition
+import edu.ntnu.fullstack.amazoom.listing.entity.ListingStatus
 import edu.ntnu.fullstack.amazoom.listing.service.ListingService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -329,5 +331,70 @@ class ListingController(
     fun advancedSearchListings(@RequestBody searchRequest: ListingSearchRequestDto): ResponseEntity<Page<ListingDto>> {
         val searchResults = listingService.searchListings(searchRequest)
         return ResponseEntity.ok(searchResults)
+    }
+
+    @Operation(
+        summary = "Get my listings",
+        description = "Retrieves all listings created by the currently authenticated user"
+    )
+    @ApiResponses(
+        ApiResponse(
+            responseCode = "200",
+            description = "Get my listings successfully",
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "User not authenticated",
+            content = [Content(schema = Schema(implementation = ErrorResponseDto::class))]
+        )
+    )
+    @GetMapping("/me")
+    fun getMyListings(
+        @Parameter(description = "Page number (0-based)", example = "0")
+        @RequestParam(defaultValue = "0") page: Int,
+        @Parameter(description = "Number of items per page", example = "10")
+        @RequestParam(defaultValue = "10") size: Int,
+        @Parameter(description = "Listing status field", example = "ACTIVE")
+        @RequestParam(defaultValue = "ACTIVE") status: ListingStatus
+    ): ResponseEntity<Page<ListingDto>> {
+        val myListingRequest = MyListingRequest(
+            page = page,
+            size = size,
+            status = status
+        )
+        val myListings = listingService.getMyListings(myListingRequest)
+        return ResponseEntity.ok(myListings)
+    }
+
+    @Operation(
+        summary = "Get bookmarked listings by user",
+        description = "Retrieves all listings bookmarked by the currently authenticated user"
+    )
+    @ApiResponses(
+        ApiResponse(
+            responseCode = "200",
+            description = "Get bookmarked listings successfully",
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "User not authenticated",
+            content = [Content(schema = Schema(implementation = ErrorResponseDto::class))]
+        )
+    )
+    @GetMapping("/bookmarks")
+    fun getBookmarkedListings(
+        @Parameter(description = "Page number (0-based)", example = "0")
+        @RequestParam(defaultValue = "0") page: Int,
+        @Parameter(description = "Number of items per page", example = "10")
+        @RequestParam(defaultValue = "10") size: Int,
+        @Parameter(description = "Listing status field", example = "ACTIVE")
+        @RequestParam(defaultValue = "ACTIVE") status: ListingStatus
+    ): ResponseEntity<Page<ListingDto>> {
+        val myListingRequest = MyListingRequest(
+            page = page,
+            size = size
+        )
+        val bookmarkedListings = listingService.getBookmarkedListings(myListingRequest)
+        return ResponseEntity.ok(bookmarkedListings)
     }
 }
