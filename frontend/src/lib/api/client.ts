@@ -2,6 +2,7 @@ import createFetchClient from 'openapi-fetch'
 import type { paths } from '@/lib/api/schema'
 import ky from 'ky'
 import { useAuthStore } from '@/stores/auth'
+import router from '@/router'
 
 // // Flag to prevent multiple simultaneous refresh attempts
 // const isRefreshing = false
@@ -29,6 +30,8 @@ function createApiClient() {
 
           if (res.status === 401 && authStore.token) {
             authStore.logout()
+            const path = router.currentRoute.value.fullPath
+            router.push(`/login?redirect=${path}`)
           }
 
           return res
@@ -64,6 +67,8 @@ export const uploadClient = ky.extend({
 
         if (res.status === 401 && authStore.token) {
           authStore.logout()
+          const path = router.currentRoute.value.fullPath
+          router.push(`/login?redirect=${path}`)
         }
 
         return res
