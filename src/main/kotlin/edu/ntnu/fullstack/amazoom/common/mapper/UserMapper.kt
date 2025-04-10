@@ -23,7 +23,7 @@ object UserMapper {
             phoneNumber = user.phoneNumber,
             profileImageUrl = user.profileImageUrl,
             address = user.address?.let { AddressMapper.toDto(it) },
-            roles = user.roles.map { it.name.toString() },
+            roles = user.roles?.map { it.name.toString() } ?: emptyList(),
         )
     }
 }
