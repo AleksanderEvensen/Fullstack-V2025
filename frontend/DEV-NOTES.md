@@ -17,9 +17,9 @@
 - [ ] Listings 
   - [x] Lat/Lon in listings
   - [ ] See the location on the listing page (map)
-- [ ] Search Page
-  - [ ] Map on search page
-  - [ ] Search Area filter
+- [x] Search Page
+  - [x] Map on search page
+  - [x] Search Area filter
   - [ ] Search bug (search filter collisions)
 
 ### Yazan
