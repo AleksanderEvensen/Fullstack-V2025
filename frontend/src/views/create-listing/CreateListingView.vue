@@ -31,7 +31,7 @@ import { toast } from 'vue-sonner'
 import { useRouter } from 'vue-router'
 
 // Import the LocationInfoForm component
-import LocationInfoForm from './components/LocationInfoForm.vue'
+import LocationInfoForm from '@/components/LocationInfoForm.vue'
 import ImageUploadForm from './components/ImageUploadForm.vue'
 
 const { t } = useTypedI18n()

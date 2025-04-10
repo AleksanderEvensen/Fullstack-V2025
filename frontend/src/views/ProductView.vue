@@ -147,6 +147,8 @@ const handleToggleSold = () => {
     price: product.value.price,
     originalPrice: product.value.originalPrice,
     description: product.value.description,
+    latitude: 0,
+    longitude: 0,
   }, {
     onSuccess: () => {
       toast.success(t('product.toggleSoldSuccess'))

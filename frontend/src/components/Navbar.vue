@@ -9,7 +9,7 @@ import FlagComponent from '@/components/ui/country-flag/CountryFlag.vue'
 import { computed, ref } from 'vue'
 import { type Locales, AvailableLocales, useTypedI18n } from '@/i18n'
 import { useAuthStore } from '@/stores/auth'
-import { formatNameInitials, formatPictureUrl } from '@/lib/utils'
+import { formatPictureUrl } from '@/lib/utils'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,6 +33,12 @@ const locales: Record<Locales, { flag: string; name: string }> = {
 
 const user = computed(() => {
   return useAuthStore().user
+})
+
+const profilePicture = computed(() => {
+  return user.value?.profileImageUrl
+    ? formatPictureUrl(user.value.profileImageUrl)
+    : ''
 })
 
 function logout() {

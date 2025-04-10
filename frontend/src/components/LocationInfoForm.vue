@@ -2,7 +2,7 @@
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
 import { useTypedI18n } from '@/i18n'
 import { MapboxMap, MapboxMarker, MapboxNavigationControl } from '@studiometa/vue-mapbox-gl'
 import { MAPBOX_API_TOKEN } from '@/lib/utils'
@@ -11,15 +11,32 @@ import { searchGeocodeAdvanced } from '@/lib/api/geocoding'
 import { watchDebounced } from '@vueuse/core'
 import type { Map } from 'mapbox-gl'
 
+const props = defineProps<{
+  initialValues?: {
+    streetName?: string;
+    streetNumber?: string;
+    city?: string;
+    postalCode?: string;
+    country?: string;
+    latitude?: number;
+    longitude?: number;
+  }
+}>()
+
 const { t } = useTypedI18n()
 
-const street = ref('')
-const city = ref('')
-const postalCode = ref('')
-const country = ref('Norway')
+const street = ref(props.initialValues?.streetName || '')
+const city = ref(props.initialValues?.city || '')
+const postalCode = ref(props.initialValues?.postalCode || '')
+const streetNumber = ref(props.initialValues?.streetNumber || '')
+const country = ref(props.initialValues?.country || 'Norway')
 
 const mapRef = ref<Map | null>(null)
-const currentLocation = ref<{ lat: number; lon: number } | null>(null)
+const currentLocation = ref<{ lat: number; lon: number } | null>(
+  props.initialValues?.latitude && props.initialValues?.longitude
+    ? { lat: props.initialValues.latitude, lon: props.initialValues.longitude }
+    : null
+)
 const searchInProgress = ref(false)
 
 const locationData = computed(() => ({
@@ -40,6 +57,24 @@ watch(currentLocation, (newLocation) => {
   }
 })
 
+// Watch for incoming initialValues changes
+watch(() => props.initialValues, (newValues) => {
+  if (newValues) {
+    street.value = newValues.streetName || ''
+    streetNumber.value = newValues.streetNumber || ''
+    city.value = newValues.city || ''
+    postalCode.value = newValues.postalCode || ''
+    country.value = newValues.country || 'Norway'
+    
+    if (newValues.latitude && newValues.longitude) {
+      currentLocation.value = {
+        lat: newValues.latitude,
+        lon: newValues.longitude
+      }
+    }
+  }
+}, { deep: true })
+
 // Reference to form fields for updating
 const latitudeField = ref()
 const longitudeField = ref()
@@ -47,26 +82,25 @@ const longitudeField = ref()
 // Flyto address when map is created or address fields change
 async function flyToAddress() {
   searchInProgress.value = true
-
+  
   try {
     if (!locationData.value.street || !locationData.value.city) {
       return
     }
 
     if (!mapRef.value) return
-
-    const [location] =
-      (await searchGeocodeAdvanced({
-        ...locationData.value,
-        country: country.value,
-      })) ?? []
-
+    
+    const [location] = await searchGeocodeAdvanced({
+      ...locationData.value,
+      country: country.value
+    }) ?? []
+    
     if (location) {
       currentLocation.value = {
         lat: +location.lat,
         lon: +location.lon,
       }
-
+      
       mapRef.value.flyTo({
         center: [+location.lon, +location.lat],
         zoom: 14,
@@ -80,32 +114,35 @@ async function flyToAddress() {
 }
 
 // Watch for changes in address fields with debounce
-watchDebounced(
-  locationData,
-  async () => {
-    if (!locationData.value.street || !locationData.value.city) return
-    flyToAddress()
-  },
-  { debounce: 1000 },
-)
+watchDebounced(locationData, async () => {
+  if (!locationData.value.street || !locationData.value.city) return
+  flyToAddress()
+}, { debounce: 1000 })
 
 // Setup map when created
 function mapCreated(map: Map) {
   mapRef.value = map
   map.on('click', handleMapClick)
+  
+  // If we have initial coordinates, center the map on them
+  if (currentLocation.value && map) {
+    map.once('load', () => {
+      map.flyTo({
+        center: [currentLocation.value!.lon, currentLocation.value!.lat],
+        zoom: 14,
+      })
+    })
+  }
 }
 
 // Let users set marker by clicking on map
 function handleMapClick(event: { lngLat: { lat: number; lng: number } }) {
   if (!mapRef.value) return
-
+  
   currentLocation.value = {
     lat: event.lngLat.lat,
     lon: event.lngLat.lng,
   }
-
-  // Find the corresponding address (reverse geocoding would be ideal here)
-  // This is a simplified implementation
 }
 
 // Clear the marker and location data
@@ -119,6 +156,16 @@ function clearLocation() {
 function handleSearch() {
   flyToAddress()
 }
+
+// Initialize map with initial coordinates
+onMounted(() => {
+  if (props.initialValues?.latitude && props.initialValues?.longitude && mapRef.value) {
+    mapRef.value.flyTo({
+      center: [props.initialValues.longitude, props.initialValues.latitude],
+      zoom: 14,
+    })
+  }
+})
 </script>
 
 <template>
@@ -131,8 +178,18 @@ function handleSearch() {
           <FormControl>
             <div class="input-with-icon">
               <MapPinIcon class="input-icon" />
-              <Input v-bind="componentField" placeholder="Tollbugata 2" v-model="street" />
+              <Input v-bind="componentField" v-model="street" placeholder="Tollbugata" />
             </div>
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      </FormField>
+
+      <FormField v-slot="{ componentField }" name="streetNumber">
+        <FormItem>
+          <FormLabel>{{ t('createListing.form.location.streetNumber') }}</FormLabel>
+          <FormControl>
+            <Input v-bind="componentField" v-model="streetNumber" placeholder="2" />
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -171,9 +228,9 @@ function handleSearch() {
       </FormField>
 
       <div class="search-button-container">
-        <Button
-          type="button"
-          @click="handleSearch"
+        <Button 
+          type="button" 
+          @click="handleSearch" 
           :disabled="searchInProgress || !street || !city"
           variant="outline"
         >
@@ -204,12 +261,17 @@ function handleSearch() {
       <div v-if="currentLocation" class="location-found">
         <div class="location-actions">
           <p class="location-message">{{ t('createListing.form.location.locationSet') }}</p>
-          <Button variant="destructive" size="sm" @click="clearLocation" type="button">
+          <Button 
+            variant="destructive" 
+            size="sm"
+            @click="clearLocation" 
+            type="button"
+          >
             <TrashIcon class="button-icon" />
             {{ t('createListing.form.location.clear') }}
           </Button>
         </div>
-
+        
         <!-- Hidden fields for latitude/longitude -->
         <FormField ref="latitudeField" v-slot="{ componentField }" name="latitude">
           <input type="hidden" v-bind="componentField" :value="currentLocation?.lat" />
@@ -219,7 +281,7 @@ function handleSearch() {
           <input type="hidden" v-bind="componentField" :value="currentLocation?.lon" />
         </FormField>
       </div>
-
+      
       <p v-else class="location-instruction">
         {{ t('createListing.form.location.instructions') }}
       </p>
@@ -257,6 +319,7 @@ function handleSearch() {
 
 .input-with-icon input {
   padding-left: calc(var(--spacing) * 8);
+  width: 100%;
 }
 
 .city-postal-row {
@@ -287,7 +350,7 @@ function handleSearch() {
 .map-container {
   border-radius: var(--radius);
   overflow: hidden;
-  margin-top: calc(var(--spacing) * 4);
+  margin-top: calc(var(--spacing) * 2);
 }
 
 .map-display {
