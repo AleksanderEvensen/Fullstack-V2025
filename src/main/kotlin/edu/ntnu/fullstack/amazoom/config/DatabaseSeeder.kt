@@ -78,7 +78,8 @@ class DatabaseSeeder @Autowired constructor(
             return listingRepository.findAll().first()
         }
 
-        logger.info("Creating admin listing...")
+        logger.info("Creating admin listing...");
+        val (latitude, longitude) = randomLatLon();
         val adminListing = Listing(
             title = "MacBook Pro M1 Max 16-inch",
             category = category,
@@ -97,7 +98,9 @@ class DatabaseSeeder @Autowired constructor(
             defects = listOf("Minor scratch on bottom case"),
             modifications = listOf("Applied screen protector"),
             reasonForSelling = "Upgrading to newer model",
-            images = listOf("https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=1000&auto=format&fit=crop")
+            images = listOf("https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=1000&auto=format&fit=crop"),
+            latitude = latitude,
+            longitude = longitude
         )
         return listingRepository.save(adminListing)
     }
