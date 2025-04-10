@@ -1,102 +1,74 @@
 import { ref, computed } from 'vue'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { fetchClient } from '@/lib/api/client'
 import type { components } from '@/lib/api/schema'
 
-type ChatMessage = components['schemas']['ChatMessageDto']
 type ChatMessageRequest = components['schemas']['ChatMessageRequestDto']
+type PageConversationSummaryDto = components['schemas']['PageConversationSummaryDto']
+type PageChatMessageDto = components['schemas']['PageChatMessageDto']
 
 export function useChatMessages() {
   const queryClient = useQueryClient()
   const currentConversation = ref<{ otherUserId: number; listingId: number } | null>(null)
   const newMessage = ref('')
-  const lastTimestamp = ref(Date.now())
 
-  const conversationsQuery = useQuery({
-    queryKey: ['conversations'],
-    queryFn: async () => {
-      return await fetchClient.GET('/api/chat/conversations', {}).then((res) => {
-        console.log('conversations', res.data)
-        return res.data
-      })
-    },
-    // refetchInterval: 10000,
-  })
-
-  const messagesQuery = useQuery({
-    queryKey: ['messages', currentConversation],
-    queryFn: async () => {
-      if (!currentConversation.value) return []
-
-      const { otherUserId, listingId } = currentConversation.value
-      const response = await fetchClient
-        .GET('/api/chat/conversation/{listingId}/{otherUserId}', {
-          params: {
-            path: {
-              listingId,
-              otherUserId,
-            },
+  // Get all user conversations with infinite query
+  const conversationsQuery = useInfiniteQuery({
+    queryKey: ['conversations', 'infinite'],
+    queryFn: async ({ pageParam = 0 }) => {
+      const response = await fetchClient.GET('/api/chat/conversations', {
+        params: {
+          query: {
+            page: pageParam,
+            size: 10,
           },
-        })
-        .then((res) => res.data)
-
-      if (response && response.length > 0) {
-        const newestMessage = response[0]
-        lastTimestamp.value = new Date(newestMessage.timestamp).getTime()
-      }
-
-      return response || []
+        },
+      })
+      return response.data as PageConversationSummaryDto
     },
-    enabled: computed(() => !!currentConversation.value),
+    getNextPageParam: (lastPage) => {
+      if (lastPage.last) return undefined
+
+      return (lastPage.number ?? 0) + 1
+    },
+    initialPageParam: 0,
+    refetchInterval: 5000, // Refetch every 5 seconds instead of polling
   })
 
-  const newMessagesQuery = useQuery({
-    queryKey: ['newMessages', currentConversation, lastTimestamp],
-    queryFn: async () => {
-      if (!currentConversation.value) return []
+  // Get messages for the current conversation with infinite query
+  const messagesQuery = useInfiniteQuery({
+    queryKey: ['messages', 'infinite', currentConversation],
+    queryFn: async ({ pageParam = 0 }) => {
+      if (!currentConversation.value) return { content: [], last: true } as PageChatMessageDto
 
       const { otherUserId, listingId } = currentConversation.value
-      try {
-        const response = await fetchClient
-          .GET('/api/chat/poll/{listingId}/{otherUserId}', {
-            params: {
-              path: {
-                listingId,
-                otherUserId,
-              },
-              query: {
-                lastTimestamp: lastTimestamp.value,
-              },
-            },
-          })
-          .then((res) => res.data)
-
-        if (response && response.length > 0) {
-          const newestMessage = response[0]
-          lastTimestamp.value = new Date(newestMessage.timestamp).getTime()
-
-          queryClient.setQueryData(
-            ['messages', currentConversation.value],
-            (oldData: ChatMessage[] | undefined) => {
-              return [...response, ...(oldData || [])]
-            },
-          )
-        }
-
-        return response || []
-      } catch (error) {
-        if (error instanceof Error && error.name === 'AbortError') {
-          return []
-        }
-        throw error
-      }
+      const response = await fetchClient.GET('/api/chat/conversation/{listingId}/{otherUserId}', {
+        params: {
+          path: {
+            listingId,
+            otherUserId,
+          },
+          query: {
+            page: pageParam,
+            size: 20,
+          },
+        },
+      })
+      return response.data as PageChatMessageDto
     },
-    // refetchInterval: 1000,
+    getNextPageParam: (lastPage) => {
+      if (!lastPage) return undefined
+
+      if (lastPage.last) return undefined
+
+      return (lastPage.number ?? 0) + 1
+    },
+    initialPageParam: 0,
     enabled: computed(() => !!currentConversation.value),
-    refetchOnWindowFocus: false,
-    notifyOnChangeProps: ['data'],
+    refetchInterval: 3000, // Refetch every 3 seconds instead of polling
   })
 
+  // Send a new message
   const sendMessageMutation = useMutation({
     mutationFn: async (content: string) => {
       if (!currentConversation.value || !content.trim()) return null
@@ -118,22 +90,21 @@ export function useChatMessages() {
     onSuccess: (data) => {
       if (!data) return
 
-      lastTimestamp.value = new Date(data.timestamp).getTime()
+      // Invalidate the messages query to trigger a refetch
+      queryClient.invalidateQueries({
+        queryKey: ['messages', 'infinite', currentConversation.value],
+      })
 
-      queryClient.setQueryData(
-        ['messages', currentConversation.value],
-        (oldData: ChatMessage[] | undefined) => {
-          return [data, ...(oldData || [])]
-        },
-      )
-
+      // Clear message input
       newMessage.value = ''
     },
   })
 
   function setConversation(otherUserId: number, listingId: number) {
     currentConversation.value = { otherUserId, listingId }
-    lastTimestamp.value = Date.now()
+
+    // Reset any existing query data for the new conversation
+    queryClient.resetQueries({ queryKey: ['messages', 'infinite', currentConversation.value] })
   }
 
   function sendMessage() {
@@ -141,21 +112,46 @@ export function useChatMessages() {
     sendMessageMutation.mutate(newMessage.value)
   }
 
+  function fetchNextConversationsPage() {
+    if (conversationsQuery.hasNextPage.value) {
+      conversationsQuery.fetchNextPage()
+    }
+  }
+
+  function fetchNextMessagesPage() {
+    if (messagesQuery.hasNextPage.value) {
+      messagesQuery.fetchNextPage()
+    }
+  }
+
+  // Compute flattened arrays from infinite query pages
+  const conversations = computed(() => {
+    return conversationsQuery.data.value?.pages.flatMap((page) => page.content ?? []) ?? []
+  })
+
+  const messages = computed(() => {
+    return messagesQuery.data.value?.pages.flatMap((page) => page.content ?? []) ?? []
+  })
+
   return {
     conversationsQuery,
     messagesQuery,
-    newMessagesQuery,
-
     currentConversation,
     newMessage,
 
     setConversation,
     sendMessage,
+    fetchNextConversationsPage,
+    fetchNextMessagesPage,
 
-    conversations: computed(() => conversationsQuery.data.value || []),
-    messages: computed(() => messagesQuery.data.value || []),
+    conversations,
+    messages,
+    hasMoreConversations: computed(() => conversationsQuery.hasNextPage.value),
+    hasMoreMessages: computed(() => messagesQuery.hasNextPage.value),
     isLoadingConversations: computed(() => conversationsQuery.isLoading.value),
+    isFetchingNextConversations: computed(() => conversationsQuery.isFetchingNextPage.value),
     isLoadingMessages: computed(() => messagesQuery.isLoading.value),
+    isFetchingNextMessages: computed(() => messagesQuery.isFetchingNextPage.value),
     isSendingMessage: computed(() => sendMessageMutation.isPending.value),
   }
 }
