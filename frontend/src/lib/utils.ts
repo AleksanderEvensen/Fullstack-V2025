@@ -8,8 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 type Address = components['schemas']['AddressDto']
 export function formatAddress(address: Address) {
   const addressParts = [
-    address.streetName,
-    address.streetNumber,
+    address.streetName.trim() + ' ' + address.streetNumber.trim(),
     address.postalCode,
     address.city,
     address.country,
@@ -27,9 +26,6 @@ export function formatNameInitials(name: string) {
 
 export const MAPBOX_API_TOKEN = import.meta.env.VITE_MAPBOX_GL_TOKEN as string
 
-// TODO: This is a temporary function to format the picture url.
-// The main purpose of this is to make sure that seeder and uploaded images work
-// seeder uses image urls, while uploaded images are saved as filename.generateduuid.extension
 export function formatPictureUrl(filename: string | null) {
   if (window === undefined || !filename) {
     return ''
