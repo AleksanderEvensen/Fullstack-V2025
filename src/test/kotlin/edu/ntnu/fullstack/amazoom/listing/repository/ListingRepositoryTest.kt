@@ -39,10 +39,7 @@ class ListingRepositoryTest {
 
     @BeforeEach
     fun setup() {
-        val role = Role(
-            name = RoleName.ROLE_USER
-        )
-        entityManager.persist(role)
+
 
         // Create and persist a user
         user = User(
@@ -57,7 +54,6 @@ class ListingRepositoryTest {
                 city = "Test City",
                 country = "Test Country"
             ),
-            roles = mutableSetOf(role) // Associate the persisted role
         )
         entityManager.persist(user)
 
