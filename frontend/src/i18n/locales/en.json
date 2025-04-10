@@ -18,7 +18,9 @@
     "next": "Next",
     "previous": "Previous",
     "goback": "Go Back",
-    "settings": "Settings"
+    "settings": "Settings",
+    "loadMore": "Load more",
+    "loadingMore": "Loading more..."
   },
   "search": {
     "title": "Find what your heart desires",
@@ -30,6 +32,7 @@
     "noResults": "No listings match your search criteria. Try adjusting your filters.",
     "pagination": "Page {current} of {total}",
     "resultsCount": "nothing here| {count} result | {count} results",
+    "mapView": "Map View",
     "sort": {
       "newest": "Newest first",
       "oldest": "Oldest first",
