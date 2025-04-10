@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
-import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -26,11 +25,9 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/chat")
 @Tag(name = "Chat", description = "Operations for chat messaging")
-class ChatController(
+class ChatMessageController(
     private val chatMessageService: ChatMessageService
 ) {
-    private val logger = LoggerFactory.getLogger(ChatController::class.java)
-
     /**
      * Gets all conversations for the current user.
      */
