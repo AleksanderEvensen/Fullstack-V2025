@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { MapPin, FunnelIcon, X, House } from 'lucide-vue-next'
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useUrlSearchParams, watchDebounced } from '@vueuse/core'
 import SearchFilter from './components/SearchFilter.vue'
 import type { paths } from '@/lib/api/schema'

@@ -18,7 +18,7 @@ defineProps<{
   }
 }>()
 
-const emit = defineEmits<{
+defineEmits<{
   (e: 'next'): void
   (e: 'prev'): void
 }>()
