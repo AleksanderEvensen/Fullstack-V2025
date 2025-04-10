@@ -34,12 +34,6 @@ const user = computed(() => {
   return useAuthStore().user
 })
 
-const profilePicture = computed(() => {
-  return user.value?.profileImageUrl
-    ? formatPictureUrl(user.value.profileImageUrl)
-    : ''
-})
-
 function logout() {
   const authStore = useAuthStore()
   authStore.logout()
