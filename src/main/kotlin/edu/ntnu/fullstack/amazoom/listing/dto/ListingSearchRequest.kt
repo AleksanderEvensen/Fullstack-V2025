@@ -22,4 +22,7 @@ data class ListingSearchRequestDto(
     val sortBy: String = "createdAt",
     val sortDirection: String = "DESC",
     val status: ListingStatus = ListingStatus.ACTIVE,
+    val latitude: Double? = null,
+    val longitude: Double? = null,
+    val radiusKm: Double = 5.0
 ) 

@@ -179,6 +179,22 @@ object ListingSpecification {
         }
     }
 
+    private fun withinRadius(latitude: Double?, longitude: Double?, radiusKm: Double?): Specification<Listing>? {
+        if (latitude == null || longitude == null || radiusKm == null) {
+            return null
+        }
+        return Specification { root, _, criteriaBuilder ->
+            val distanceInMeters = criteriaBuilder.function(
+                "ST_Distance_Sphere",
+                Double::class.java,
+                criteriaBuilder.function("POINT", Any::class.java, root.get<Double>("longitude"), root.get<Double>("latitude")),
+                criteriaBuilder.function("POINT", Any::class.java, criteriaBuilder.literal(longitude), criteriaBuilder.literal(latitude))
+            )
+            val radiusInMeters = radiusKm * 1000
+            criteriaBuilder.lessThanOrEqualTo(distanceInMeters, radiusInMeters)
+        }
+    }
+
     // Combine all specifications
     fun buildSpecification(
         title: String? = null,
@@ -197,6 +213,9 @@ object ListingSpecification {
         defectsCount: Int? = null,
         modificationsCount: Int? = null,
         status: ListingStatus = ListingStatus.ACTIVE
+        latitude: Double? = null,
+        longitude: Double? = null,
+        radiusKm: Double? = null
     ): Specification<Listing> {
         // If q parameter is provided, use it for title/description search
         // otherwise use individual title and description parameters
@@ -216,5 +235,6 @@ object ListingSpecification {
             .and(withDefectsCount(defectsCount))
             .and(withModificationsCount(modificationsCount))
             .and(withStatus(status))
+            .and(withinRadius(latitude, longitude, radiusKm))
     }
-} 
+}

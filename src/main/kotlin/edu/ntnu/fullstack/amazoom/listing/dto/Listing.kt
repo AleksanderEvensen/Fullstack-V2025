@@ -4,6 +4,7 @@ import edu.ntnu.fullstack.amazoom.common.dto.UserDto
 import edu.ntnu.fullstack.amazoom.listing.entity.ListingCondition
 import edu.ntnu.fullstack.amazoom.listing.entity.ListingStatus
 import io.swagger.v3.oas.annotations.media.Schema
+import jakarta.validation.constraints.NotBlank
 import java.time.LocalDateTime
 
 /**
@@ -32,6 +33,12 @@ data class ListingDto(
 
     @field:Schema(description = "Detailed description of the item", example = "MacBook Pro 2022: In excellent condition. Barely used.")
     val description: String,
+
+    @field:Schema(description = "GPS Latitude location of the listing", example = "63.124345", required = true)
+    val latitude: Double,
+
+    @field:Schema(description = "GPS Longitude location of the listing", example = "10.123456", required = true)
+    val longitude: Double,
 
     @field:Schema(description = "Information about the seller")
     var seller: UserDto,

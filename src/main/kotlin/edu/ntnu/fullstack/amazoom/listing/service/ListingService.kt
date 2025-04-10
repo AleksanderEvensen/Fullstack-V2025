@@ -238,7 +238,10 @@ class ListingService(
             model = searchRequest.model,
             sellerId = searchRequest.sellerId,
             defectsCount = searchRequest.defectsCount,
-            modificationsCount = searchRequest.modificationsCount
+            modificationsCount = searchRequest.modificationsCount,
+            latitude = searchRequest.latitude,
+            longitude = searchRequest.longitude,
+            radiusKm = searchRequest.radiusKm,
         )
 
         val listingsPage = listingRepository.findAll(specification, pageable)

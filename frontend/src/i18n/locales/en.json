@@ -47,7 +47,10 @@
       "category": "Category",
       "selectCategory": "Select category",
       "manufacturer": "Manufacturer",
-      "searchManufacturer": "Search by manufacturer..."
+      "searchManufacturer": "Search by manufacturer...",
+      "location": "Location",
+      "locationTitle": "Location Radius",
+      "radiusDisplay": "{distance} km"
     },
     "settings": "Settings",
     "goback": "Go Back"

@@ -12,6 +12,7 @@ import edu.ntnu.fullstack.amazoom.common.repository.UserRepository
 import edu.ntnu.fullstack.amazoom.listing.entity.Listing
 import edu.ntnu.fullstack.amazoom.listing.entity.ListingCondition
 import edu.ntnu.fullstack.amazoom.listing.repository.ListingRepository
+import jakarta.persistence.Tuple
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.ApplicationArguments
@@ -22,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
+import javax.xml.stream.Location
 
 @Component
 @DependsOn("flywayInitializer")
@@ -450,7 +452,7 @@ class DatabaseSeeder @Autowired constructor(
     ): Listing {
         val (title, manufacturer, price) = productInfo
         val originalPrice = if (condition != ListingCondition.NEW) price * (1.2 + (0..5).random() * 0.1) else null
-        
+        val (latitude, longitude) = randomLatLon();
         return Listing(
             title = title,
             category = category,
@@ -460,6 +462,8 @@ class DatabaseSeeder @Autowired constructor(
             originalPrice = originalPrice,
             description = "$title: $description",
             manufacturer = manufacturer,
+            latitude = latitude,
+            longitude = longitude,
             modelYear = if ((0..1).random() == 1) (2019..2025).random() else null,
             purchaseDate = if ((0..1).random() == 1) "${(2019..2023).random()}-${(1..12).random().toString().padStart(2, '0')}-${(1..28).random().toString().padStart(2, '0')}" else null,
             usageDuration = if ((0..1).random() == 1) "${(1..36).random()} months" else null,
@@ -497,4 +501,32 @@ class DatabaseSeeder @Autowired constructor(
             logger.info("Created ${bookmarks.size} bookmarks")
         }
     }
-} 
+
+    private fun randomLatLon(): Pair<Double, Double> {
+        val locations = mapOf(
+            "trondheim" to LocationBounds(
+                63.381237, 10.339532,
+                63.430249, 10.478325
+            ),
+            "oslo" to LocationBounds(
+                59.916931, 10.573178,
+                59.958125, 10.860918
+            )
+        )
+        // get random map location map key
+        val randomLocationName = locations.keys.random()
+        val location = locations[randomLocationName]!!;
+
+        val lat = Random().nextDouble(location.minLat, location.maxLat);
+        val lon = Random().nextDouble(location.minLon, location.maxLon);
+        return Pair(lat, lon);
+
+    }
+}
+
+data class LocationBounds(
+    val minLat: Double,
+    val minLon: Double,
+    val maxLat: Double,
+    val maxLon: Double
+)

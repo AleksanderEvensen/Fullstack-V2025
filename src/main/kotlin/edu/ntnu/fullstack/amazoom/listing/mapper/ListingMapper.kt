@@ -39,7 +39,9 @@ object ListingMapper {
             defects = request.defects ?: emptyList(),
             modifications = request.modifications ?: emptyList(),
             reasonForSelling = request.reasonForSelling,
-            images = request.images ?: emptyList()
+            images = request.images ?: emptyList(),
+            latitude = request.latitude,
+            longitude = request.longitude,
         )
     }
 
@@ -64,17 +66,19 @@ object ListingMapper {
             price = request.price,
             originalPrice = request.originalPrice ?: existing.originalPrice,
             description = request.description,
-            modelYear = request.modelYear ?: existing.modelYear,
-            manufacturer = request.manufacturer ?: existing.manufacturer,
-            model = request.model ?: existing.model,
-            serialNumber = request.serialNumber ?: existing.serialNumber,
-            purchaseDate = request.purchaseDate ?: existing.purchaseDate,
-            usageDuration = request.usageDuration ?: existing.usageDuration,
-            defects = request.defects ?: existing.defects,
-            modifications = request.modifications ?: existing.modifications,
-            reasonForSelling = request.reasonForSelling ?: existing.reasonForSelling,
-            images = request.images ?: existing.images,
+            modelYear = request.modelYear,
+            manufacturer = request.manufacturer,
+            model = request.model,
+            serialNumber = request.serialNumber,
+            purchaseDate = request.purchaseDate,
+            usageDuration = request.usageDuration,
+            defects = request.defects ?: emptyList(),
+            modifications = request.modifications ?: emptyList(),
+            reasonForSelling = request.reasonForSelling,
+            images = request.images ?: emptyList(),
             status = request.status ?: existing.status,
+            latitude = request.latitude,
+            longitude = request.longitude,
         )
     }
 
@@ -106,7 +110,9 @@ object ListingMapper {
             createdAt = entity.createdAt,
             images = entity.images,
             status = entity.status,
-            isBookmarked = false
+            isBookmarked = false,
+            latitude = entity.latitude,
+            longitude = entity.longitude,
         )
     }
 }
