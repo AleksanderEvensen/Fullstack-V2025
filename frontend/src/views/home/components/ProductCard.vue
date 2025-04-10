@@ -7,7 +7,6 @@ import { formatAddress, formatPictureUrl } from '@/lib/utils'
 import type { components } from '@/lib/api/schema'
 import { useTypedI18n } from '@/i18n'
 
-
 const { t } = useTypedI18n()
 
 type Product = components['schemas']['ListingDto']
@@ -15,8 +14,6 @@ type Product = components['schemas']['ListingDto']
 defineProps<{
   product: Product
 }>()
-
-
 </script>
 
 <template>
@@ -33,12 +30,16 @@ defineProps<{
         <div class="seller-info">
           <Avatar class="seller-avatar">
             <AvatarImage
-              :src="product.seller.profileImageUrl ? formatPictureUrl(product.seller.profileImageUrl) : ''"
-              :alt="product.seller.firstName"
+              :src="
+                product.seller.profileImageUrl
+                  ? formatPictureUrl(product.seller.profileImageUrl)
+                  : ''
+              "
+              :alt="product.seller.name"
             />
-            <AvatarFallback>{{ product.seller.firstName[0] }}</AvatarFallback>
+            <AvatarFallback>{{ product.seller.name[0] }}</AvatarFallback>
           </Avatar>
-          <span class="seller-name">{{ product.seller.firstName }}</span>
+          <span class="seller-name">{{ product.seller.name }}</span>
         </div>
         <div class="product-location" v-if="product.seller.address">
           {{ formatAddress(product.seller.address) }}
@@ -126,11 +127,11 @@ defineProps<{
 }
 
 @media (max-width: 1400px) {
-    .product-meta {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-    }
+  .product-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
 }
 
 .seller-info {
