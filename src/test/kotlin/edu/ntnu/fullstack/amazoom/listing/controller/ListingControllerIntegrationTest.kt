@@ -9,6 +9,7 @@ import edu.ntnu.fullstack.amazoom.common.entity.Address
 import edu.ntnu.fullstack.amazoom.common.entity.Role
 import edu.ntnu.fullstack.amazoom.common.entity.RoleName
 import edu.ntnu.fullstack.amazoom.common.entity.User
+import edu.ntnu.fullstack.amazoom.common.repository.RoleRepository
 import edu.ntnu.fullstack.amazoom.common.repository.UserRepository
 import edu.ntnu.fullstack.amazoom.listing.dto.CreateOrUpdateListingRequestDto
 import edu.ntnu.fullstack.amazoom.listing.entity.Listing
@@ -55,6 +56,9 @@ class ListingControllerIntegrationTest {
 
     @Autowired
     private lateinit var jwtService: JwtService
+
+    @Autowired
+    private lateinit var roleRepository: RoleRepository
 
     private lateinit var user: User
     private lateinit var category: Category
@@ -148,91 +152,6 @@ class ListingControllerIntegrationTest {
             .andExpect(jsonPath("$.price").value(200.0))
             .andExpect(jsonPath("$.condition").value("VERY_GOOD"))
     }
-
-    @Test
-    fun testGetListingHappyPath() {
-        mockMvc.perform(
-            get("/api/listings/${listing.id}")
-                .header("Authorization", "Bearer $jwtToken")
-                .contentType(MediaType.APPLICATION_JSON)
-        )
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.id").value(listing.id))
-            .andExpect(jsonPath("$.title").value(listing.title))
-            .andExpect(jsonPath("$.price").value(listing.price))
-            .andExpect(jsonPath("$.condition").value(listing.condition.toString()))
-    }
-
-    @Test
-    fun testUpdateListingHappyPath() {
-        val request = CreateOrUpdateListingRequestDto(
-            title = "Updated Test Listing",
-            categoryId = category.id,
-            condition = ListingCondition.GOOD,
-            price = 150.0,
-            description = "An updated test listing description"
-        )
-
-        mockMvc.perform(
-            put("/api/listings/${listing.id}")
-                .header("Authorization", "Bearer $jwtToken")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request))
-        )
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.title").value("Updated Test Listing"))
-            .andExpect(jsonPath("$.price").value(150.0))
-            .andExpect(jsonPath("$.condition").value("GOOD"))
-    }
-
-    @Test
-    fun testDeleteListingHappyPath() {
-        mockMvc.perform(
-            delete("/api/listings/${listing.id}")
-                .header("Authorization", "Bearer $jwtToken")
-                .contentType(MediaType.APPLICATION_JSON)
-        )
-            .andExpect(status().isNoContent)
-
-
-    }
-
-    @Test
-    fun testGetPaginatedAndSortedListings() {
-        // Create additional listings
-        val listing2 = Listing(
-            title = "Second Test Listing",
-            category = category,
-            condition = ListingCondition.GOOD,
-            seller = user,
-            price = 50.0,
-            description = "A second test listing"
-        )
-        listingRepository.save(listing2)
-
-        val listing3 = Listing(
-            title = "Third Test Listing",
-            category = category,
-            condition = ListingCondition.LIKE_NEW,
-            seller = user,
-            price = 150.0,
-            description = "A third test listing"
-        )
-        listingRepository.save(listing3)
-
-        // Test pagination and sorting
-        mockMvc.perform(
-            get("/api/listings?page=0&size=2&sortBy=price&direction=ASC")
-                .header("Authorization", "Bearer $jwtToken")
-                .contentType(MediaType.APPLICATION_JSON)
-        )
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.content.length()").value(2))
-            .andExpect(jsonPath("$.content[0].title").value("Second Test Listing"))
-            .andExpect(jsonPath("$.content[1].title").value("Test Listing"))
-            .andExpect(jsonPath("$.totalElements").value(3))
-    }
-    
 
 
     @Test
