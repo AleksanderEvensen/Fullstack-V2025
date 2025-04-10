@@ -79,7 +79,7 @@ class VippsService(
      * Gets the user info from Vipps API.
      *
      * @param accessToken The access token from the auth flow
-     * @return A resilt of the user info
+     * @return A result of the user info
      */
     fun getUserInfo(accessToken: String): Result<VippsUserInfoResponse> {
         return kotlin.runCatching {
