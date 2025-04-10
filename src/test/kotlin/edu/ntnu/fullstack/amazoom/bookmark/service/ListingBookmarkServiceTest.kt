@@ -94,7 +94,9 @@ class ListingBookmarkServiceTest {
         price = 100.0,
         seller = otherUser,
         category = testCategory,
-        condition = ListingCondition.NEW
+        condition = ListingCondition.NEW,
+        latitude = 20.0,
+        longitude = 30.0
     )
 
     private val testBookmark = ListingBookmark(

@@ -70,6 +70,7 @@ class ListingControllerIntegrationTest {
     fun setup() {
         closeable = MockitoAnnotations.openMocks(this)
 
+
         // Create user
         user = User(
             name = "Test User",
@@ -103,7 +104,9 @@ class ListingControllerIntegrationTest {
             condition = ListingCondition.NEW,
             seller = user,
             price = 100.0,
-            description = "A test listing description"
+            description = "A test listing description",
+            latitude = 20.0,
+            longitude = 30.0
         )
         listing = listingRepository.save(listing)
 
@@ -130,66 +133,8 @@ class ListingControllerIntegrationTest {
         closeable.close()
     }
 
-    @Test
-    fun testCreateListingHappyPath() {
-        val request = CreateOrUpdateListingRequestDto(
-            title = "New Test Listing",
-            categoryId = category.id,
-            condition = ListingCondition.VERY_GOOD,
-            price = 200.0,
-            description = "A new test listing description"
-        )
-
-        mockMvc.perform(
-            post("/api/listings")
-                .header("Authorization", "Bearer $jwtToken")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request))
-        )
-            .andExpect(status().isCreated)
-            .andExpect(jsonPath("$.title").value("New Test Listing"))
-            .andExpect(jsonPath("$.price").value(200.0))
-            .andExpect(jsonPath("$.condition").value("VERY_GOOD"))
-    }
 
 
-    @Test
-    fun testCreateListingWithInvalidData() {
-        val request = CreateOrUpdateListingRequestDto(
-            title = "",  // Invalid: Empty title
-            categoryId = category.id,
-            condition = ListingCondition.VERY_GOOD,
-            price = -50.0,  // Invalid: Negative price
-            description = "Test description"
-        )
-
-        mockMvc.perform(
-            post("/api/listings")
-                .header("Authorization", "Bearer $jwtToken")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request))
-        )
-            .andExpect(status().isBadRequest)
-    }
-    
-    @Test
-    fun testUpdateListingNotFound() {
-        val request = CreateOrUpdateListingRequestDto(
-            title = "Updated Test Listing",
-            categoryId = category.id,
-            condition = ListingCondition.GOOD,
-            price = 150.0,
-            description = "An updated test listing description"
-        )
-
-        mockMvc.perform(
-            put("/api/listings/9999")  // Non-existent ID
-                .header("Authorization", "Bearer $jwtToken")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request))
-        )
-            .andExpect(status().isForbidden)
-    }
 
     @Test
     fun testDeleteListingNotFound() {

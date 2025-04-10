@@ -83,7 +83,10 @@ class ListingServiceTest {
         price = 100.0,
         seller = testUser,
         category = testCategory,
-        condition = ListingCondition.NEW
+        condition = ListingCondition.NEW,
+        status = ListingStatus.ACTIVE,
+        latitude = 20.0,
+        longitude = 30.0,
     )
 
     @BeforeEach
@@ -98,7 +101,9 @@ class ListingServiceTest {
             categoryId = 1L,
             condition = ListingCondition.NEW,
             price = 100.0,
-            description = "A new listing description"
+            description = "A new listing description",
+            latitude = 20.0,
+            longitude = 30.0
         )
         `when`(categoryRepository.findById(1L)).thenReturn(Optional.of(testCategory))
         `when`(listingRepository.save(any())).thenReturn(testListing)
@@ -122,7 +127,9 @@ class ListingServiceTest {
             categoryId = 1L,
             condition = ListingCondition.NEW,
             price = 100.0,
-            description = "A new listing description"
+            description = "A new listing description",
+            latitude = 20.0,
+            longitude = 30.0
         )
         `when`(categoryRepository.findById(1L)).thenReturn(Optional.empty())
 
@@ -164,7 +171,9 @@ class ListingServiceTest {
             categoryId = 1L,
             condition = ListingCondition.GOOD,
             price = 150.0,
-            description = "Updated description"
+            description = "Updated description",
+            latitude = 20.0,
+            longitude = 30.0
         )
         `when`(listingRepository.findById(1L)).thenReturn(Optional.of(testListing))
         `when`(categoryRepository.findById(1L)).thenReturn(Optional.of(testCategory))
@@ -196,7 +205,9 @@ class ListingServiceTest {
             categoryId = 1L,
             condition = ListingCondition.GOOD,
             price = 150.0,
-            description = "Updated description"
+            description = "Updated description",
+            latitude = 20.0,
+            longitude = 30.0
         )
         `when`(listingRepository.findById(1L)).thenReturn(Optional.empty())
 
@@ -214,7 +225,9 @@ class ListingServiceTest {
             categoryId = 1L,
             condition = ListingCondition.GOOD,
             price = 150.0,
-            description = "Updated description"
+            description = "Updated description",
+            latitude = 20.0,
+            longitude = 30.0
         )
         `when`(listingRepository.findById(1L)).thenReturn(Optional.of(testListing))
         `when`(categoryRepository.findById(1L)).thenReturn(Optional.empty())

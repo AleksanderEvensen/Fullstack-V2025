@@ -212,7 +212,7 @@ object ListingSpecification {
         sellerId: Long? = null,
         defectsCount: Int? = null,
         modificationsCount: Int? = null,
-        status: ListingStatus = ListingStatus.ACTIVE
+        status: ListingStatus = ListingStatus.ACTIVE,
         latitude: Double? = null,
         longitude: Double? = null,
         radiusKm: Double? = null

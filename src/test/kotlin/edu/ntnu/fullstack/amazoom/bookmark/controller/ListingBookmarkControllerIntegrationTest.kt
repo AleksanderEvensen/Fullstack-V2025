@@ -103,7 +103,9 @@ class ListingBookmarkControllerIntegrationTest {
             condition = ListingCondition.NEW,
             seller = sellerUser,
             price = 100.0,
-            description = "A test listing description"
+            description = "A test listing description",
+            latitude = 20.0,
+            longitude = 30.0,
         )
         listing = listingRepository.save(listing)
 
@@ -214,7 +216,9 @@ class ListingBookmarkControllerIntegrationTest {
             condition = ListingCondition.NEW,
             seller = user, // Same as authenticated user
             price = 200.0,
-            description = "My own listing that I can't bookmark"
+            description = "My own listing that I can't bookmark",
+            latitude = 10.0,
+            longitude = 20.0,
         )
         listingRepository.save(ownListing)
 
