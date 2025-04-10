@@ -234,7 +234,6 @@ class ListingRepositoryTest {
         // Verify both users' listings are in the result
         assertTrue(allListings.any { it.seller.id == user.id })
         assertTrue(allListings.any { it.seller.id == otherUser.id })
-        entityManager.flush()
 
     }
 } 
