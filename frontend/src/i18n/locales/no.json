@@ -58,6 +58,8 @@
     "notSpecified": "Lokasjon ikke spesifisert"
   },
   "auth": {
+    "loginTab": "Logg inn",
+    "registerTab": "Registrer",
     "createAccount": "Opprett konto",
     "fillOutForm": "Fyll ut skjemaet nedenfor for å opprette kontoen din",
     "steps": {
@@ -103,6 +105,7 @@
       "button": "Logg inn",
       "noAccount": "Har du ikke en konto?",
       "registerLink": "Registrer deg",
+      "vipps": "Logg inn med Vipps",
       "validation": {
         "passwordRequired": "Passord er påkrevd"
       }

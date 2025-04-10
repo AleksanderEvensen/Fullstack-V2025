@@ -118,7 +118,9 @@ export const useAuthStore = defineStore('auth', () => {
     if (tokenFromCookie) {
       token.value = tokenFromCookie
       localStorage.setItem(TOKEN, token.value)
-    } else if (token.value) {
+    }
+
+    if (token.value) {
       fetchUser().catch(() => logout())
     }
 

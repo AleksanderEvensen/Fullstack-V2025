@@ -2,10 +2,12 @@ package edu.ntnu.fullstack.amazoom.auth.service
 
 import edu.ntnu.fullstack.amazoom.Utils
 import edu.ntnu.fullstack.amazoom.auth.config.VippsProperties
+import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
+import java.net.URI
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
@@ -29,13 +31,20 @@ class VippsService(
         Base64.Default.encode("${vippsProperties.clientId}:${vippsProperties.clientSecret}".encodeToByteArray());
     private val logger = LoggerFactory.getLogger(VippsService::class.java)
 
-    fun getToken(code: String): Result<VippsTokenResponse> {
+
+    /**
+     * Gets the token from Vipps given the code from auth flow and a redirect URL.
+     *
+     * @param code The code from the auth flow
+     * @param redirectUrl The redirect URL for vipps that was also used in the auth flow
+     * @return A result of the token response
+     */
+    fun getToken(code: String, redirectUrl: String): Result<VippsTokenResponse> {
         val requestBody = Utils.SearchParams(
             mapOf(
                 "grant_type" to "authorization_code",
                 "code" to code,
-                // This is unused, but required by the Vipps API
-                "redirect_uri" to "http://localhost:8080/api/auth/vipps/callback",
+                "redirect_uri" to redirectUrl,
 
                 // These are optional, but we include them for maximum support
                 "client_id" to vippsProperties.clientId,
@@ -43,7 +52,7 @@ class VippsService(
             )
         );
         logger.debug("Requesting token from Vipps with code: $code");
-
+        logger.debug("Request body: $requestBody");
         return kotlin.runCatching {
             vippsApi.post()
                 .uri("/access-management-1.0/access/oauth2/token")
@@ -66,6 +75,12 @@ class VippsService(
         }
     }
 
+    /**
+     * Gets the user info from Vipps API.
+     *
+     * @param accessToken The access token from the auth flow
+     * @return A resilt of the user info
+     */
     fun getUserInfo(accessToken: String): Result<VippsUserInfoResponse> {
         return kotlin.runCatching {
             vippsApi.get()
@@ -88,15 +103,38 @@ class VippsService(
         }
     }
 
-    fun createVippsAuthUrl(redirect_url: String): String {
+    /**
+     * Creates the URL for the Vipps authentication redirect.
+     *
+     * @param redirectUrl The URL Vipps should redirect to after authentication.
+     * @return The URL for to redirect to.
+     */
+    fun createVippsAuthUrl(redirectUrl: String): String {
         val params = Utils.SearchParams(mapOf(
             "client_id" to vippsProperties.clientId,
             "response_type" to "code",
-            "redirect_uri" to redirect_url,
+            "redirect_uri" to redirectUrl,
             "scope" to "openid nin name email address phoneNumber",
             "state" to "12345"
         ));
         return "${vippsProperties.baseUrl}/access-management-1.0/access/oauth2/auth?${params}"
+    }
+
+    /**
+     * Creates the URL for the Vipps authentication redirect based on the request host.
+     *
+     * @param request The current request
+     * @return The URL for to redirect to.
+     */
+    fun createVippsCallbackUrl(request: HttpServletRequest): String {
+        val requestUrl = request.requestURL.toString();
+        val url = URI(requestUrl).toURL();
+        val sb = StringBuilder("${url.protocol}://${url.host}");
+        if (url.port != -1) {
+            sb.append(":${url.port}");
+        }
+        sb.append("/api/auth/vipps/callback");
+        return sb.toString();
     }
 }
 
@@ -141,7 +179,7 @@ data class VippsTokenResponse(
 data class VippsTokenErrorResponse(
     val error: String,
     val error_code: Int,
-    val error_debug: String
+    val error_debug: String?
 );
 
 class VippsTokenException(
