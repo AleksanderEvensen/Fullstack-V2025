@@ -21,6 +21,7 @@ import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
 import org.springframework.context.annotation.DependsOn
 import org.springframework.context.annotation.Profile
+import org.springframework.data.domain.Pageable
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -62,6 +63,8 @@ class DatabaseSeeder @Autowired constructor(
         val listings = createListings(users, categories)
         createBookmarks(users, listings)
         createConversation(users[0], users[1], adminListing)
+        createConversation(users[0], users[3], adminListing)
+
 
         logger.info("Database seeding completed!")
     }
@@ -100,11 +103,12 @@ class DatabaseSeeder @Autowired constructor(
     }
 
     private fun createConversation(seller: User, buyer: User, listing: Listing) {
+        val pageable = Pageable.unpaged()
         val existingMessages = chatMessageRepository.findMessagesBetweenUsersForListing(
-            seller.id, buyer.id, listing.id
+            seller.id, buyer.id, listing.id, pageable
         )
 
-        if (!existingMessages.isEmpty()) {
+        if (!existingMessages.isEmpty) {
             logger.info("Chat messages already exist between users. Skipping conversation creation.")
             return
         }
@@ -297,6 +301,15 @@ class DatabaseSeeder @Autowired constructor(
                     roles = mutableSetOf(userRole, adminRole)
                 )
             )
+
+            val defaultUser = User(
+                name = "default default",
+                email = "default@example.com",
+                password = passwordEncoder.encode("password123"),
+                phoneNumber = "34567892",
+                address = createAddress("Default Street", "1", "0000", "Oslo", "Norway"),
+                roles = mutableSetOf(userRole)
+            )
             
             // Create regular users
             val norwegianCities = listOf(
@@ -341,7 +354,7 @@ class DatabaseSeeder @Autowired constructor(
                 )
             }
             
-            val allUsers = adminUsers + regularUsers
+            val allUsers = adminUsers + defaultUser + regularUsers
             return userRepository.saveAll(allUsers)
         }
         return userRepository.findAll()

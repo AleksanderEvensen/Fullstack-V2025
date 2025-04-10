@@ -1,6 +1,8 @@
 package edu.ntnu.fullstack.amazoom.chat.service
 
-import edu.ntnu.fullstack.amazoom.chat.dto.*
+import edu.ntnu.fullstack.amazoom.chat.dto.ChatMessageDto
+import edu.ntnu.fullstack.amazoom.chat.dto.ChatMessageRequestDto
+import edu.ntnu.fullstack.amazoom.chat.dto.ConversationSummaryDto
 import edu.ntnu.fullstack.amazoom.chat.entity.ChatMessage
 import edu.ntnu.fullstack.amazoom.chat.exception.InvalidMessageException
 import edu.ntnu.fullstack.amazoom.chat.exception.MessageAccessDeniedException
@@ -8,7 +10,6 @@ import edu.ntnu.fullstack.amazoom.chat.exception.MessageTooLongException
 import edu.ntnu.fullstack.amazoom.chat.exception.RecipientNotFoundException
 import edu.ntnu.fullstack.amazoom.chat.mapper.ChatMessageMapper
 import edu.ntnu.fullstack.amazoom.chat.repository.ChatMessageRepository
-import edu.ntnu.fullstack.amazoom.common.entity.User
 import edu.ntnu.fullstack.amazoom.common.mapper.UserMapper
 import edu.ntnu.fullstack.amazoom.common.service.UserService
 import edu.ntnu.fullstack.amazoom.listing.exception.ListingNotFoundException
@@ -17,7 +18,6 @@ import edu.ntnu.fullstack.amazoom.listing.service.ListingService
 import jakarta.transaction.Transactional
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.web.util.HtmlUtils
@@ -25,7 +25,7 @@ import java.time.Instant
 
 /**
  * Service class for handling chat messages.
- * Provides methods for sending messages, retrieving conversations, and long polling for new messages.
+ * Provides methods for sending messages and retrieving conversations.
  */
 @Service
 class ChatMessageService(
@@ -36,70 +36,69 @@ class ChatMessageService(
 ) {
     private val logger = LoggerFactory.getLogger(ChatMessageService::class.java)
     private val MAX_MESSAGE_LENGTH = 1000
-    private val LONG_POLL_TIMEOUT = 30000L
-    private val POLLING_SLEEP_INTERVAL = 500L
 
     /**
-     * Gets unique conversations for the current user.
+     * Gets conversations for the current user with pagination.
+     *
+     * @param pageable Pagination information
+     * @return Page of conversation summaries
      */
-    fun getUniqueConversations(): List<ConversationSummaryDto> {
+    fun getConversations(pageable: Pageable): Page<ConversationSummaryDto> {
         val currentUser = userService.getCurrentUser()
-        val currentUserId = currentUser.id
 
-        logger.debug("Getting unique conversations for user: {}", currentUserId)
+        logger.debug("Getting paginated conversations for user: {}", currentUser.id)
 
-        val uniqueConversations = chatMessageRepository.findUniqueConversationIds(currentUserId)
+        return chatMessageRepository.findConversationsByUserId(currentUser.id, pageable)
+            .map { conv ->
+                val otherUser = userService.getUserById(conv.otherUserId)
+                val listing = listingService.getListing(conv.listingId)
 
-        return uniqueConversations.map { conversation ->
-            val otherUserId = conversation.otherUserId
-            val listingId = conversation.listingId
-
-            val otherUser = userService.getUserById(otherUserId)
-            val listing = listingService.getListing(listingId)
-
-            val latestMessage = chatMessageRepository.findMessagesBetweenUsersForListing(
-                currentUserId, otherUserId, listingId
-            ).firstOrNull()
-
-            val lastMessageDto = latestMessage?.let {
-                LastMessageDto(
-                    content = it.content,
-                    timestamp = it.timestamp,
+                ConversationSummaryDto(
+                    user = UserMapper.toDto(otherUser),
+                    listingId = conv.listingId,
+                    listingTitle = listing.title,
+                    lastMessage = conv.lastMessage
                 )
             }
-
-            ConversationSummaryDto(
-                user = UserMapper.toDto(otherUser),
-                listingId = listingId,
-                listingTitle = listing.title,
-                lastMessage = lastMessageDto
-            )
-        }
     }
 
     /**
-     * Gets messages for a specific conversation.
+     * Gets messages for a specific conversation between current user, another user, and a listing,
+     * with pagination.
+     *
+     * @param otherUserId ID of the other user in the conversation
+     * @param listingId ID of the listing the conversation is about
+     * @param pageable Pagination information
+     * @return Page of chat messages
      */
     fun getMessagesForConversation(
         otherUserId: Long,
-        listingId: Long
-    ): List<ChatMessageDto> {
+        listingId: Long,
+        pageable: Pageable
+    ): Page<ChatMessageDto> {
         val userId = userService.getCurrentUser().id
 
-        logger.debug("Getting messages between users {} and {} for listing: {}",
+        logger.debug("Getting paginated messages between users {} and {} for listing: {}",
             userId, otherUserId, listingId)
 
-        val messages = chatMessageRepository.findMessagesBetweenUsersForListing(
+        return chatMessageRepository.findMessagesBetweenUsersForListing(
             userId,
             otherUserId,
-            listingId
-        )
-
-        return messages.map { ChatMessageMapper.toDto(it) }
+            listingId,
+            pageable
+        ).map { ChatMessageMapper.toDto(it) }
     }
 
     /**
-     * Sends a new message.
+     * Sends a new message from current user to other user.
+     *
+     * @param request The message request
+     * @return The sent message
+     * @throws InvalidMessageException if the message content is invalid
+     * @throws MessageTooLongException if the message is too long
+     * @throws RecipientNotFoundException if the recipient does not exist
+     * @throws ListingNotFoundException if the listing does not exist
+     * @throws MessageAccessDeniedException if the user is not allowed to send messages in this conversation
      */
     @Transactional
     fun sendMessage(request: ChatMessageRequestDto): ChatMessageDto {
@@ -119,7 +118,7 @@ class ChatMessageService(
             throw RecipientNotFoundException(request.recipientId)
         }
 
-        val listing = listingRepository.findById(request.listingId).orElseThrow{
+        val listing = listingRepository.findById(request.listingId).orElseThrow {
             ListingNotFoundException()
         }
 
@@ -143,34 +142,14 @@ class ChatMessageService(
         return ChatMessageMapper.toDto(savedMessage)
     }
 
-    fun checkForNewMessages(
-        user: User,
-        lastMessageTimestamp: Instant,
-        otherUserId: Long,
-        listingId: Long
-    ): List<ChatMessageDto> {
-        val newMessages = chatMessageRepository.findNewMessagesForConversation(
-            currentUserId = user.id,
-            otherUserId = otherUserId,
-            listingId = listingId,
-            since = lastMessageTimestamp
-        )
-
-        if (newMessages.isNotEmpty()) {
-            logger.debug("Found {} new messages for user: {}", newMessages.size, user.email)
-        }
-
-        return newMessages.map { ChatMessageMapper.toDto(it) }
-    }
-
-    /**
-     * Gets the current user.
-     */
-    fun getCurrentUser() = userService.getCurrentUser()
-
     /**
      * Verifies that a conversation between users about a listing is valid.
      * At least one of the users must be the seller of the listing.
+     *
+     * @param senderId ID of the message sender
+     * @param recipientId ID of the message recipient
+     * @param listingId ID of the listing
+     * @throws MessageAccessDeniedException if the conversation is invalid
      */
     private fun verifyConversationAccess(senderId: Long, recipientId: Long, listingId: Long) {
         val listing = listingService.getListing(listingId)

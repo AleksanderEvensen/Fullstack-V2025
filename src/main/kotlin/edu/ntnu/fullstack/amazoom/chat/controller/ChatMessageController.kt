@@ -4,49 +4,91 @@ import edu.ntnu.fullstack.amazoom.chat.dto.ChatMessageDto
 import edu.ntnu.fullstack.amazoom.chat.dto.ChatMessageRequestDto
 import edu.ntnu.fullstack.amazoom.chat.dto.ConversationSummaryDto
 import edu.ntnu.fullstack.amazoom.chat.service.ChatMessageService
-import edu.ntnu.fullstack.amazoom.common.service.UserService
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.slf4j.LoggerFactory
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.context.request.async.DeferredResult
-import java.time.Instant
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 
+/**
+ * REST Controller for handling chat messages.
+ * Provides endpoints for sending messages and retrieving conversations.
+ * conversations are between the current user and other users about a given listing.
+ */
 @RestController
 @RequestMapping("/api/chat")
 @Tag(name = "Chat", description = "Operations for chat messaging")
 class ChatController(
-    private val chatMessageService: ChatMessageService,
-    private val userService: UserService
+    private val chatMessageService: ChatMessageService
 ) {
     private val logger = LoggerFactory.getLogger(ChatController::class.java)
-    private val LONG_POLL_TIMEOUT = 30000L
 
     /**
      * Gets all conversations for the current user.
      */
+    @Operation(
+        summary = "Get user conversations",
+        description = "Retrieves all conversations for the current user"
+    )
+    @ApiResponses(
+        ApiResponse(
+            responseCode = "200",
+            description = "Conversations retrieved successfully",
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "User not authenticated"
+        )
+    )
     @GetMapping("/conversations")
-    fun getConversations(): ResponseEntity<List<ConversationSummaryDto>> {
-        val conversations = chatMessageService.getUniqueConversations()
-
+    fun getConversations(
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "20") size: Int
+    ): ResponseEntity<Page<ConversationSummaryDto>> {
+        val pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "timestamp"))
+        val conversations = chatMessageService.getConversations(pageable)
         return ResponseEntity.ok(conversations)
     }
 
     /**
      * Gets messages for a specific conversation.
      */
+    @Operation(
+        summary = "Get conversation messages",
+        description = "Retrieves messages between the current user and another user for a specific listing"
+    )
+    @ApiResponses(
+        ApiResponse(
+            responseCode = "200",
+            description = "Messages retrieved successfully",
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "User not authenticated"
+        )
+    )
     @GetMapping("/conversation/{listingId}/{otherUserId}")
     fun getConversation(
         @PathVariable listingId: Long,
-        @PathVariable otherUserId: Long
-    ): ResponseEntity<List<ChatMessageDto>> {
+        @PathVariable otherUserId: Long,
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "20") size: Int
+    ): ResponseEntity<Page<ChatMessageDto>> {
+        val pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "timestamp"))
+
         return ResponseEntity.ok(
             chatMessageService.getMessagesForConversation(
                 otherUserId,
-                listingId
+                listingId,
+                pageable
             )
         )
     }
@@ -54,62 +96,32 @@ class ChatController(
     /**
      * Sends a new message.
      */
+    @Operation(
+        summary = "Send message",
+        description = "Sends a new message to another user about a listing"
+    )
+    @ApiResponses(
+        ApiResponse(
+            responseCode = "200",
+            description = "Message sent successfully",
+            content = [Content(schema = Schema(implementation = ChatMessageDto::class))]
+        ),
+        ApiResponse(
+            responseCode = "400",
+            description = "Invalid message"
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "User not authenticated"
+        ),
+        ApiResponse(
+            responseCode = "404",
+            description = "Recipient or listing not found"
+        )
+    )
     @PostMapping("/send")
     fun sendMessage(@Valid @RequestBody request: ChatMessageRequestDto): ResponseEntity<ChatMessageDto> {
         val message = chatMessageService.sendMessage(request)
         return ResponseEntity.ok(message)
-    }
-
-    /**
-     * Long polling endpoint to receive new messages for a specific conversation.
-     */
-    @GetMapping("/poll/{listingId}/{otherUserId}")
-    fun pollForMessages(
-        @PathVariable otherUserId: Long,
-        @PathVariable listingId: Long,
-        @RequestParam("lastTimestamp") lastTimestamp: Long
-    ): DeferredResult<ResponseEntity<List<ChatMessageDto>>> {
-        val result = DeferredResult<ResponseEntity<List<ChatMessageDto>>>(30000L) // 30 seconds timeout
-        val lastMessageTime = Instant.ofEpochMilli(lastTimestamp)
-
-        val currentUser = userService.getCurrentUser()
-
-        logger.debug("Starting poll for user: {}, listingId: {}, otherUserId: {}",
-            currentUser.email, listingId, otherUserId)
-
-        val executor = Executors.newSingleThreadScheduledExecutor()
-
-        val task = object : Runnable {
-            override fun run() {
-                try {
-                    val messages = chatMessageService.checkForNewMessages(
-                        currentUser,
-                        lastMessageTime,
-                        otherUserId,
-                        listingId
-                    )
-
-                    if (messages.isNotEmpty()) {
-                        result.setResult(ResponseEntity.ok(messages))
-                        return
-                    }
-
-                    if (!result.isSetOrExpired) {
-                        executor.schedule(this, 500, TimeUnit.MILLISECONDS)
-                    }
-                } catch (e: Exception) {
-                    logger.error("Error checking for messages: {}", e.message, e)
-                    result.setErrorResult(ResponseEntity.status(500).body(emptyList<ChatMessageDto>()))
-                }
-            }
-        }
-
-        executor.schedule(task, 0, TimeUnit.MILLISECONDS)
-
-        result.onCompletion {
-            executor.shutdown()
-        }
-
-        return result
     }
 }
