@@ -1,5 +1,6 @@
 package edu.ntnu.fullstack.amazoom.listing.entity
 
+import edu.ntnu.fullstack.amazoom.bookmark.entity.ListingBookmark
 import edu.ntnu.fullstack.amazoom.common.entity.User
 import edu.ntnu.fullstack.amazoom.category.entity.Category
 import edu.ntnu.fullstack.amazoom.listing.dto.ListingDto
@@ -39,7 +40,8 @@ data class Listing(
 
     val originalPrice: Double? = null,
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(nullable = false)
+    @Lob
     val description: String,
 
     // Product Details
@@ -71,6 +73,9 @@ data class Listing(
     @CollectionTable(name = "listing_images", joinColumns = [JoinColumn(name = "listing_id")])
     @Column(name = "image_url")
     val images: List<String> = emptyList(),
+
+    @OneToMany(mappedBy = "listing", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val bookmarks: List<ListingBookmark> = mutableListOf(),
 
     // creation and update timestamps
     @Column(name = "created_at", updatable = false)

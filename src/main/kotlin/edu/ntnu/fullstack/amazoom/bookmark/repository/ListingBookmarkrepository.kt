@@ -13,4 +13,7 @@ interface ListingBookmarkRepository : JpaRepository<ListingBookmark, Long> {
 
     @Query("SELECT lb FROM ListingBookmark lb WHERE lb.user.id = :userId")
     fun findAllForUser(userId: Long): List<ListingBookmark>
+    fun findByListingId(listingId: Long): ListingBookmark?
+
+    fun findByUserIdAndListingId(userId: Long, listingId: Long): ListingBookmark?
 }

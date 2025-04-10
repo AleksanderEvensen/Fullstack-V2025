@@ -1,5 +1,6 @@
 package edu.ntnu.fullstack.amazoom.common.entity
 
+import edu.ntnu.fullstack.amazoom.bookmark.entity.ListingBookmark
 import edu.ntnu.fullstack.amazoom.common.dto.AddressDto
 import edu.ntnu.fullstack.amazoom.common.dto.FullUserDto
 import edu.ntnu.fullstack.amazoom.common.dto.UserDto
@@ -50,6 +51,10 @@ class User(
         inverseJoinColumns = [JoinColumn(name = "role_id")]
     )
     val roles: MutableSet<Role> = mutableSetOf(),
+
+
+    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val bookmarks: List<ListingBookmark> = mutableListOf(),
 
     @Version
     val version: Long = 0,

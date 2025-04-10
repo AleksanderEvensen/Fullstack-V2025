@@ -67,7 +67,7 @@ data class ListingDto(
     val createdAt: LocalDateTime,
 
     @field:Schema(description = "Is the listing bookmarked by the user", example = "true")
-    val isBookmarked: Boolean,
+    var isBookmarked: Boolean,
 
     @field:Schema(description = "Listing status", example = "ACTIVE")
     val status: ListingStatus,

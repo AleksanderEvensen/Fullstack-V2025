@@ -106,6 +106,14 @@ class UserService(
     }
 
     /**
+     * Get authentication status of current request
+     */
+    fun isAuthenticated(): Boolean {
+        val authentication = SecurityContextHolder.getContext().authentication
+        return authentication != null && authentication.isAuthenticated
+    }
+
+    /**
      * Gets a user by their ID.
      *
      * @param id The ID of the user to retrieve

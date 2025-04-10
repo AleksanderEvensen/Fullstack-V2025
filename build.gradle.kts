@@ -23,6 +23,7 @@ repositories {
 }
 
 val jjwtVersion = "0.12.6"
+val mockitoVersion = "5.17.0"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -49,8 +50,10 @@ dependencies {
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+	testImplementation("org.mockito:mockito-core:$mockitoVersion")
+	testImplementation("org.mockito:mockito-junit-jupiter:$mockitoVersion")
+	testImplementation("org.mockito:mockito-inline:5.2.0")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-
 }
 
 kotlin {
@@ -67,6 +70,10 @@ allOpen {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+	systemProperty("spring.profiles.active", "test")
+
+	// Configure Mockito agent for JDK compatibility - simplified approach
+	jvmArgs("-XX:+EnableDynamicAgentLoading")
 }
 
 tasks.withType<KotlinCompile>().configureEach {

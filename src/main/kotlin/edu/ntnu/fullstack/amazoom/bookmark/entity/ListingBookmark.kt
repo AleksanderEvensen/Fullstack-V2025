@@ -9,17 +9,20 @@ import jakarta.persistence.*
  * Associates a user with a listing they have bookmarked.
  */
 @Entity
-@Table(name = "listing_bookmarks", uniqueConstraints = [UniqueConstraint(columnNames = ["listing_id", "user_id"])])
+@Table(
+    name = "listing_bookmarks",
+    uniqueConstraints = [UniqueConstraint(columnNames = ["listing_id", "user_id"])]
+)
 data class ListingBookmark(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L,
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = [CascadeType.REMOVE])
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "listing_id", nullable = false)
     val listing: Listing,
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = [CascadeType.REMOVE])
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     val user: User
 )

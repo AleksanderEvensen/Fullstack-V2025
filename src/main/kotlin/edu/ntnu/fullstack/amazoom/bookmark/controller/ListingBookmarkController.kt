@@ -29,7 +29,7 @@ class ListingBookmarkController(private val listingBookmarkService: ListingBookm
     /**
      * Creates a new bookmark for a listing.
      *
-     * @param request The request containing the listing ID to bookmark
+     * @param listingId The ID of the listing to bookmark
      * @return The created bookmark
      */
     @Operation(
@@ -58,23 +58,23 @@ class ListingBookmarkController(private val listingBookmarkService: ListingBookm
             content = [Content(schema = Schema(implementation = ErrorResponseDto::class))]
         )
     )
-    @PostMapping
-    fun createBookmark(@Valid @RequestBody request: CreateListingBookmarkRequestDto): ResponseEntity<ListingBookmarkResponseDto> {
-        logger.debug("REST request to create bookmark for listing: {}", request.listingId)
+    @PostMapping("/{listingId}")
+    fun createBookmark(@PathVariable listingId: Long): ResponseEntity<ListingBookmarkResponseDto> {
+        logger.debug("REST request to create bookmark for listing: {}", listingId)
 
-        val response = listingBookmarkService.createBookmark(request)
+        val response = listingBookmarkService.createBookmarkByListingId(listingId)
         return ResponseEntity.status(HttpStatus.CREATED).body(response)
     }
 
     /**
-     * Deletes a bookmark by its ID.
+     * Deletes a bookmark by its listing ID.
      *
-     * @param id The ID of the bookmark to delete
+     * @param listingId The ID of the listing to remove from bookmarks
      * @return A no content response
      */
     @Operation(
         summary = "Delete a bookmark",
-        description = "Deletes a bookmark by its ID. Users can only delete their own bookmarks."
+        description = "Deletes a bookmark by its listing ID. Users can only delete their own bookmarks."
     )
     @ApiResponses(
         ApiResponse(
@@ -92,11 +92,10 @@ class ListingBookmarkController(private val listingBookmarkService: ListingBookm
             content = [Content(schema = Schema(implementation = ErrorResponseDto::class))]
         )
     )
-    @DeleteMapping("/{id}")
-    fun deleteBookmark(@PathVariable id: Long): ResponseEntity<Void> {
-        logger.debug("REST request to delete bookmark: {}", id)
-
-        listingBookmarkService.deleteBookmark(id)
+    @DeleteMapping("/{listingId}")
+    fun deleteBookmark(@PathVariable listingId: Long): ResponseEntity<Void> {
+        logger.debug("REST request to delete bookmark for listing: {}", listingId)
+        listingBookmarkService.deleteBookmarkByListingId(listingId)
         return ResponseEntity.noContent().build()
     }
 
