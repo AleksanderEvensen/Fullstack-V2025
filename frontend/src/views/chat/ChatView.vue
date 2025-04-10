@@ -2,6 +2,7 @@
 import { useChatMessages } from '@/lib/composables/useChat'
 import ConversationList from './components/ConversationList.vue'
 import ChatConversation from './components/ChatConversation.vue'
+import { Card } from '@/components/ui/card'
 
 const {
   conversations,
@@ -17,17 +18,17 @@ const {
 </script>
 
 <template>
-  <div class="chat-page">
-    <div class="conversation-sidebar">
+  <div class="chat-page container">
+    <Card class="conversation-sidebar">
       <ConversationList
         :conversations="conversations"
         :current-conversation="currentConversation"
         :is-loading="isLoadingConversations"
         @select-conversation="setConversation"
       />
-    </div>
+    </Card>
 
-    <div class="conversation-main">
+    <Card class="conversation-main">
       <ChatConversation
         :messages="messages"
         :is-loading="isLoadingMessages"
@@ -37,7 +38,7 @@ const {
         v-model:message="newMessage"
         @send-message="sendMessage"
       />
-    </div>
+    </Card>
   </div>
 </template>
 
@@ -46,11 +47,13 @@ const {
   display: flex;
   height: 100%;
   min-height: calc(100vh - 64px); /* Adjust based on your app's header height */
+  gap: var(--spacing);
+  padding: var(--spacing);
+  width: 100%;
 }
 
 .conversation-sidebar {
   width: 320px;
-  border-right: 1px solid #e5e7eb;
   overflow-y: auto;
 }
 
@@ -69,8 +72,6 @@ const {
   .conversation-sidebar {
     width: 100%;
     height: 50%;
-    border-right: none;
-    border-bottom: 1px solid #e5e7eb;
   }
 
   .conversation-main {

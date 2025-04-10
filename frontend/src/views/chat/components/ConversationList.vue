@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { components } from '@/lib/api/schema'
+import { CardHeader, CardContent } from '@/components/ui/card'
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 
 type ConversationSummary = components['schemas']['ConversationSummaryDto']
 
@@ -54,62 +56,66 @@ const getInitial = (name: string) => {
 
 <template>
   <div class="conversation-list">
-    <div class="header">
+    <CardHeader class="header">
       <h2>Conversations</h2>
-    </div>
+    </CardHeader>
 
-    <!-- Loading state -->
-    <div v-if="isLoading" class="loading-state">
-      <div class="spinner"></div>
-      <p>Loading conversations...</p>
-    </div>
+    <CardContent class="conversations-content">
+      <!-- Loading state -->
+      <div v-if="isLoading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading conversations...</p>
+      </div>
 
-    <!-- Empty state -->
-    <div v-else-if="conversations.length === 0" class="empty-state">
-      <p>No conversations yet</p>
-      <p class="text-sm text-gray-500">Start chatting about a listing to see conversations here</p>
-    </div>
+      <!-- Empty state -->
+      <div v-else-if="conversations.length === 0" class="empty-state">
+        <p>No conversations yet</p>
+        <p class="text-sm text-muted-foreground">
+          Start chatting about a listing to see conversations here
+        </p>
+      </div>
 
-    <!-- Conversations -->
-    <div v-else class="conversations">
-      <div
-        v-for="conversation in conversations"
-        :key="`${conversation.listingId}-${conversation.user.id}`"
-        :class="['conversation-item', isSelectedConversation(conversation) ? 'selected' : '']"
-        @click="selectConversation(conversation)"
-      >
-        <!-- User avatar or initial -->
-        <div class="avatar">
-          <img
-            v-if="conversation.user.profileImageUrl"
-            :src="conversation.user.profileImageUrl"
-            alt="Profile"
-          />
-          <div v-else class="avatar-fallback">
-            {{ getInitial(conversation.user.firstName) }}
+      <!-- Conversations -->
+      <div v-else class="conversations">
+        <div
+          v-for="conversation in conversations"
+          :key="`${conversation.listingId}-${conversation.user.id}`"
+          :class="['conversation-item', isSelectedConversation(conversation) ? 'selected' : '']"
+          @click="selectConversation(conversation)"
+        >
+          <!-- User avatar or initial -->
+          <Avatar class="avatar">
+            <AvatarImage
+              v-if="conversation.user.profileImageUrl"
+              :src="conversation.user.profileImageUrl"
+              alt="Profile"
+            />
+            <AvatarFallback>
+              {{ getInitial(conversation.user.firstName) }}
+            </AvatarFallback>
+          </Avatar>
+
+          <!-- Conversation info -->
+          <div class="conversation-info">
+            <div class="conversation-header">
+              <span class="user-name">
+                {{ conversation.user.firstName }} {{ conversation.user.lastName }}
+              </span>
+              <span v-if="conversation.lastMessage" class="timestamp">
+                {{ formatTime(conversation.lastMessage.timestamp) }}
+              </span>
+            </div>
+
+            <div class="listing-title">{{ conversation.listingTitle }}</div>
+
+            <div v-if="conversation.lastMessage" class="last-message">
+              {{ truncateMessage(conversation.lastMessage.content) }}
+            </div>
+            <div v-else class="no-messages">No messages yet</div>
           </div>
-        </div>
-
-        <!-- Conversation info -->
-        <div class="conversation-info">
-          <div class="conversation-header">
-            <span class="user-name"
-              >{{ conversation.user.firstName }} {{ conversation.user.lastName }}</span
-            >
-            <span v-if="conversation.lastMessage" class="timestamp">
-              {{ formatTime(conversation.lastMessage.timestamp) }}
-            </span>
-          </div>
-
-          <div class="listing-title">{{ conversation.listingTitle }}</div>
-
-          <div v-if="conversation.lastMessage" class="last-message">
-            {{ truncateMessage(conversation.lastMessage.content) }}
-          </div>
-          <div v-else class="no-messages">No messages yet</div>
         </div>
       </div>
-    </div>
+    </CardContent>
   </div>
 </template>
 
@@ -120,15 +126,15 @@ const getInitial = (name: string) => {
   height: 100%;
 }
 
-.header {
-  padding: 16px;
-  border-bottom: 1px solid #e5e7eb;
-}
-
 .header h2 {
   margin: 0;
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-weight: var(--font-weight-medium);
+}
+
+.conversations-content {
+  flex: 1;
+  overflow-y: auto;
+  padding-top: 0;
 }
 
 .loading-state,
@@ -140,14 +146,14 @@ const getInitial = (name: string) => {
   height: 100%;
   padding: 2rem;
   text-align: center;
-  color: #6b7280;
+  color: var(--muted-foreground);
 }
 
 .spinner {
   width: 24px;
   height: 24px;
-  border: 2px solid #e5e7eb;
-  border-top-color: #3b82f6;
+  border: 2px solid var(--muted);
+  border-top-color: var(--primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
@@ -166,46 +172,24 @@ const getInitial = (name: string) => {
 
 .conversation-item {
   display: flex;
-  padding: 12px 16px;
-  border-bottom: 1px solid #e5e7eb;
+  padding: calc(var(--spacing) * 2);
+  border-bottom: 1px solid var(--border);
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
 .conversation-item:hover {
-  background-color: #f9fafb;
+  background-color: var(--accent);
 }
 
 .conversation-item.selected {
-  background-color: #eff6ff;
-  border-left: 3px solid #3b82f6;
+  background-color: var(--accent);
+  border-left: 3px solid var(--primary);
 }
 
 .avatar {
-  width: 40px;
-  height: 40px;
-  margin-right: 12px;
+  margin-right: calc(var(--spacing) * 2);
   flex-shrink: 0;
-}
-
-.avatar img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.avatar-fallback {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: #3b82f6;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  font-size: 18px;
 }
 
 .conversation-info {
@@ -220,19 +204,19 @@ const getInitial = (name: string) => {
 }
 
 .user-name {
-  font-weight: 500;
-  color: #111827;
+  font-weight: var(--font-weight-medium);
+  color: var(--foreground);
 }
 
 .timestamp {
-  font-size: 0.75rem;
-  color: #6b7280;
+  font-size: var(--font-size-xs);
+  color: var(--muted-foreground);
 }
 
 .listing-title {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #4b5563;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--muted-foreground);
   margin-bottom: 4px;
   white-space: nowrap;
   overflow: hidden;
@@ -240,16 +224,16 @@ const getInitial = (name: string) => {
 }
 
 .last-message {
-  font-size: 0.875rem;
-  color: #6b7280;
+  font-size: var(--font-size-sm);
+  color: var(--muted-foreground);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .no-messages {
-  font-size: 0.875rem;
-  color: #9ca3af;
+  font-size: var(--font-size-sm);
+  color: var(--muted-foreground);
   font-style: italic;
 }
 </style>

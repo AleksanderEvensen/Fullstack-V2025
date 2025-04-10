@@ -2,6 +2,9 @@
 import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import type { components } from '@/lib/api/schema'
+import { CardHeader, CardContent, CardFooter } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 
 type ChatMessage = components['schemas']['ChatMessageDto']
 type ConversationSummary = components['schemas']['ConversationSummaryDto']
@@ -88,17 +91,17 @@ onMounted(() => {
 <template>
   <div class="chat-conversation">
     <!-- Header with user and listing info -->
-    <div v-if="activeConversation" class="conversation-header">
+    <CardHeader v-if="activeConversation" class="conversation-header">
       <h2>{{ activeConversation.user.firstName }} {{ activeConversation.user.lastName }}</h2>
       <div class="listing-title">{{ activeConversation.listingTitle }}</div>
-    </div>
+    </CardHeader>
 
-    <div v-else class="conversation-header empty">
+    <CardHeader v-else class="conversation-header empty">
       <h2>Select a conversation</h2>
-    </div>
+    </CardHeader>
 
     <!-- Messages area -->
-    <div class="messages-container" ref="messagesContainer">
+    <CardContent class="messages-container" ref="messagesContainer">
       <!-- Loading state -->
       <div v-if="isLoading" class="loading-state">
         <div class="spinner"></div>
@@ -113,7 +116,7 @@ onMounted(() => {
       <!-- No messages yet -->
       <div v-else-if="messages.length === 0" class="empty-state">
         <p>No messages yet</p>
-        <p class="text-sm text-gray-500">Send a message to start the conversation</p>
+        <p class="text-sm text-muted-foreground">Send a message to start the conversation</p>
       </div>
 
       <!-- Messages -->
@@ -131,25 +134,26 @@ onMounted(() => {
           </div>
         </div>
       </div>
-    </div>
+    </CardContent>
 
     <!-- Message input -->
-    <div v-if="currentConversation" class="message-input">
-      <input
+    <CardFooter v-if="currentConversation" class="message-input">
+      <Input
         v-model="messageInput"
         type="text"
         placeholder="Type a message..."
         @keyup.enter="handleSendMessage"
         :disabled="isSending"
+        class="message-input-field"
       />
-      <button
+      <Button
         @click="handleSendMessage"
         :disabled="!messageInput.trim() || isSending"
         class="send-button"
       >
-        <span>Send</span>
-      </button>
-    </div>
+        Send
+      </Button>
+    </CardFooter>
   </div>
 </template>
 
@@ -160,31 +164,27 @@ onMounted(() => {
   height: 100%;
 }
 
-.conversation-header {
-  padding: 16px;
-  border-bottom: 1px solid #e5e7eb;
-}
-
 .conversation-header h2 {
   margin: 0 0 4px 0;
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-medium);
 }
 
 .conversation-header .listing-title {
-  color: #6b7280;
-  font-size: 0.875rem;
+  color: var(--muted-foreground);
+  font-size: var(--font-size-sm);
 }
 
 .conversation-header.empty {
   text-align: center;
-  color: #6b7280;
+  color: var(--muted-foreground);
 }
 
 .messages-container {
   flex: 1;
   overflow-y: auto;
-  padding: 16px;
+  padding-top: var(--spacing);
+  padding-bottom: var(--spacing);
 }
 
 .loading-state,
@@ -194,15 +194,15 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: #6b7280;
+  color: var(--muted-foreground);
   text-align: center;
 }
 
 .spinner {
   width: 24px;
   height: 24px;
-  border: 2px solid #e5e7eb;
-  border-top-color: #3b82f6;
+  border: 2px solid var(--muted);
+  border-top-color: var(--primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
@@ -221,7 +221,7 @@ onMounted(() => {
 
 .message {
   max-width: 70%;
-  margin-bottom: 12px;
+  margin-bottom: calc(var(--spacing) * 2);
   padding: 0;
   display: flex;
   flex-direction: column;
@@ -236,27 +236,27 @@ onMounted(() => {
 }
 
 .message-content {
-  padding: 10px 14px;
-  border-radius: 16px;
+  padding: calc(var(--spacing) * 2) calc(var(--spacing) * 3);
+  border-radius: var(--radius);
   white-space: pre-wrap;
   word-break: break-word;
 }
 
 .message.sent .message-content {
-  background-color: #3b82f6;
-  color: white;
-  border-bottom-right-radius: 4px;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  border-bottom-right-radius: calc(var(--radius) / 2);
 }
 
 .message.received .message-content {
-  background-color: #f3f4f6;
-  color: #1f2937;
-  border-bottom-left-radius: 4px;
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+  border-bottom-left-radius: calc(var(--radius) / 2);
 }
 
 .message-meta {
-  font-size: 0.75rem;
-  color: #6b7280;
+  font-size: var(--font-size-xs);
+  color: var(--muted-foreground);
   margin-top: 2px;
   padding: 0 4px;
 }
@@ -267,42 +267,15 @@ onMounted(() => {
 
 .message-input {
   display: flex;
-  padding: 12px 16px;
-  border-top: 1px solid #e5e7eb;
+  gap: calc(var(--spacing) * 2);
+  padding: calc(var(--spacing) * 3);
 }
 
-.message-input input {
+.message-input-field {
   flex: 1;
-  padding: 10px 16px;
-  border: 1px solid #d1d5db;
-  border-radius: 24px;
-  font-size: 0.875rem;
-  margin-right: 8px;
-}
-
-.message-input input:focus {
-  outline: none;
-  border-color: #3b82f6;
 }
 
 .send-button {
-  padding: 0 20px;
-  height: 40px;
-  background-color: #3b82f6;
-  color: white;
-  font-weight: 500;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.send-button:hover:not(:disabled) {
-  background-color: #2563eb;
-}
-
-.send-button:disabled {
-  background-color: #93c5fd;
-  cursor: not-allowed;
+  min-width: 80px;
 }
 </style>
