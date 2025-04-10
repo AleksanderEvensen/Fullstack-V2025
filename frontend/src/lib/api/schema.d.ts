@@ -923,17 +923,17 @@ export interface components {
             /** Format: int64 */
             offset?: number;
             sort?: components["schemas"]["SortObject"];
-            unpaged?: boolean;
             paged?: boolean;
             /** Format: int32 */
             pageNumber?: number;
             /** Format: int32 */
             pageSize?: number;
+            unpaged?: boolean;
         };
         SortObject: {
             empty?: boolean;
-            unsorted?: boolean;
             sorted?: boolean;
+            unsorted?: boolean;
         };
         ChatMessageRequestDto: {
             /** Format: int64 */
@@ -1056,6 +1056,14 @@ export interface components {
             profileImageUrl?: string;
             /** @description User's address information */
             address?: components["schemas"]["AddressDto"];
+            /**
+             * @description List of roles assigned to the user
+             * @example [
+             *       "ROLE_USER",
+             *       "ROLE_ADMIN"
+             *     ]
+             */
+            roles?: string[];
         };
     };
     responses: never;

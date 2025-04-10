@@ -5,6 +5,7 @@ import createFetchClient from 'openapi-fetch'
 import ky from 'ky'
 import Cookies from 'universal-cookie'
 import router from '@/router'
+import { JWTRegisteredClaims, parseJWT } from '@oslojs/jwt'
 
 type LoginRequest = paths['/api/auth/login']['post']['requestBody']['content']['application/json']
 type RegisterRequest =
@@ -17,6 +18,20 @@ export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(localStorage.getItem(TOKEN))
   const user = ref<User | null>(null)
   const isAuthenticated = computed(() => !!token.value)
+  const isAdmin = computed(() => {
+    if (!token.value) return false
+
+    try {
+      const parsedToken = parseJWT(token.value)
+      const payload = parsedToken[1]
+
+      // @ts-expect-error no types
+      return Array.isArray(payload.roles) && payload.roles.includes('ADMIN')
+    } catch (error) {
+      console.error('Error checking admin status:', error)
+      return false
+    }
+  })
 
   const api = createFetchClient<paths>({
     fetch: (...args) =>
@@ -134,6 +149,7 @@ export const useAuthStore = defineStore('auth', () => {
     token,
     user,
     isAuthenticated,
+    isAdmin,
     login,
     register,
     logout,

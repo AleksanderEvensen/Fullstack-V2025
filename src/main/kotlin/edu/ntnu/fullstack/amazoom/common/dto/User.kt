@@ -44,6 +44,9 @@ data class FullUserDto (
 
     @field:Schema(description = "User's address information", nullable = true)
     val address: AddressDto?,
+
+    @field:Schema(description = "List of roles assigned to the user", example = "[\"ROLE_USER\", \"ROLE_ADMIN\"]", nullable = true)
+    val roles: List<String>? = null,
 )
 
 /**
