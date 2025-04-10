@@ -152,8 +152,7 @@ class DatabaseSeeder @Autowired constructor(
             // Create a few admin users
             val adminUsers = listOf(
                 User(
-                    firstName = "Admin",
-                    lastName = "User",
+                    name = "Admin Admin",
                     email = "admin@example.com",
                     password = passwordEncoder.encode("admin123"),
                     phoneNumber = "+4734567890",
@@ -161,8 +160,7 @@ class DatabaseSeeder @Autowired constructor(
                     roles = mutableSetOf(userRole, adminRole)
                 ),
                 User(
-                    firstName = "Super",
-                    lastName = "Admin",
+                    name = "Super Admin",
                     email = "super.admin@example.com",
                     password = passwordEncoder.encode("admin123"),
                     phoneNumber = "+4734567891",
@@ -199,8 +197,7 @@ class DatabaseSeeder @Autowired constructor(
                 val postalCode = String.format("%04d", (1000..9999).random())
                 
                 User(
-                    firstName = firstName,
-                    lastName = lastName,
+                    name = "$firstName $lastName",
                     email = "${firstName.lowercase()}.${lastName.lowercase()}${index}@example.com",
                     password = passwordEncoder.encode("password"),
                     phoneNumber = "+47${(10000000..99999999).random()}",

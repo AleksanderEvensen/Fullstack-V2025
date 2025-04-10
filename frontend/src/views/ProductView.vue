@@ -15,7 +15,6 @@ const id = useRoute().params.id as unknown as number
 const { data: product } = getListing(id)
 const currentImageIndex = ref(0)
 
-
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat('NO', {
     style: 'currency',
@@ -69,8 +68,13 @@ const handleBookmark = () => {
           <img :src="formatPictureUrl(product.images[currentImageIndex])" :alt="product.title" />
         </div>
         <div class="image-thumbnails">
-          <button v-for="(image, index) in product.images" :key="index" @click="currentImageIndex = index"
-            class="thumbnail-button" :class="{ active: currentImageIndex === index }">
+          <button
+            v-for="(image, index) in product.images"
+            :key="index"
+            @click="currentImageIndex = index"
+            class="thumbnail-button"
+            :class="{ active: currentImageIndex === index }"
+          >
             <img :src="formatPictureUrl(image)" :alt="`${t('product.imageAlt')} ${index + 1}`" />
             {{ formatPictureUrl(image) }}
           </button>
@@ -84,8 +88,13 @@ const handleBookmark = () => {
             <CardTitle>
               <div class="title-container">
                 <span>{{ product.title }}</span>
-                <Button variant="ghost" size="icon" class="action-button" @click="handleBookmark"
-                  :disabled="isBookmarking || isUnbookmarking">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  class="action-button"
+                  @click="handleBookmark"
+                  :disabled="isBookmarking || isUnbookmarking"
+                >
                   <HeartIcon :class="cn('icon', product.isBookmarked ? 'icon-filled' : '')" />
                 </Button>
               </div>
@@ -129,12 +138,17 @@ const handleBookmark = () => {
             <div class="seller-info">
               <Avatar class="seller-avatar">
                 <AvatarImage
-                  :src="product.seller.profileImageUrl ? formatPictureUrl(product.seller.profileImageUrl) : ''"
-                  :alt="product.seller.firstName" />
-                <AvatarFallback>{{ product.seller.firstName[0] }}</AvatarFallback>
+                  :src="
+                    product.seller.profileImageUrl
+                      ? formatPictureUrl(product.seller.profileImageUrl)
+                      : ''
+                  "
+                  :alt="product.seller.name"
+                />
+                <AvatarFallback>{{ product.seller.name[0] }}</AvatarFallback>
               </Avatar>
               <div class="seller-details">
-                <h3>{{ product.seller.firstName }} {{ product.seller.lastName }}</h3>
+                <h3>{{ product.seller.name }}</h3>
                 <div class="seller-info-text" v-if="product.seller.address">
                   {{ formatAddress(product.seller.address) }}
                 </div>
@@ -223,7 +237,11 @@ const handleBookmark = () => {
           </CardHeader>
           <CardContent>
             <ul class="details-list">
-              <li v-for="(mod, index) in product.modifications" :key="index" class="detail-list-item">
+              <li
+                v-for="(mod, index) in product.modifications"
+                :key="index"
+                class="detail-list-item"
+              >
                 {{ mod }}
               </li>
             </ul>
@@ -279,7 +297,6 @@ const handleBookmark = () => {
   overflow: hidden;
   background-color: var(--accent);
 }
-
 
 .main-image img {
   width: 100%;
@@ -531,7 +548,7 @@ const handleBookmark = () => {
 }
 
 /* Make certain sections span full width */
-.details-grid> :nth-child(n + 3) {
+.details-grid > :nth-child(n + 3) {
   grid-column: 1 / -1;
 }
 

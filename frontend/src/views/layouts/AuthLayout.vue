@@ -18,6 +18,7 @@ import { onMounted } from 'vue';
 import Cookies from 'universal-cookie';
 
 const cookie = useCookies(["toast"]);
+const authStore = useAuthStore();
 
 onMounted(() => {
   const cookieStr = new Cookies(document.cookie).get("toast");
@@ -33,17 +34,17 @@ onMounted(() => {
     if (!Number.isNaN(Number(duration))) options.duration = Number(duration);
 
     showToast[type](message, options);
+    console.debug("Showing server toast: ", {
+      type,
+      message,
+      ...options,
+    })
 
     document.cookie = "toast=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     cookie.remove("toast");
-  } 
-
+  }
+  authStore.initialize();
 })
-
-
-const authStore = useAuthStore();
-authStore.initialize();
-
 </script>
 
 <style scoped>

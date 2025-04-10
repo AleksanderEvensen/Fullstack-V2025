@@ -51,8 +51,7 @@ class UserService(
             ?: throw MissingRoleException("ROLE_USER not found in database")
 
         val user = User(
-            firstName = data.firstName,
-            lastName = data.lastName,
+            name = data.name,
             email = data.email,
             phoneNumber = data.phoneNumber,
             password = data.password,

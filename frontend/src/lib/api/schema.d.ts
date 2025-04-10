@@ -726,15 +726,10 @@ export interface components {
              */
             id: number;
             /**
-             * @description User's first name
-             * @example John
+             * @description User's full name
+             * @example John Doe
              */
-            firstName: string;
-            /**
-             * @description User's last name
-             * @example Doe
-             */
-            lastName: string;
+            name: string;
             /**
              * @description URL to user's profile image
              * @example profile-1234-abcd.jpg
@@ -812,18 +807,18 @@ export interface components {
             sortDirection: string;
         };
         PageListingDto: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["ListingDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
@@ -833,17 +828,17 @@ export interface components {
             /** Format: int64 */
             offset?: number;
             sort?: components["schemas"]["SortObject"];
+            unpaged?: boolean;
             paged?: boolean;
             /** Format: int32 */
             pageNumber?: number;
             /** Format: int32 */
             pageSize?: number;
-            unpaged?: boolean;
         };
         SortObject: {
             empty?: boolean;
-            sorted?: boolean;
             unsorted?: boolean;
+            sorted?: boolean;
         };
         ListingBookmarkResponseDto: {
             /** Format: int64 */
@@ -859,15 +854,18 @@ export interface components {
             message: string;
         };
         RegisterRequestDto: {
-            firstName: string;
-            lastName: string;
+            name: string;
             email: string;
             password: string;
             phoneNumber: string;
+            street: string;
+            city: string;
+            postalCode: string;
         };
         LoginRequestDto: {
             email: string;
             password: string;
+            redirectUrl?: string;
         };
         ConversationSummaryDto: {
             user: components["schemas"]["UserDto"];
@@ -885,18 +883,18 @@ export interface components {
             isFromCurrentUser: boolean;
         };
         PageConversationSummaryDto: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["ConversationSummaryDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
@@ -921,15 +919,10 @@ export interface components {
              */
             id: number;
             /**
-             * @description User's first name
-             * @example John
+             * @description User's full name
+             * @example John Doe
              */
-            firstName: string;
-            /**
-             * @description User's last name
-             * @example Doe
-             */
-            lastName: string;
+            name: string;
             /**
              * @description User's email address
              * @example john.doe@example.com

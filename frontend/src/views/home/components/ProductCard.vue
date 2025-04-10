@@ -44,19 +44,30 @@ const handleBookmark = () => {
       <div class="product-meta">
         <div class="seller-info">
           <Avatar class="seller-avatar">
-            <AvatarImage :src="product.seller.profileImageUrl ? formatPictureUrl(product.seller.profileImageUrl) : ''"
-              :alt="product.seller.firstName" />
-            <AvatarFallback>{{ product.seller.firstName[0] }}</AvatarFallback>
+            <AvatarImage
+              :src="
+                product.seller.profileImageUrl
+                  ? formatPictureUrl(product.seller.profileImageUrl)
+                  : ''
+              "
+              :alt="product.seller.name"
+            />
+            <AvatarFallback>{{ product.seller.name[0] }}</AvatarFallback>
           </Avatar>
-          <span class="seller-name">{{ product.seller.firstName }}</span>
+          <span class="seller-name">{{ product.seller.name }}</span>
         </div>
         <div class="product-location" v-if="product.seller.address">
           {{ formatAddress(product.seller.address) }}
         </div>
       </div>
       <div class="product-actions">
-        <Button variant="ghost" size="icon" class="action-button" @click="handleBookmark"
-          :disabled="isBookmarking || isUnbookmarking">
+        <Button
+          variant="ghost"
+          size="icon"
+          class="action-button"
+          @click="handleBookmark"
+          :disabled="isBookmarking || isUnbookmarking"
+        >
           <HeartIcon :class="cn('icon', product.isBookmarked ? 'icon-filled' : '')" />
         </Button>
         <Button variant="ghost" size="icon" class="action-button">

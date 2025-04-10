@@ -19,10 +19,7 @@ class User(
     val id: Long = 0,
 
     @Column(nullable = false)
-    val firstName: String,
-
-    @Column(nullable = false)
-    val lastName: String,
+    val name: String,
 
     @Column(nullable = false, unique = true)
     val email: String,

@@ -1,5 +1,7 @@
 package edu.ntnu.fullstack.amazoom.auth.controller
 
+import edu.ntnu.fullstack.amazoom.ToastType
+import edu.ntnu.fullstack.amazoom.Utils
 import edu.ntnu.fullstack.amazoom.auth.dto.AuthResponseDto
 import edu.ntnu.fullstack.amazoom.auth.dto.LoginRequestDto
 import edu.ntnu.fullstack.amazoom.auth.dto.RegisterRequestDto
@@ -14,8 +16,11 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
@@ -23,6 +28,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.net.URI
 
 /**
  * REST controller for authentication operations.

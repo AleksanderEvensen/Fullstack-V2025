@@ -9,20 +9,27 @@ import jakarta.validation.constraints.Size
  * Contains all required fields to register a new user in the system.
  */
 data class RegisterRequestDto(
-    @field:NotBlank(message = "First name is required")
-    val firstName: String,
-
-    @field:NotBlank(message = "Last name is required")
-    val lastName: String,
+    @field:NotBlank(message = "Full Name is required")
+    val name: String,
 
     @field:NotBlank(message = "Email is required")
     @field:Email(message = "Email should be valid")
     val email: String,
 
     @field:NotBlank(message = "Password is required")
-    @field:Size(min = 8, max = 30, message = "Password must be between 8 and 30 characters")
+    @field:Size(min = 8, message = "Password must be at least 8 characters")
     val password: String,
 
     @field:NotBlank(message = "Phone number is required")
-    val phoneNumber: String
+    val phoneNumber: String,
+
+    @field:NotBlank(message = "Street name and number is required")
+    val street: String,
+
+    @field:NotBlank(message = "City name is required")
+    val city: String,
+
+    @field:NotBlank(message = "Postal code is required")
+    val postalCode: String,
+
 )
