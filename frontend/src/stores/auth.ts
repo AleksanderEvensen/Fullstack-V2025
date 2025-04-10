@@ -5,7 +5,7 @@ import createFetchClient from 'openapi-fetch'
 import ky from 'ky'
 import Cookies from 'universal-cookie'
 import router from '@/router'
-import { JWTRegisteredClaims, parseJWT } from '@oslojs/jwt'
+import { parseJWT } from '@oslojs/jwt'
 
 type LoginRequest = paths['/api/auth/login']['post']['requestBody']['content']['application/json']
 type RegisterRequest =
