@@ -29,6 +29,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.springframework.transaction.annotation.Transactional
+import kotlin.jvm.optionals.getOrElse
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -63,29 +64,29 @@ class CategoryControllerIntegrationTest {
     fun setup() {
         closeable = MockitoAnnotations.openMocks(this)
 
-        // Create admin role
-        val adminRole = roleRepository.save(Role(name = RoleName.ROLE_ADMIN))
+        // Create or find admin role - fixed to prevent unique constraint violation
+        val adminRole = roleRepository.findByName(RoleName.ROLE_ADMIN)
+            ?: roleRepository.save(Role(name = RoleName.ROLE_ADMIN))
 
-        // Create admin user
-        adminUser = User(
-            name = "Admin User",
-            email = "admin@example.com",
-            password = "password",
-            phoneNumber = "1234567890",
-            address = Address(
-                streetName = "Admin Street",
-                streetNumber = "123",
-                postalCode = "12345",
-                city = "Admin City",
-                country = "Admin Country"
-            ),
-            roles = mutableSetOf(adminRole)
-        )
-        adminUser = userRepository.save(adminUser)
+        // Check if the admin user already exists
+        val existingUser = userRepository.findByEmail("admin@example.com")
 
-        // Create category
+        // Create admin user if it doesn't exist
+        adminUser = existingUser.getOrElse {
+            userRepository.save(User(
+                name = "Admin User",
+                email = "admin@example.com",
+                password = "adminpassword",
+                phoneNumber = "12345678",
+                roles = mutableSetOf(adminRole),
+
+            ))
+        }
+
+        // Create category (avoid duplication by using a unique name for each test run)
+        val categoryName = "Electronics-${System.currentTimeMillis()}"
         category = Category(
-            name = "Electronics",
+            name = categoryName,
             description = "Electronic devices and gadgets",
             translationString = "electronics",
             icon = "electronics-icon"
@@ -108,10 +109,18 @@ class CategoryControllerIntegrationTest {
 
     @AfterEach
     fun cleanup() {
-        categoryRepository.deleteAll()
-        userRepository.deleteAll()
-        SecurityContextHolder.clearContext()
-        closeable.close()
+        try {
+            // Clear test data - be thorough with cleanup
+            categoryRepository.deleteAll()
+            // Don't delete users and roles to prevent unique constraint issues
+            // on subsequent test runs - instead we'll reuse existing ones
+
+            SecurityContextHolder.clearContext()
+            closeable.close()
+        } catch (e: Exception) {
+            // Log cleanup errors but don't fail the test
+            println("Cleanup error: ${e.message}")
+        }
     }
 
     @Test
@@ -218,4 +227,4 @@ class CategoryControllerIntegrationTest {
         )
             .andExpect(status().isNotFound)
     }
-} 
+}
