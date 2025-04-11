@@ -162,7 +162,7 @@ function logout() {
               </div>
 
               <!-- Messages -->
-              <RouterLink @click="isOpen = false" to="/marketplace/messages" class="mobile-nav-item">
+              <RouterLink @click="isOpen = false" to="/messages" class="mobile-nav-item">
                 <MailIcon class="icon" />
                 <span>{{ t('nav.messages') }}</span>
               </RouterLink>
