@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { MapPin, FunnelIcon, X, House } from 'lucide-vue-next'
+import { MapPin, FunnelIcon, X } from 'lucide-vue-next'
 import { ref, computed, watch } from 'vue'
 import { useUrlSearchParams, watchDebounced } from '@vueuse/core'
 import SearchFilter from './components/SearchFilter.vue'
@@ -20,7 +20,8 @@ import { useTypedI18n } from '@/i18n'
 import { MapboxMap, MapboxMarker, MapboxNavigationControl } from '@studiometa/vue-mapbox-gl'
 import type { Map } from 'mapbox-gl'
 import { MAPBOX_API_TOKEN } from '@/lib/utils'
-import mapboxgl from 'mapbox-gl'
+import mapboxgl from 'mapbox-gl';
+import { RouterLink } from "vue-router";
 
 const { t } = useTypedI18n()
 
@@ -282,9 +283,7 @@ const listingMarkers = computed(() => {
                 :key="marker.id"
                 :lng-lat="[marker.longitude, marker.latitude]"
               >
-                <div class="map-marker">
-                  <House />
-                </div>
+                <RouterLink :to="`/marketplace/product/${marker.id}`" class="map-marker"></RouterLink>
               </MapboxMarker>
 
               <MapboxNavigationControl position="top-right" />
@@ -360,13 +359,14 @@ const listingMarkers = computed(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 24px;
+  height: 24px;
   color: white;
   background-color: var(--primary);
   border-radius: 50%;
   cursor: pointer;
   transition: transform 0.2s;
+  border: 3px solid white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
