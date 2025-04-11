@@ -148,6 +148,7 @@ docker compose build
 
 When the backend is running, API documentation is available at:
 
+-   Scalar UI: http://localhost:8080/docs.html (anbefalt mer moderne enn swagger)
 -   Swagger UI: http://localhost:8080/swagger-ui.html
 -   OpenAPI Schema: http://localhost:8080/openapi-schema.json
 

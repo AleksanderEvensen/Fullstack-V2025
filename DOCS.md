@@ -157,6 +157,8 @@ Applikasjonen bruker MySQL som relasjonsdatabase med følgende nøkkelentiteter:
 
 Flyway-migreringer håndterer databaseskjemaevolusjon, og sikrer konsistent skjema på tvers av miljøer.
 
+![ERD Diagram](./res/docs/DB-ERD.png)
+
 ## API-dokumentasjon
 
 API-et følger RESTful-prinsipper med følgende hovedendepunkter:
