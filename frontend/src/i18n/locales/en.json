@@ -117,7 +117,8 @@
       "passwordUpper": "Password must contain at least one uppercase letter",
       "passwordLower": "Password must contain at least one lowercase letter",
       "passwordNumber": "Password must contain at least one number",
-      "passwordsNotMatch": "Passwords don't match"
+      "passwordsNotMatch": "Passwords don't match",
+      "passwordRequired": "Password is required"
     }
   },
   "createListing": {

@@ -53,11 +53,11 @@ const passwordSchema = z
   })
 
 const addressSchema = z.object({
-  streetName: z.string().min(1, t('profile.settings.address-required')),
+  streetName: z.string().min(1, t('profile.settings.address.address-required')),
   streetNumber: z.string(),
-  city: z.string().min(1, t('profile.settings.address-required')),
-  postalCode: z.string().min(1, t('profile.settings.address-required')),
-  country: z.string().min(1, t('profile.settings.address-required')),
+  city: z.string().min(1, t('profile.settings.address.address-required')),
+  postalCode: z.string().min(1, t('profile.settings.address.address-required')),
+  country: z.string().min(1, t('profile.settings.address.address-required')),
   latitude: z.number().optional(),
   longitude: z.number().optional(),
 })
@@ -193,15 +193,9 @@ onMounted(() => {
         }}</AvatarFallback>
       </Avatar>
       <div class="profile-info">
-        <Label class="setting-label">{{ t('profile.settings.profile-picture') }}</Label>
         <div class="profile-actions">
-          <input
-            @change="changeProfilePicture"
-            style="display: none"
-            id="profile-pic-input"
-            accept=".jpg, .jpeg, .png"
-            type="file"
-          />
+          <input @change="changeProfilePicture" style="display: none" id="profile-pic-input" accept=".jpg, .jpeg, .png"
+            type="file" />
           <Button variant="outline" as="label" for="profile-pic-input">
             {{ t('profile.settings.changePicture') }}
           </Button>
@@ -229,19 +223,13 @@ onMounted(() => {
               <Input type="text" :default-value="user?.phoneNumber" autocomplete="tel" disabled />
             </div>
 
-            <Form
-              v-slot="{ meta, values, validate }"
-              as=""
-              :validation-schema="toTypedSchema(passwordSchema)"
-              ref="passwordFormRef"
-            >
-              <form
-                @submit.prevent="
-                  validate().then(() =>
-                    handlePasswordUpdate(values as z.infer<typeof passwordSchema>),
-                  )
-                "
-              >
+            <Form v-slot="{ meta, values, validate }" as="" :validation-schema="toTypedSchema(passwordSchema)"
+              ref="passwordFormRef">
+              <form @submit.prevent="
+                validate().then(() =>
+                  handlePasswordUpdate(values as z.infer<typeof passwordSchema>),
+                )
+                ">
                 <FormField v-slot="{ componentField }" name="currentPassword">
                   <FormItem>
                     <FormLabel>{{ t('profile.settings.old-password') }}</FormLabel>
@@ -286,29 +274,18 @@ onMounted(() => {
           <CardTitle>{{ t('profile.settings.address.title') }}</CardTitle>
         </CardHeader>
         <CardContent>
-          <Form
-            v-slot="{ meta, values, validate }"
-            as=""
-            :validation-schema="toTypedSchema(addressSchema)"
-            ref="addressFormRef"
-            class="address-form"
-          >
-            <form
-              @submit.prevent="
-                validate().then(() => handleAddressUpdate(values as z.infer<typeof addressSchema>))
-              "
-            >
+          <Form v-slot="{ meta, values, validate }" as="" :validation-schema="toTypedSchema(addressSchema)"
+            ref="addressFormRef" class="address-form">
+            <form @submit.prevent="
+              validate().then(() => handleAddressUpdate(values as z.infer<typeof addressSchema>))
+              ">
               <div class="address-container">
                 <!-- Using the integrated LocationInfoForm component -->
                 <LocationInfoForm :initial-values="initialAddressValues" />
 
                 <!-- Save Address Button -->
                 <div class="save-address-container">
-                  <Button
-                    type="submit"
-                    class="save-address-button"
-                    :disabled="!meta.valid || addressIsLoading"
-                  >
+                  <Button type="submit" class="save-address-button" :disabled="!meta.valid || addressIsLoading">
                     {{
                       addressIsLoading
                         ? t('common.submitting')

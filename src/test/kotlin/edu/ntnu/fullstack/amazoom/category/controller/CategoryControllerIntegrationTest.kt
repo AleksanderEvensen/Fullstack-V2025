@@ -64,11 +64,9 @@ class CategoryControllerIntegrationTest {
     fun setup() {
         closeable = MockitoAnnotations.openMocks(this)
 
-        // Create or find admin role - fixed to prevent unique constraint violation
         val adminRole = roleRepository.findByName(RoleName.ROLE_ADMIN)
             ?: roleRepository.save(Role(name = RoleName.ROLE_ADMIN))
 
-        // Check if the admin user already exists
         val existingUser = userRepository.findByEmail("admin@example.com")
 
         // Create admin user if it doesn't exist

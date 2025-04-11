@@ -138,7 +138,8 @@
       "passwordUpper": "Passordet må inneholde minst én stor bokstav",
       "passwordLower": "Passordet må inneholde minst én liten bokstav",
       "passwordNumber": "Passordet må inneholde minst ett tall",
-      "passwordsNotMatch": "Passordene samsvarer ikke"
+      "passwordsNotMatch": "Passordene samsvarer ikke",
+      "passwordRequired": "Passord er påkrevd"
     }
   },
   "createListing": {

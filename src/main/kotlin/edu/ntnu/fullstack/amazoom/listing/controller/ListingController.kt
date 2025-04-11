@@ -218,10 +218,12 @@ class ListingController(
         @Parameter(description = "Field to sort by", example = "price")
         @RequestParam(defaultValue = "price") sortBy: String,
         @Parameter(description = "Sort direction", example = "ASC")
-        @RequestParam(defaultValue = "ASC") direction: Sort.Direction
+        @RequestParam(defaultValue = "ASC") direction: Sort.Direction,
+        @Parameter(description = "Listing status field", example = "ACTIVE")
+        @RequestParam(defaultValue = "ACTIVE") status: ListingStatus
     ): ResponseEntity<Page<ListingDto>> {
         logger.debug("REST request to get listings page: {}, size: {}", page, size)
-        val paginatedListings = listingService.getPaginatedAndSortedListings(page, size, sortBy, direction)
+        val paginatedListings = listingService.getPaginatedAndSortedListings(page, size, sortBy, direction, status)
         return ResponseEntity.ok(paginatedListings)
     }
     
