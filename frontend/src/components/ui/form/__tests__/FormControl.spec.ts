@@ -65,7 +65,6 @@ describe('FormControl', () => {
   })
 
   it('applies error state correctly', async () => {
-    // Create a properly typed error mock with error as string
     const errorMock = {
       error: computed(() => 'This field is required'),
       formItemId: 'test-form-item-id',
