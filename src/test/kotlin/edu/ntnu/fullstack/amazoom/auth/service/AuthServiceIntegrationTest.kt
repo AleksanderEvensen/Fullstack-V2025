@@ -41,6 +41,7 @@ class AuthServiceIntegrationTest {
     }
 
     @Test
+    @Transactional()
     fun `test register new user`() {
         // Create registration request
         val request = RegisterRequestDto(
@@ -53,13 +54,8 @@ class AuthServiceIntegrationTest {
             street = "Test Street",
         )
 
-        // Register user
         val response = authService.register(request)
-
-        // Verify response
         assertNotNull(response.accessToken)
-
-        // Verify user was saved in database
         val savedUser = userRepository.findByEmail(testEmail)
         assertNotNull(savedUser)
 
