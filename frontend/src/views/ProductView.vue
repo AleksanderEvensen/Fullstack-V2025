@@ -28,6 +28,8 @@ import { useAuthStore } from '@/stores/auth'
 import { toast } from 'vue-sonner'
 import { CheckIcon } from 'lucide-vue-next'
 import { useQueryClient } from '@tanstack/vue-query'
+import { Textarea } from '@/components/ui/textarea'
+import { useSendMessage } from '@/lib/api/queries/sendMessage'
 const { t } = useTypedI18n()
 const id = useRoute().params.id as unknown as number
 const { data: product } = getListing(id)
@@ -121,6 +123,29 @@ const handleToggleSold = () => {
       },
     },
   )
+}
+
+const messageContent = ref('')
+const { mutate: sendMessage } = useSendMessage()
+
+const handleSendMessage = () => {
+  if (!messageContent.value.trim() || !product.value) return
+
+  const messageData = {
+    recipientId: product.value.seller.id,
+    listingId: product.value.id,
+    content: messageContent.value,
+  }
+
+  sendMessage(messageData, {
+    onSuccess: () => {
+      messageContent.value = ''
+      toast.success(t('messages.sendSuccess') || 'Message sent')
+    },
+    onError: () => {
+      toast.error(t('messages.sendError') || 'Failed to send message')
+    },
+  })
 }
 </script>
 
@@ -226,9 +251,16 @@ const handleToggleSold = () => {
 
             <!-- Actions -->
             <div class="action-buttons">
-              <Button variant="outline" class="message-button" size="lg">{{
-                t('product.messageButton')
-              }}</Button>
+              <Textarea v-model="messageContent" :placeholder="t('product.messagePlaceholder')" />
+              <Button
+                variant="outline"
+                class="message-button"
+                size="lg"
+                @click="handleSendMessage"
+                :disabled="!messageContent.trim()"
+              >
+                {{ t('product.messageButton') }}
+              </Button>
             </div>
           </CardContent>
         </Card>

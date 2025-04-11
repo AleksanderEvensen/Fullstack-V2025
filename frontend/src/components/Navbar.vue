@@ -165,11 +165,7 @@ function logout() {
               </div>
 
               <!-- Messages -->
-              <RouterLink
-                @click="isOpen = false"
-                to="/marketplace/messages"
-                class="mobile-nav-item"
-              >
+              <RouterLink @click="isOpen = false" to="/messages" class="mobile-nav-item">
                 <MailIcon class="icon" />
                 <span>{{ t('nav.messages') }}</span>
               </RouterLink>
@@ -183,6 +179,14 @@ function logout() {
                 <PlusIcon class="icon" />
                 <span>{{ t('nav.createListing') }}</span>
               </RouterLink>
+
+              <!-- Categories -->
+              <template v-if="authStore.isAdmin">
+                <RouterLink to="/categories" class="mobile-nav-item">
+                  <LibraryIcon class="icon" />
+                  {{ t('nav.categories') }}
+                </RouterLink>
+              </template>
             </div>
 
             <!-- Profile -->
