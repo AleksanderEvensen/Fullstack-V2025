@@ -88,6 +88,17 @@ const router = createRouter({
           component: () => import('../views/messages/MessagesView.vue'),
           meta: { requiresAuth: true },
         },
+        {
+          path: '/categories',
+          name: 'categories',
+          component: () => import('../views/categories/Categories.vue'),
+          meta: { requiresAdmin: true },
+        },
+        {
+          path: '/:pathMatch(.*)*',
+          name: 'not-found',
+          component: () => import('../views/not-found/NotFoundView.vue'),
+        },
       ],
     },
   ],
@@ -100,11 +111,17 @@ router.beforeEach((to, from, next) => {
     authStore.initialize()
   }
 
-  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    next({ path: '/login', query: { redirect: to.fullPath } })
-  } else {
-    next()
+  if (to.meta.requiresAdmin && !authStore.isAdmin) {
+    console.log('Redirecting non-admin user')
+    return next({ path: '/' })
   }
+
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    console.log('Redirecting unauthenticated user')
+    return next({ path: '/login', query: { redirect: to.fullPath } })
+  }
+
+  next()
 })
 
 export default router

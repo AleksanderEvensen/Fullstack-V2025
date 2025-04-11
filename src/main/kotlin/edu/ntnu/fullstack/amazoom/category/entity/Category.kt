@@ -1,6 +1,8 @@
 package edu.ntnu.fullstack.amazoom.category.entity
 
+import edu.ntnu.fullstack.amazoom.bookmark.entity.ListingBookmark
 import edu.ntnu.fullstack.amazoom.category.dto.CategoryDto
+import edu.ntnu.fullstack.amazoom.listing.entity.Listing
 import jakarta.persistence.*
 
 /**
@@ -26,6 +28,12 @@ data class Category(
     val icon: String,
 
     @Version
-    val version: Long? = null
+    val version: Long? = null,
+
+    @OneToMany(mappedBy = "category", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val listings: List<Listing> = mutableListOf()
+
+
+
 )
 

@@ -3,6 +3,7 @@ package edu.ntnu.fullstack.amazoom.listing.entity
 import edu.ntnu.fullstack.amazoom.bookmark.entity.ListingBookmark
 import edu.ntnu.fullstack.amazoom.common.entity.User
 import edu.ntnu.fullstack.amazoom.category.entity.Category
+import edu.ntnu.fullstack.amazoom.chat.entity.ChatMessage
 import edu.ntnu.fullstack.amazoom.listing.dto.ListingDto
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.*
@@ -41,7 +42,6 @@ data class Listing(
     val originalPrice: Double? = null,
 
     @Column(nullable = false)
-    @Lob
     val description: String,
 
     @Column(nullable = false)
@@ -89,6 +89,9 @@ data class Listing(
 
     @Column(name = "updated_at")
     var updatedAt: LocalDateTime = LocalDateTime.now(),
+
+    @OneToMany(mappedBy = "listing", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val messages: List<ChatMessage> = mutableListOf(),
 ) {
     /**
      * Updates the updatedAt timestamp before persisting changes.
@@ -96,6 +99,10 @@ data class Listing(
     @PreUpdate
     fun preUpdate() {
         updatedAt = LocalDateTime.now()
+    }
+
+    override fun toString(): String {
+        return "Listing(id=$id, title='$title', price=$price, condition=$condition)"
     }
 }
 

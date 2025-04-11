@@ -25,4 +25,8 @@ data class ListingBookmark(
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     val user: User
-)
+) {
+    override fun toString(): String {
+        return "ListingBookmark(id=$id, listingId=${listing.id}, userId=${user.id})"
+    }
+}

@@ -11,6 +11,9 @@ importers:
       '@internationalized/date':
         specifier: ^3.7.0
         version: 3.7.0
+      '@oslojs/jwt':
+        specifier: ^0.3.0
+        version: 0.3.0
       '@studiometa/vue-mapbox-gl':
         specifier: ^2.7.2
         version: 2.7.2(@mapbox/mapbox-gl-geocoder@5.0.3)(mapbox-gl@3.11.0)(vue@3.5.13(typescript@5.8.2))
@@ -683,6 +686,12 @@ packages:
 
   '@one-ini/wasm@0.1.1':
     resolution: {integrity: sha512-XuySG1E38YScSJoMlqovLru4KTUNSjgVTIjyh7qMX6aNN5HY5Ct5LhRJdxO79JtTzKfzV/bnWpz+zquYrISsvw==}
+
+  '@oslojs/encoding@0.4.1':
+    resolution: {integrity: sha512-hkjo6MuIK/kQR5CrGNdAPZhS01ZCXuWDRJ187zh6qqF2+yMHZpD9fAYpX8q2bOO6Ryhl3XpCT6kUX76N8hhm4Q==}
+
+  '@oslojs/jwt@0.3.0':
+    resolution: {integrity: sha512-bg9hh6gc7ppS2haLv2nE7oezroXK6a6zGTz6JzCHXAQKCOOZM4HfOrV9DwCaDimrTcDi1nHAe2ueAAxZ23eeUA==}
 
   '@oxlint/darwin-arm64@0.16.4':
     resolution: {integrity: sha512-lxwzCWM8zkSsv+JMEAvhHoS5X+5ICq/Vupb4RAalozX2V39Y/JXNol6RBxIGD7EEmitxWBghMIMdmqW9Y0wChA==}
@@ -4230,6 +4239,12 @@ snapshots:
       fastq: 1.19.1
 
   '@one-ini/wasm@0.1.1': {}
+
+  '@oslojs/encoding@0.4.1': {}
+
+  '@oslojs/jwt@0.3.0':
+    dependencies:
+      '@oslojs/encoding': 0.4.1
 
   '@oxlint/darwin-arm64@0.16.4':
     optional: true

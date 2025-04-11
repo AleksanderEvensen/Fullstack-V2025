@@ -8,6 +8,7 @@ import edu.ntnu.fullstack.amazoom.listing.dto.CreateOrUpdateListingRequestDto
 import edu.ntnu.fullstack.amazoom.listing.dto.ListingDto
 import edu.ntnu.fullstack.amazoom.listing.dto.ListingSearchRequestDto
 import edu.ntnu.fullstack.amazoom.listing.dto.MyListingRequest
+import edu.ntnu.fullstack.amazoom.listing.entity.ListingStatus
 import edu.ntnu.fullstack.amazoom.listing.exception.ListingNotFoundException
 import edu.ntnu.fullstack.amazoom.listing.mapper.ListingMapper
 import edu.ntnu.fullstack.amazoom.listing.repository.ListingRepository
@@ -132,16 +133,21 @@ class ListingService(
      * @param size The number of listings per page
      * @param sortBy The field to sort by
      * @param direction The sort direction (ASC or DESC)
+     * @param status The status of the listings to retrieve
      * @return A page of listing DTOs
      */
     fun getPaginatedAndSortedListings(
         page: Int,
         size: Int,
         sortBy: String,
-        direction: Sort.Direction
+        direction: Sort.Direction,
+        status: ListingStatus
     ): Page<ListingDto> {
         val pageable = PageRequest.of(page, size, Sort.by(direction, sortBy))
-        val listingsPage = listingRepository.findAll(pageable)
+        val listingSpecification = ListingSpecification.buildSpecification(
+            status = status
+        )
+        val listingsPage = listingRepository.findAll(listingSpecification, pageable)
         val currentUser = try {
             userService.getCurrentUser()
         } catch (e: Exception) {
