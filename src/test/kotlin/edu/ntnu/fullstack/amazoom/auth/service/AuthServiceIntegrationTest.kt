@@ -3,9 +3,12 @@ package edu.ntnu.fullstack.amazoom.auth.service
 import edu.ntnu.fullstack.amazoom.auth.dto.LoginRequestDto
 import edu.ntnu.fullstack.amazoom.auth.dto.RegisterRequestDto
 import edu.ntnu.fullstack.amazoom.auth.exception.InvalidCredentialsException
+import edu.ntnu.fullstack.amazoom.common.entity.Role
+import edu.ntnu.fullstack.amazoom.common.entity.RoleName
 import edu.ntnu.fullstack.amazoom.common.entity.User
 import edu.ntnu.fullstack.amazoom.common.exception.UserAlreadyExistsException
 import edu.ntnu.fullstack.amazoom.common.exception.UserNotFoundException
+import edu.ntnu.fullstack.amazoom.common.repository.RoleRepository
 import edu.ntnu.fullstack.amazoom.common.repository.UserRepository
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
@@ -29,15 +32,27 @@ class AuthServiceIntegrationTest {
     @Autowired
     private lateinit var passwordEncoder: PasswordEncoder
 
+    @Autowired
+    protected lateinit var roleRepository: RoleRepository
+
     private val testEmail = "test.user@example.com"
     private val testPassword = "password123"
     private val testName = "Test User"
     private val testPhoneNumber = "12345678"
 
+
+
+
     @BeforeEach
     fun setup() {
-        // Clean up any existing test users
         userRepository.deleteAll()
+        // Create roles needed for testing
+        if (roleRepository.findByName(RoleName.ROLE_USER) == null) {
+            roleRepository.save(Role(name = RoleName.ROLE_USER))
+        }
+        if (roleRepository.findByName(RoleName.ROLE_ADMIN) == null) {
+            roleRepository.save(Role(name = RoleName.ROLE_ADMIN))
+        }
     }
 
     @Test
