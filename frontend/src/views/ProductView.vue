@@ -153,7 +153,8 @@ const handleSendMessage = () => {
 </script>
 
 <template>
-  <div class="container" v-if="product">
+  <main>
+    <div class="container" v-if="product">
     <div class="product-grid">
       <div class="product-images">
         <div class="main-image">
@@ -382,6 +383,7 @@ const handleSendMessage = () => {
       </div>
     </div>
   </div>
+  </main>
 </template>
 
 <style scoped>

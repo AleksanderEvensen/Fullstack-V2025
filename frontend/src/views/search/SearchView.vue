@@ -174,128 +174,130 @@ const listingMarkers = computed(() => {
 </script>
 
 <template>
-  <div class="container">
-    <header class="search-header">
-      <h1 class="search-title">{{ t('search.title') }}</h1>
-      <span class="search-count">{{ totalCountMessage }}</span>
-    </header>
+  <main class="search-page">
+    <div class="container">
+      <header class="search-header">
+        <h1 class="search-title">{{ t('search.title') }}</h1>
+        <span class="search-count">{{ totalCountMessage }}</span>
+      </header>
 
-    <div class="search-query">
-      <Input
-        :placeholder="t('search.searchPlaceholder')"
-        class="search-input"
-        v-model="localQuery"
-      />
-    </div>
-
-    <div class="search-container">
-      <SearchFilter v-if="filtersPanelOpen" @filter-change="handleFilterChange" />
-
-      <div class="search-results">
-        <div class="search-controls">
-          <div class="search-controls-left">
-            <Button variant="outline" @click="filtersPanelOpen = !filtersPanelOpen">
-              <FunnelIcon :size="20" />
-              <span class="control-text">{{
-                filtersPanelOpen ? t('search.hideFilters') : t('search.showFilters')
-              }}</span>
-            </Button>
-
-            <Button variant="outline" class="map-button" @click="toggleMapView">
-              <MapPin :size="20" />
-              <span class="control-text">{{ t('search.viewOnMap') }}</span>
-            </Button>
-          </div>
-
-          <div class="sort-select">
-            <Select v-model="sortBy">
-              <SelectTrigger>
-                <SelectValue :placeholder="sortBy" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem
-                    v-for="option in sortOptions"
-                    :key="option.value"
-                    :value="option.value"
-                  >
-                    {{ option.label }}
-                  </SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <div v-if="isLoading && !allListings.length" class="loading-state">
-          <p>{{ t('common.loading') }}</p>
-        </div>
-
-        <div v-else-if="isError" class="error-state">
-          <p>{{ t('search.errorLoading') }}</p>
-        </div>
-
-        <div v-else-if="allListings.length === 0" class="empty-state">
-          <p>{{ t('search.noResults') }}</p>
-        </div>
-
-        <div v-else class="search-results-list">
-          <ProductCard
-            v-for="(item, index) in allListings"
-            :key="item.id || index"
-            :product="item"
-          />
-        </div>
-
-        <div v-if="hasNextPage" class="load-more-container">
-          <Button
-            variant="outline"
-            :disabled="isFetchingNextPage"
-            @click="fetchNextPage"
-            class="load-more-button"
-          >
-            {{ isFetchingNextPage ? t('common.loadingMore') : t('common.loadMore') }}
-          </Button>
-        </div>
+      <div class="search-query">
+        <Input
+          :placeholder="t('search.searchPlaceholder')"
+          class="search-input"
+          v-model="localQuery"
+        />
       </div>
-    </div>
 
-    <dialog id="mapDialog">
-      <div class="map-view">
-        <div class="map-header">
-          <h2>{{ t('search.mapView') }}</h2>
-          <Button variant="ghost" size="icon" @click="toggleMapView(false)" class="close-button">
-            <X :size="20" />
-          </Button>
-        </div>
+      <div class="search-container">
+        <SearchFilter v-if="filtersPanelOpen" @filter-change="handleFilterChange" />
 
-        <div class="map-container">
-          <MapboxMap
-            style="height: 60vh; max-height: 500px"
-            :access-token="MAPBOX_API_TOKEN"
-            map-style="mapbox://styles/mapbox/streets-v12"
-            @mb-created="handleMapCreated"
-          >
-            <MapboxMarker
-              v-for="marker in listingMarkers"
-              :key="marker.id"
-              :lng-lat="[marker.longitude, marker.latitude]"
+        <div class="search-results">
+          <div class="search-controls">
+            <div class="search-controls-left">
+              <Button variant="outline" @click="filtersPanelOpen = !filtersPanelOpen">
+                <FunnelIcon :size="20" />
+                <span class="control-text">{{
+                  filtersPanelOpen ? t('search.hideFilters') : t('search.showFilters')
+                }}</span>
+              </Button>
+
+              <Button variant="outline" class="map-button" @click="toggleMapView">
+                <MapPin :size="20" />
+                <span class="control-text">{{ t('search.viewOnMap') }}</span>
+              </Button>
+            </div>
+
+            <div class="sort-select">
+              <Select v-model="sortBy">
+                <SelectTrigger>
+                  <SelectValue :placeholder="sortBy" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem
+                      v-for="option in sortOptions"
+                      :key="option.value"
+                      :value="option.value"
+                    >
+                      {{ option.label }}
+                    </SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div v-if="isLoading && !allListings.length" class="loading-state">
+            <p>{{ t('common.loading') }}</p>
+          </div>
+
+          <div v-else-if="isError" class="error-state">
+            <p>{{ t('search.errorLoading') }}</p>
+          </div>
+
+          <div v-else-if="allListings.length === 0" class="empty-state">
+            <p>{{ t('search.noResults') }}</p>
+          </div>
+
+          <div v-else class="search-results-list">
+            <ProductCard
+              v-for="(item, index) in allListings"
+              :key="item.id || index"
+              :product="item"
+            />
+          </div>
+
+          <div v-if="hasNextPage" class="load-more-container">
+            <Button
+              variant="outline"
+              :disabled="isFetchingNextPage"
+              @click="fetchNextPage"
+              class="load-more-button"
             >
-              <div class="map-marker">
-                <House />
-              </div>
-            </MapboxMarker>
-
-            <MapboxNavigationControl position="top-right" />
-          </MapboxMap>
-        </div>
-
-        <div class="map-footer">
-          <span>{{ totalCountMessage }}</span>
+              {{ isFetchingNextPage ? t('common.loadingMore') : t('common.loadMore') }}
+            </Button>
+          </div>
         </div>
       </div>
-    </dialog>
-  </div>
+
+      <dialog id="mapDialog">
+        <div class="map-view">
+          <div class="map-header">
+            <h2>{{ t('search.mapView') }}</h2>
+            <Button variant="ghost" size="icon" @click="toggleMapView(false)" class="close-button">
+              <X :size="20" />
+            </Button>
+          </div>
+
+          <div class="map-container">
+            <MapboxMap
+              style="height: 60vh; max-height: 500px"
+              :access-token="MAPBOX_API_TOKEN"
+              map-style="mapbox://styles/mapbox/streets-v12"
+              @mb-created="handleMapCreated"
+            >
+              <MapboxMarker
+                v-for="marker in listingMarkers"
+                :key="marker.id"
+                :lng-lat="[marker.longitude, marker.latitude]"
+              >
+                <div class="map-marker">
+                  <House />
+                </div>
+              </MapboxMarker>
+
+              <MapboxNavigationControl position="top-right" />
+            </MapboxMap>
+          </div>
+
+          <div class="map-footer">
+            <span>{{ totalCountMessage }}</span>
+          </div>
+        </div>
+      </dialog>
+    </div>
+  </main>
 </template>
 
 <style scoped>
