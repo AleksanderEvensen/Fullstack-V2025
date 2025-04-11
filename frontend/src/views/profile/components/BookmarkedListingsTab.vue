@@ -17,7 +17,7 @@ const userListings = computed(() => pagedListings.value?.content ?? [])
     <div class="listings-list">
         <UserListing v-for="listing in userListings" :key="listing.id" :listing="listing" />
         <div v-if="userListings.length === 0" class="empty-state">
-            <p>{{ t('profile.listings.empty.bookmarked') }}</p>
+            <p>{{ t('profile.empty.bookmarked') }}</p>
         </div>
     </div>
 </template>

@@ -70,6 +70,9 @@ class ListingControllerIntegrationTest {
     fun setup() {
         closeable = MockitoAnnotations.openMocks(this)
 
+        val userRole = roleRepository.findByName(RoleName.ROLE_USER)
+            ?: roleRepository.save(Role(name = RoleName.ROLE_USER))
+
 
         // Create user
         user = User(
@@ -84,7 +87,7 @@ class ListingControllerIntegrationTest {
                 city = "Test City",
                 country = "Test Country"
             ),
-            roles = mutableSetOf(Role(id = 1, name = RoleName.ROLE_USER))
+            roles = mutableSetOf(userRole)
         )
         user = userRepository.save(user)
 

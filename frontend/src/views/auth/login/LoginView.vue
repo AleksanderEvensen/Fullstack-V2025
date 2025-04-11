@@ -24,7 +24,7 @@ const { t } = useTypedI18n()
 
 const loginZodSchema = z.object({
   email: z.string().email(t('auth.validation.emailInvalid')),
-  password: z.string().min(1, t('auth.login.validation.passwordRequired')),
+  password: z.string().min(1, t('auth.validation.passwordRequired')),
 })
 
 const searchParams = useUrlSearchParams('history')

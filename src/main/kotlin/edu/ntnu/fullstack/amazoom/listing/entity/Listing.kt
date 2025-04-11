@@ -3,6 +3,7 @@ package edu.ntnu.fullstack.amazoom.listing.entity
 import edu.ntnu.fullstack.amazoom.bookmark.entity.ListingBookmark
 import edu.ntnu.fullstack.amazoom.common.entity.User
 import edu.ntnu.fullstack.amazoom.category.entity.Category
+import edu.ntnu.fullstack.amazoom.chat.entity.ChatMessage
 import edu.ntnu.fullstack.amazoom.listing.dto.ListingDto
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.*
@@ -88,6 +89,9 @@ data class Listing(
 
     @Column(name = "updated_at")
     var updatedAt: LocalDateTime = LocalDateTime.now(),
+
+    @OneToMany(mappedBy = "listing", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val messages: List<ChatMessage> = mutableListOf(),
 ) {
     /**
      * Updates the updatedAt timestamp before persisting changes.

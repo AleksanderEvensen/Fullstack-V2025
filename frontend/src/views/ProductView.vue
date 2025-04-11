@@ -12,7 +12,7 @@ import {
   useUnbookmarkListing,
   useUpdateListing,
 } from '@/lib/api/queries/listings'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { cn, formatAddress, formatPictureUrl, MAPBOX_API_TOKEN } from '@/lib/utils'
 import { useTypedI18n } from '@/i18n'
 import { EllipsisIcon, HeartIcon, TrashIcon, PinIcon } from 'lucide-vue-next'
@@ -31,6 +31,7 @@ import { useQueryClient } from '@tanstack/vue-query'
 const { t } = useTypedI18n()
 const id = useRoute().params.id as unknown as number
 const { data: product } = getListing(id)
+const router = useRouter()
 const currentImageIndex = ref(0)
 const queryClient = useQueryClient()
 const formatPrice = (price: number) => {
@@ -95,6 +96,8 @@ const handleDelete = () => {
   deleteListing(product.value.id, {
     onSuccess: () => {
       toast.success(t('product.deleteSuccess'))
+      queryClient.invalidateQueries({ queryKey: [LISTING_QUERY_KEY] })
+      router.push('/')
     },
   })
 }
@@ -132,13 +135,8 @@ const handleToggleSold = () => {
           <img :src="formatPictureUrl(product.images[currentImageIndex])" :alt="product.title" />
         </div>
         <div class="image-thumbnails">
-          <button
-            v-for="(image, index) in product.images"
-            :key="index"
-            @click="currentImageIndex = index"
-            class="thumbnail-button"
-            :class="{ active: currentImageIndex === index }"
-          >
+          <button v-for="(image, index) in product.images" :key="index" @click="currentImageIndex = index"
+            class="thumbnail-button" :class="{ active: currentImageIndex === index }">
             <img :src="formatPictureUrl(image)" :alt="`${t('product.imageAlt')} ${index + 1}`" />
           </button>
         </div>
@@ -152,14 +150,8 @@ const handleToggleSold = () => {
               <div class="title-container">
                 <span>{{ product.title }}</span>
                 <div class="product-action-buttons">
-                  <Button
-                    v-if="canBookmark"
-                    variant="ghost"
-                    size="icon"
-                    class="action-button"
-                    @click="handleBookmark"
-                    :disabled="isBookmarking || isUnbookmarking"
-                  >
+                  <Button v-if="canBookmark" variant="ghost" size="icon" class="action-button" @click="handleBookmark"
+                    :disabled="isBookmarking || isUnbookmarking">
                     <HeartIcon :class="cn('icon', product.isBookmarked ? 'icon-filled' : '')" />
                   </Button>
                   <DropdownMenu v-if="canDelete">
@@ -167,11 +159,7 @@ const handleToggleSold = () => {
                       <EllipsisIcon />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
-                      <DropdownMenuItem
-                        class="dropdown-menu-item"
-                        @click="handleToggleSold"
-                        :disabled="isTogglingSold"
-                      >
+                      <DropdownMenuItem class="dropdown-menu-item" @click="handleToggleSold" :disabled="isTogglingSold">
                         <CheckIcon />
                         {{
                           product.status === 'ACTIVE'
@@ -179,11 +167,7 @@ const handleToggleSold = () => {
                             : t('product.toggleActive')
                         }}
                       </DropdownMenuItem>
-                      <DropdownMenuItem
-                        class="dropdown-menu-item danger"
-                        @click="handleDelete"
-                        :disabled="isDeleting"
-                      >
+                      <DropdownMenuItem class="dropdown-menu-item danger" @click="handleDelete" :disabled="isDeleting">
                         <TrashIcon />
                         {{ t('product.delete') }}
                       </DropdownMenuItem>
@@ -196,10 +180,7 @@ const handleToggleSold = () => {
               <Badge variant="outline" class="condition-badge">
                 {{ getTranslatedCondition(product.condition) }}
               </Badge>
-              <Badge
-                :variant="product.status === 'ACTIVE' ? 'default' : 'secondary'"
-                class="status-badge"
-              >
+              <Badge :variant="product.status === 'ACTIVE' ? 'default' : 'secondary'" class="status-badge">
                 {{
                   product.status === 'ACTIVE'
                     ? t('product.status.active')
@@ -241,14 +222,10 @@ const handleToggleSold = () => {
           <CardContent>
             <div class="seller-info">
               <Avatar class="seller-avatar">
-                <AvatarImage
-                  :src="
-                    product.seller.profileImageUrl
-                      ? formatPictureUrl(product.seller.profileImageUrl)
-                      : ''
-                  "
-                  :alt="product.seller.name"
-                />
+                <AvatarImage :src="product.seller.profileImageUrl
+                  ? formatPictureUrl(product.seller.profileImageUrl)
+                  : ''
+                  " :alt="product.seller.name" />
                 <AvatarFallback>{{ product.seller.name[0] }}</AvatarFallback>
               </Avatar>
               <div class="seller-details">
@@ -275,15 +252,9 @@ const handleToggleSold = () => {
     <div class="product-details">
       <div class="details-grid">
         <Card>
-          <MapboxMap
-            class="product-map rounded"
-            style="height: 400px"
-            :access-token="MAPBOX_API_TOKEN"
-            map-style="mapbox://styles/mapbox/streets-v12"
-            :center="[product.longitude, product.latitude]"
-            :zoom="12.0"
-            @mb-created="(map: Map) => (mapRef = map)"
-          >
+          <MapboxMap class="product-map rounded" style="height: 400px" :access-token="MAPBOX_API_TOKEN"
+            map-style="mapbox://styles/mapbox/streets-v12" :center="[product.longitude, product.latitude]" :zoom="12.0"
+            @mb-created="(map: Map) => (mapRef = map)">
             <MapboxMarker :lng-lat="[product.longitude, product.latitude]">
               <div class="map-marker">
                 <PinIcon />
@@ -294,9 +265,7 @@ const handleToggleSold = () => {
         </Card>
 
         <!-- Basic Info -->
-        <Card
-          v-if="product.modelYear || product.manufacturer || product.model || product.serialNumber"
-        >
+        <Card v-if="product.modelYear || product.manufacturer || product.model || product.serialNumber">
           <CardHeader>
             <CardTitle>{{ t('product.details.basicInfo') }}</CardTitle>
           </CardHeader>
@@ -362,11 +331,7 @@ const handleToggleSold = () => {
           </CardHeader>
           <CardContent>
             <ul class="details-list">
-              <li
-                v-for="(mod, index) in product.modifications"
-                :key="index"
-                class="detail-list-item"
-              >
+              <li v-for="(mod, index) in product.modifications" :key="index" class="detail-list-item">
                 {{ mod }}
               </li>
             </ul>
@@ -691,7 +656,7 @@ const handleToggleSold = () => {
 }
 
 /* Make certain sections span full width */
-.details-grid > :nth-child(n + 3) {
+.details-grid> :nth-child(n + 3) {
   grid-column: 1 / -1;
 }
 
@@ -750,27 +715,7 @@ const handleToggleSold = () => {
   height: 20px;
 }
 
-:deep(.mapboxgl-ctrl-top-right) {
-  top: 16px;
-  right: 16px;
-}
 
-:deep(.mapboxgl-ctrl) {
-  border-radius: var(--radius);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  background-color: var(--background);
-  border: 1px solid var(--border);
-}
-
-:deep(.mapboxgl-ctrl button) {
-  border-radius: var(--radius);
-  background-color: var(--background);
-  border: 1px solid var(--border);
-}
-
-:deep(.mapboxgl-ctrl button:hover) {
-  background-color: var(--accent);
-}
 
 .badges-container {
   display: flex;
