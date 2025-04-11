@@ -41,7 +41,6 @@ data class Listing(
     val originalPrice: Double? = null,
 
     @Column(nullable = false)
-    @Lob
     val description: String,
 
     @Column(nullable = false)
@@ -96,6 +95,10 @@ data class Listing(
     @PreUpdate
     fun preUpdate() {
         updatedAt = LocalDateTime.now()
+    }
+
+    override fun toString(): String {
+        return "Listing(id=$id, title='$title', price=$price, condition=$condition)"
     }
 }
 
