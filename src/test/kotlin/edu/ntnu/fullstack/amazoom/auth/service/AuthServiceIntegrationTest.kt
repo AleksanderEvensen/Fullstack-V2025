@@ -78,7 +78,6 @@ class AuthServiceIntegrationTest {
 
     @Test
     fun `test register with existing email throws exception`() {
-        // Create and save a user first
         userRepository.save(
             User(
                 email = testEmail,
@@ -106,7 +105,6 @@ class AuthServiceIntegrationTest {
 
     @Test
     fun `test login with valid credentials`() {
-        // Create and save a user
         userRepository.save(
             User(
                 email = testEmail,
@@ -116,23 +114,17 @@ class AuthServiceIntegrationTest {
             )
         )
 
-        // Create login request
         val request = LoginRequestDto(
             email = testEmail,
             password = testPassword
         )
-
-        // Login
         val response = authService.login(request.email, request.password)
-
-        // Verify response
         assertNotNull(response.accessToken)
 
     }
 
     @Test
     fun `test login with invalid password throws exception`() {
-        // Create and save a user
         userRepository.save(
             User(
                 email = testEmail,
@@ -141,8 +133,6 @@ class AuthServiceIntegrationTest {
                 phoneNumber = testPhoneNumber
             )
         )
-
-        // Create login request with wrong password
         val request = LoginRequestDto(
             email = testEmail,
             password = "wrongpassword"
@@ -155,7 +145,6 @@ class AuthServiceIntegrationTest {
 
     @Test
     fun `test login with non-existent email throws exception`() {
-        // Create login request for non-existent user
         val request = LoginRequestDto(
             email = "nonexistent@example.com",
             password = testPassword

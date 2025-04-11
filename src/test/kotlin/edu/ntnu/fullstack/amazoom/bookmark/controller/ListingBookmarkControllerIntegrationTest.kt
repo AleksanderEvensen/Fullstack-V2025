@@ -81,8 +81,6 @@ class ListingBookmarkControllerIntegrationTest {
     @BeforeEach
     fun setup() {
         closeable = MockitoAnnotations.openMocks(this)
-
-        // Create test role if it doesn't exist
         val roleUser = roleRepository.findByName(RoleName.ROLE_USER) ?:
         roleRepository.save(Role(name = RoleName.ROLE_USER))
 
@@ -102,7 +100,6 @@ class ListingBookmarkControllerIntegrationTest {
         )
         sellerUser = userRepository.save(sellerUser)
 
-        // Create category
         category = Category(
             name = "Electronics${System.currentTimeMillis()}",
             description = "Electronic devices and gadgets",
@@ -111,7 +108,6 @@ class ListingBookmarkControllerIntegrationTest {
         )
         category = categoryRepository.save(category)
 
-        // Create listing by seller
         listing = Listing(
             title = "Test Listing",
             category = category,
@@ -124,7 +120,6 @@ class ListingBookmarkControllerIntegrationTest {
         )
         listing = listingRepository.save(listing)
 
-        // Create buyer user
         user = User(
             name = "Buyer User",
             email = "buyer@example.com",
@@ -141,7 +136,6 @@ class ListingBookmarkControllerIntegrationTest {
         )
         user = userRepository.save(user)
 
-        // Create JWT token for the buyer user
         val authorities = user.roles.map { SimpleGrantedAuthority(it.name.toString()) }
         val userDetails = CustomUserDetails(
             username = user.email,
@@ -153,7 +147,6 @@ class ListingBookmarkControllerIntegrationTest {
 
     @AfterEach
     fun cleanup() {
-        // Clear all test data
         bookmarkRepository.deleteAll()
         listingRepository.deleteAll()
         categoryRepository.deleteAll()
@@ -164,7 +157,6 @@ class ListingBookmarkControllerIntegrationTest {
 
     @Test
     fun testCreateBookmarkHappyPath() {
-        // Create a bookmark with JWT Authentication
         val result = mockMvc.perform(
             post("/api/bookmarks/${listing.id}")
                 .header("Authorization", "Bearer $jwtToken")
@@ -172,14 +164,9 @@ class ListingBookmarkControllerIntegrationTest {
         )
             .andExpect(status().isCreated)
             .andReturn()
-
-        // Print response for debugging
         println("Response: " + result.response.contentAsString)
-
-        // Flush any pending transactions to ensure data is committed
         entityManager.flush()
 
-        // Verify bookmark exists in repository
         val bookmarks = bookmarkRepository.findAllForUser(user.id)
         assertFalse(bookmarks.isEmpty(), "Expected at least one bookmark")
         assertTrue(bookmarks.any { it.listing.id == listing.id && it.user.id == user.id },
@@ -188,15 +175,13 @@ class ListingBookmarkControllerIntegrationTest {
 
     @Test
     fun testGetAllBookmarksForUser() {
-        // Create a bookmark first
         val bookmark = ListingBookmark(
             user = user,
             listing = listing
         )
         bookmarkRepository.save(bookmark)
-        entityManager.flush() // Ensure the bookmark is saved
+        entityManager.flush()
 
-        // Test getting all bookmarks with JWT Authentication
         mockMvc.perform(
             get("/api/bookmarks")
                 .header("Authorization", "Bearer $jwtToken")
@@ -210,7 +195,6 @@ class ListingBookmarkControllerIntegrationTest {
     @Test
     @Transactional()
     fun testDeleteBookmark() {
-        // Create a bookmark first
         val bookmark = ListingBookmark(
             user = user,
             listing = listing
@@ -240,7 +224,7 @@ class ListingBookmarkControllerIntegrationTest {
             title = "My Own Listing",
             category = category,
             condition = ListingCondition.NEW,
-            seller = user, // Same as authenticated user
+            seller = user,
             price = 200.0,
             description = "My own listing that I can't bookmark",
             latitude = 10.0,
