@@ -1,6 +1,6 @@
 # Amazoom
 
-A full-stack e-commerce application with interactive mapping features built with Spring Boot and Vue.js.
+A full-stack e-commerce inspired by finn.no application built with Spring Boot and Vue.js.
 
 ## Contributors
 
@@ -27,17 +27,9 @@ A full-stack e-commerce application with interactive mapping features built with
 1. Clone the repository:
 
     ```bash
-    git clone https://github.com/AleksanderEvensen/Fullstack-V2025.git
+    git clone https://github.com/AleksanderEvensen/Fullstack-V2025.git amazoom
     cd amazoom
     ```
-
-2. Copy the environment file:
-
-    ```bash
-    cp env.example .env
-    ```
-
-3. Configure database settings in `.env` file
 
 ### Frontend Setup
 
@@ -71,17 +63,19 @@ The simplest way to run the entire application stack:
 docker compose up
 ```
 
-This will start both the backend and frontend services along with a MySQL database.
+This will start both the backend and frontend services along with a MySQL database and MinIO storage bucket.
 
 ### Run Locally
 
 #### Backend
 
 ```bash
+docker compose up -d database minio # Only run the databse and minio instance
 ./gradlew bootRun
 ```
 
-The backend server will start at http://localhost:8080
+The application will start at http://localhost:8080
+> NOTE: In development you need to run both backend and frontend
 
 #### Frontend
 
@@ -91,6 +85,16 @@ pnpm run dev
 ```
 
 The frontend development server will start at http://localhost:8081
+
+#### Frontend and Backend
+```bash
+docker compose up -d # Will build frontend and backend into a docker image and run with all containers
+```
+When running in a docker image the application is built in production mode.
+make sure to have the MAPBOX_API_KEY in .env file before building image.
+
+This will serve everything under http://localhost:8080
+> NOTE: In this step we dont need to run the frontend seperately
 
 ## Testing
 
@@ -109,6 +113,7 @@ pnpm run test:unit
 
 ### Frontend E2E Tests
 
+> NOTE: Backend needs to run for E2E test `docker compose up -d database minio`
 ```bash
 cd frontend
 # Install Playwright browsers if not already installed
@@ -126,8 +131,6 @@ pnpm run e2e:ui
 ```bash
 ./gradlew build
 ```
-
-This will create a JAR file in `build/libs/amazoom-0.0.1.jar`
 
 ### Build Frontend
 
@@ -148,18 +151,11 @@ docker compose build
 
 When the backend is running, API documentation is available at:
 
--   Scalar UI: http://localhost:8080/docs.html (anbefalt mer moderne enn swagger)
+-   Scalar UI: http://localhost:8080/docs.html (recommended)
 -   Swagger UI: http://localhost:8080/swagger-ui.html
 -   OpenAPI Schema: http://localhost:8080/openapi-schema.json
 
 ## Environment Variables
-
-### Backend (.env)
-
--   `SPRING_DATASOURCE_URL`: Database connection URL
--   `SPRING_DATASOURCE_USERNAME`: Database username
--   `SPRING_DATASOURCE_PASSWORD`: Database password
--   Other configuration variables as defined in `env.example`
 
 ### Frontend (.env)
 
