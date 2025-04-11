@@ -528,9 +528,7 @@ class DatabaseSeeder @Autowired constructor(
                 "https://images.unsplash.com/photo-1581235720704-06d3acfcb36f?q=80&w=1000&auto=format&fit=crop",
                 "https://images.unsplash.com/photo-1583394838336-acd977736f90?q=80&w=1000&auto=format&fit=crop",
                 "https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?q=80&w=1000&auto=format&fit=crop",
-                "https://images.unsplash.com/photo-1583934584597-5d9e9c609a7e?q=80&w=1000&auto=format&fit=crop",
                 "https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=1000&auto=format&fit=crop",
-                "https://images.unsplash.com/photo-1617005082133-45a4e4376e3d?q=80&w=1000&auto=format&fit=crop",
                 "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?q=80&w=1000&auto=format&fit=crop"
             )
             
