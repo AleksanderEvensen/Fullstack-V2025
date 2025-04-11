@@ -50,7 +50,7 @@ services:
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
       SPRING_FLYWAY_URL: jdbc:mysql://database:3306/amazoom?allowPublicKeyRetrieval=true&useSSL=false
-      SPRING_FLYWAY_USER: root 
+      SPRING_FLYWAY_USER: root
       SPRING_FLYWAY_PASSWORD: root
       MINIO_ENDPOINT: http://minio:9000
       MINIO_ACCESS_KEY: minioadmin
